@@ -43,6 +43,8 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
+#include <autom8/autom8.h>
+
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
 static const int DEFAULT_WIDTH = 100;
@@ -94,6 +96,8 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
+	autom8_init();
+
     App app(APP_NAME); /* must be before layout creation */
 
     app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
@@ -103,6 +107,8 @@ int main(int argc, char* argv[]) {
     });
 
     app.Run(std::make_shared<MainLayout>());
+
+	autom8_deinit();
 
     return 0;
 }
