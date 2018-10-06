@@ -14,27 +14,13 @@ static const std::string TAG = "ssl_certificate";
 
 using namespace autom8;
 
-#if defined(WIN32)
-#pragma warning(disable:4244) // from utf8. conversion from __w64 int to int
-typedef boost::filesystem::wpath path;
-#else
-typedef boost::filesystem::path path;
-#endif
-
 #include <utf8/utf8.h>
 
 namespace autom8 {
     namespace ssl_certificate {
         bool exists() {
-#if defined(WIN32)
-            std::string utf8fn = filename();
-            std::wstring utf16fn;
-            utf8::utf8to16(utf8fn.begin(), utf8fn.end(), back_inserter(utf16fn));
-
-            return boost::filesystem::exists(path(utf16fn));
-#else
-            return boost::filesystem::exists(path(filename()));
-#endif
+            return boost::filesystem::exists(
+                boost::filesystem::path(filename()));
         }
 
         bool remove() {
@@ -42,15 +28,8 @@ namespace autom8 {
                 return true;
             }
 
-#if defined(WIN32)
-            std::string utf8fn = filename();
-            std::wstring utf16fn;
-            utf8::utf8to16(utf8fn.begin(), utf8fn.end(), back_inserter(utf16fn));
-
-            return boost::filesystem::remove(path(utf16fn));
-#else
-            return boost::filesystem::remove(path(filename()));
-#endif
+            return boost::filesystem::remove(
+                boost::filesystem::path(filename()));
         }
 
         std::string filename() {

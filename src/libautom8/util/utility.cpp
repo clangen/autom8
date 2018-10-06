@@ -4,10 +4,6 @@
 
 #if defined(WIN32)
 #include <windows.h>
-#pragma warning(disable:4244) // from utf8. conversion from __w64 int to int
-typedef boost::filesystem::wpath path;
-#else
-typedef boost::filesystem::path path;
 #endif
 
 #include <utf8/utf8.h>
@@ -27,12 +23,14 @@ std::string get_environment_path(std::string varname) {
 }
 
 bool create_directory(std::string dir) {
-#if defined(WIN32)
-    using namespace autom8::utility;
-    return boost::filesystem::create_directories(path(u8to16(dir)));
-#else
-    return boost::filesystem::create_directories(path(dir));
-#endif
+    auto normalized = boost::filesystem::path(dir);
+    boost::system::error_code ec;
+
+    if (boost::filesystem::exists(normalized, ec)) {
+        return true;
+    }
+
+    return boost::filesystem::create_directories(normalized, ec);
 }
 
 namespace autom8 {

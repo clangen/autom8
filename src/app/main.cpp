@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
-	autom8_init();
+    autom8_init();
 
     App app(APP_NAME); /* must be before layout creation */
 
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 
     app.Run(std::make_shared<MainLayout>());
 
-	autom8_deinit();
+    autom8_deinit();
 
     return 0;
 }
