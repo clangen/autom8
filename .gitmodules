@@ -1,0 +1,3 @@
+[submodule "src/cursespp"]
+	path = src/cursespp
+	url = git@github.com:clangen/cursespp.git
