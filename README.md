@@ -1,2 +1,2 @@
-# cursespp-sample
-sample app for the [cursespp](https://github.com/clangen/cursespp) library
+# autom8-cli
+an autom8 client based on the [cursespp](https://github.com/clangen/cursespp) library
