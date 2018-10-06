@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4602D866-D98D-4AC6-A501-A2463CD41355}</ProjectGuid>
+    <RootNamespace>autom8</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Dynamic</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Dynamic</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)__output\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)__build\obj\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)__output\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)__build\obj\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_66_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_66_0\lib32-msvc-14.1\;$(SolutionDir)__output\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-41.lib;ssl-43.lib;tls-15.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>REM lib /NOLOGO /OUT:"$(SolutionDir)\debug\libautom8_static.lib" "$(SolutionDir)\libautom8\src\debug\*.obj"
+REM xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-gd-1*" "$(SolutionDir)\debug\"
+REM xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\debug\"
+REM xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\debug\"
+REM xcopy /y "$(SolutionDir)3rdparty\bin\*.dll" "$(SolutionDir)\debug\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_66_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_66_0\lib32-msvc-14.1\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-41.lib;ssl-43.lib;tls-15.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>REM lib /NOLOGO /OUT:"$(SolutionDir)\release\libautom8_static.lib" "$(SolutionDir)\libautom8\src\release\*.obj"
+REM xcopy /y "$(SolutionDir)\3rdparty\bin\boost*-mt-1*" "$(SolutionDir)\release\"
+REM xcopy /y "c:\windows\system32\msvcp100.dll" "$(SolutionDir)\release\"
+REM xcopy /y "c:\windows\system32\msvcr100.dll" "$(SolutionDir)\release\"
+REM xcopy /y "$(SolutionDir)3rdparty\bin\*.dll" "$(SolutionDir)\release\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\autom8\autom8.h" />
+    <ClInclude Include="..\include\autom8\constants.h" />
+    <ClInclude Include="..\include\autom8\db\db.hpp" />
+    <ClInclude Include="..\include\autom8\device\device_base.hpp" />
+    <ClInclude Include="..\include\autom8\device\device_factory.hpp" />
+    <ClInclude Include="..\include\autom8\device\device_model.hpp" />
+    <ClInclude Include="..\include\autom8\device\device_system.hpp" />
+    <ClInclude Include="..\include\autom8\device\null_device_system.hpp" />
+    <ClInclude Include="..\include\autom8\device\simple_device.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\cm15a\cm15a_device_system.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\mochad\mochad_controller.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\mochad\mochad_device_system.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_appliance.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_device.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_controller.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_factory.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_system.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_lamp.hpp" />
+    <ClInclude Include="..\include\autom8\device\x10\x10_security_sensor.hpp" />
+    <ClInclude Include="..\include\autom8\export.h" />
+    <ClInclude Include="..\include\autom8\message\common_messages.hpp" />
+    <ClInclude Include="..\include\autom8\message\message.hpp" />
+    <ClInclude Include="..\include\autom8\message\message_formatter.hpp" />
+    <ClInclude Include="..\include\autom8\message\message_matcher.hpp" />
+    <ClInclude Include="..\include\autom8\message\message_queue.hpp" />
+    <ClInclude Include="..\include\autom8\message\request.hpp" />
+    <ClInclude Include="..\include\autom8\message\requests\get_device_list.hpp" />
+    <ClInclude Include="..\include\autom8\message\requests\get_security_alert_count.hpp" />
+    <ClInclude Include="..\include\autom8\message\requests\send_device_command.hpp" />
+    <ClInclude Include="..\include\autom8\message\request_handler.hpp" />
+    <ClInclude Include="..\include\autom8\message\request_handler_factory.hpp" />
+    <ClInclude Include="..\include\autom8\message\request_handler_registrar.hpp" />
+    <ClInclude Include="..\include\autom8\message\response.hpp" />
+    <ClInclude Include="..\include\autom8\net\client.hpp" />
+    <ClInclude Include="..\include\autom8\net\server.hpp" />
+    <ClInclude Include="..\include\autom8\net\session.hpp" />
+    <ClInclude Include="..\include\autom8\util\debug.hpp" />
+    <ClInclude Include="..\include\autom8\util\json.hpp" />
+    <ClInclude Include="..\include\autom8\util\preferences.hpp" />
+    <ClInclude Include="..\include\autom8\util\signal_handler.hpp" />
+    <ClInclude Include="..\include\autom8\util\ssl_certificate.hpp" />
+    <ClInclude Include="..\include\autom8\util\utility.hpp" />
+    <ClInclude Include="json\json.h" />
+    <ClInclude Include="json\json_tool.h" />
+    <ClInclude Include="json\reader.h" />
+    <ClInclude Include="json\value.h" />
+    <ClInclude Include="json\writer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="autom8.cpp" />
+    <ClCompile Include="db\db.cpp" />
+    <ClCompile Include="device\device_base.cpp" />
+    <ClCompile Include="device\device_model.cpp" />
+    <ClCompile Include="device\device_system.cpp" />
+    <ClCompile Include="device\null_device_system.cpp" />
+    <ClCompile Include="device\simple_device.cpp" />
+    <ClCompile Include="device\x10\cm15a\cm15a_device_system.cpp" />
+    <ClCompile Include="device\x10\mochad\mochad_controller.cpp" />
+    <ClCompile Include="device\x10\mochad\mochad_device_system.cpp" />
+    <ClCompile Include="device\x10\x10_appliance.cpp" />
+    <ClCompile Include="device\x10\x10_device.cpp" />
+    <ClCompile Include="device\x10\x10_device_factory.cpp" />
+    <ClCompile Include="device\x10\x10_lamp.cpp" />
+    <ClCompile Include="device\x10\x10_security_sensor.cpp" />
+    <ClCompile Include="json\json_reader.cpp" />
+    <ClCompile Include="json\json_value.cpp" />
+    <ClCompile Include="json\json_writer.cpp" />
+    <ClCompile Include="message\common_messages.cpp" />
+    <ClCompile Include="message\message.cpp" />
+    <ClCompile Include="message\request.cpp" />
+    <ClCompile Include="message\requests\get_device_list.cpp" />
+    <ClCompile Include="message\requests\get_security_alert_count.cpp" />
+    <ClCompile Include="message\requests\send_device_command.cpp" />
+    <ClCompile Include="message\request_handler_factory.cpp" />
+    <ClCompile Include="message\request_handler_registrar.cpp" />
+    <ClCompile Include="message\response.cpp" />
+    <ClCompile Include="net\client.cpp" />
+    <ClCompile Include="net\server.cpp" />
+    <ClCompile Include="net\session.cpp" />
+    <ClCompile Include="util\debug.cpp" />
+    <ClCompile Include="util\json.cpp" />
+    <ClCompile Include="util\preferences.cpp" />
+    <ClCompile Include="util\ssl_certificate.cpp" />
+    <ClCompile Include="util\utility.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

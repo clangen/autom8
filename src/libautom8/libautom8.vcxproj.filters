@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{8433432f-17b6-41ff-9665-f61efdc36dc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\device">
+      <UniqueIdentifier>{29d48a63-498c-4acc-9dd0-08881f8bfe0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\message">
+      <UniqueIdentifier>{b3c5148b-f3d0-4056-82d8-ccabfbb69081}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\net">
+      <UniqueIdentifier>{e2cce86a-3d8c-47df-9a5a-26b1048d3d08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util">
+      <UniqueIdentifier>{8f9db1d5-fe0d-466b-90a5-d0f09cbc9def}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\db">
+      <UniqueIdentifier>{7f533f5a-3b9b-41b7-b61b-050785167668}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\device\x10">
+      <UniqueIdentifier>{732f37e1-b6bb-4e09-9312-0f68c8c41160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\device\x10\cm15a">
+      <UniqueIdentifier>{f4d10237-8898-483b-bcf7-801165696b9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\device\x10\mochad">
+      <UniqueIdentifier>{562422c7-fbc1-465d-83f6-99d6c8e84c80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\message\requests">
+      <UniqueIdentifier>{f59ab1c5-4ad0-49a2-9b38-323e41f857dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\json">
+      <UniqueIdentifier>{5c6205a3-453a-450e-95e6-20475904cb09}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\autom8\autom8.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\constants.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\export.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\db\db.hpp">
+      <Filter>src\db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\device_base.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\device_factory.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\device_model.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\device_system.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\null_device_system.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\simple_device.hpp">
+      <Filter>src\device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_appliance.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_device.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_controller.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_factory.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_device_system.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_lamp.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\x10_security_sensor.hpp">
+      <Filter>src\device\x10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\cm15a\cm15a_device_system.hpp">
+      <Filter>src\device\x10\cm15a</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\mochad\mochad_controller.hpp">
+      <Filter>src\device\x10\mochad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\device\x10\mochad\mochad_device_system.hpp">
+      <Filter>src\device\x10\mochad</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\common_messages.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\message.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\message_formatter.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\message_matcher.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\message_queue.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\request.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\request_handler.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\request_handler_factory.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\request_handler_registrar.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\response.hpp">
+      <Filter>src\message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\requests\send_device_command.hpp">
+      <Filter>src\message\requests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\requests\get_device_list.hpp">
+      <Filter>src\message\requests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\message\requests\get_security_alert_count.hpp">
+      <Filter>src\message\requests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\net\server.hpp">
+      <Filter>src\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\net\session.hpp">
+      <Filter>src\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\net\client.hpp">
+      <Filter>src\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\json.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\preferences.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\signal_handler.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\ssl_certificate.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\utility.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\autom8\util\debug.hpp">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json_tool.h">
+      <Filter>src\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\reader.h">
+      <Filter>src\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\value.h">
+      <Filter>src\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\writer.h">
+      <Filter>src\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json.h">
+      <Filter>src\json</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="device\device_base.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="device\device_model.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="device\device_system.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="device\null_device_system.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="device\simple_device.cpp">
+      <Filter>src\device</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\x10_device_factory.cpp">
+      <Filter>src\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\x10_lamp.cpp">
+      <Filter>src\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\x10_security_sensor.cpp">
+      <Filter>src\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\x10_appliance.cpp">
+      <Filter>src\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\x10_device.cpp">
+      <Filter>src\device\x10</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\mochad\mochad_device_system.cpp">
+      <Filter>src\device\x10\mochad</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\mochad\mochad_controller.cpp">
+      <Filter>src\device\x10\mochad</Filter>
+    </ClCompile>
+    <ClCompile Include="device\x10\cm15a\cm15a_device_system.cpp">
+      <Filter>src\device\x10\cm15a</Filter>
+    </ClCompile>
+    <ClCompile Include="message\common_messages.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\message.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\request.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\request_handler_factory.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\request_handler_registrar.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\response.cpp">
+      <Filter>src\message</Filter>
+    </ClCompile>
+    <ClCompile Include="message\requests\get_security_alert_count.cpp">
+      <Filter>src\message\requests</Filter>
+    </ClCompile>
+    <ClCompile Include="message\requests\send_device_command.cpp">
+      <Filter>src\message\requests</Filter>
+    </ClCompile>
+    <ClCompile Include="message\requests\get_device_list.cpp">
+      <Filter>src\message\requests</Filter>
+    </ClCompile>
+    <ClCompile Include="net\session.cpp">
+      <Filter>src\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\client.cpp">
+      <Filter>src\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\server.cpp">
+      <Filter>src\net</Filter>
+    </ClCompile>
+    <ClCompile Include="util\ssl_certificate.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\utility.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\debug.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\json.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\preferences.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="autom8.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="db\db.cpp">
+      <Filter>src\db</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_reader.cpp">
+      <Filter>src\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_value.cpp">
+      <Filter>src\json</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json_writer.cpp">
+      <Filter>src\json</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

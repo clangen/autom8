@@ -43,7 +43,7 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
-static const std::string APP_NAME = "cursespp-sample";
+static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
 static const int DEFAULT_WIDTH = 100;
 static const int MIN_WIDTH = 54;
@@ -62,9 +62,9 @@ class MainLayout: public LayoutBase, public IViewRoot {
     public:
         MainLayout() : LayoutBase() {
             this->label = std::make_shared<TextLabel>();
-            this->label->SetText("hello, world", text::AlignCenter);
+            this->label->SetText("hello, autom8", text::AlignCenter);
             this->SetFrameVisible(true);
-            this->SetFrameTitle(APP_NAME);
+            this->SetFrameTitle("devices");
             this->AddWindow(label);
         }
 
