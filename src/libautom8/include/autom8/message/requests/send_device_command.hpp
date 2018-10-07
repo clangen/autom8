@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_RESPONSE_HANDLER_SEND_DEVICE_COMMAND_HPP_
-#define __C_AUTOM8_RESPONSE_HANDLER_SEND_DEVICE_COMMAND_HPP_
+#pragma once
 
 #include <autom8/message/request_handler.hpp>
 #include <autom8/device/device_base.hpp>
@@ -23,5 +22,3 @@ namespace autom8 {
             const param_list& params);
     };
 }
-
-#endif

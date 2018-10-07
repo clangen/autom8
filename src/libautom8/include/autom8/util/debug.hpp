@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_DEBUG_HPP__
-#define __C_AUTOM8_DEBUG_HPP__
+#pragma once
 
 #include <sigslot/sigslot.h>
 #include <string>
@@ -19,5 +18,3 @@ namespace autom8 {
         static void log(debug_level level, const std::string& tag, const std::string& string);
     };
 }
-
-#endif

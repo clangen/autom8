@@ -31,12 +31,6 @@
     <Filter Include="src\message\requests">
       <UniqueIdentifier>{f59ab1c5-4ad0-49a2-9b38-323e41f857dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\3rdparty">
-      <UniqueIdentifier>{5c6205a3-453a-450e-95e6-20475904cb09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\3rdparty\json">
-      <UniqueIdentifier>{72e183cc-0125-4495-b973-bc1942ef135f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\autom8\autom8.h">
@@ -147,9 +141,6 @@
     <ClInclude Include="include\autom8\net\client.hpp">
       <Filter>src\net</Filter>
     </ClInclude>
-    <ClInclude Include="include\autom8\util\json.hpp">
-      <Filter>src\util</Filter>
-    </ClInclude>
     <ClInclude Include="include\autom8\util\preferences.hpp">
       <Filter>src\util</Filter>
     </ClInclude>
@@ -164,21 +155,6 @@
     </ClInclude>
     <ClInclude Include="include\autom8\util\debug.hpp">
       <Filter>src\util</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json.h">
-      <Filter>src\3rdparty\json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\json_tool.h">
-      <Filter>src\3rdparty\json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\reader.h">
-      <Filter>src\3rdparty\json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\value.h">
-      <Filter>src\3rdparty\json</Filter>
-    </ClInclude>
-    <ClInclude Include="json\writer.h">
-      <Filter>src\3rdparty\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -266,9 +242,6 @@
     <ClCompile Include="util\debug.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
-    <ClCompile Include="util\json.cpp">
-      <Filter>src\util</Filter>
-    </ClCompile>
     <ClCompile Include="util\preferences.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
@@ -277,15 +250,6 @@
     </ClCompile>
     <ClCompile Include="db\db.cpp">
       <Filter>src\db</Filter>
-    </ClCompile>
-    <ClCompile Include="json\json_reader.cpp">
-      <Filter>src\3rdparty\json</Filter>
-    </ClCompile>
-    <ClCompile Include="json\json_value.cpp">
-      <Filter>src\3rdparty\json</Filter>
-    </ClCompile>
-    <ClCompile Include="json\json_writer.cpp">
-      <Filter>src\3rdparty\json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

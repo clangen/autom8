@@ -11,6 +11,7 @@
 #include <boost/format.hpp>
 
 using namespace autom8;
+using namespace nlohmann;
 
 static boost::mutex instance_count_mutex_;
 static int instance_count_ = 0;
@@ -94,8 +95,8 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
             std::string stored_password;
             utility::prefs().get("password", stored_password);
 
-            const json_value& document = message->body();
-            std::string received_password = document["password"].asString();
+            auto document = message->body();
+            std::string received_password = document["password"];
 
             if (session->is_authenticated_ = (stored_password == received_password)) {
                 server::send(session, messages::responses::authenticated());

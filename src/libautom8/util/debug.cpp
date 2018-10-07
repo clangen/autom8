@@ -2,7 +2,7 @@
 
 #include <queue>
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 using namespace autom8;
 

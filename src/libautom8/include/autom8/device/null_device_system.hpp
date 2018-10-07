@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_NULL_DEVICE_SYSTEM_HPP__
-#define __C_AUTOM8_NULL_DEVICE_SYSTEM_HPP__
+#pragma once
 
 #include <autom8/util/signal_handler.hpp>
 #include <autom8/device/device_system.hpp>
@@ -34,5 +33,3 @@ namespace autom8 {
         device_model model_;
     };
 }
-
-#endif

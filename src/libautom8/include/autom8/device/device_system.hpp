@@ -1,13 +1,12 @@
-#ifndef __C_AUTOM8_DEVICE_SYSTEM_HPP__
-#define __C_AUTOM8_DEVICE_SYSTEM_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <autom8/device/device_base.hpp>
 #include <autom8/device/device_model.hpp>
 
 namespace autom8 {
     class device_system;
-    typedef boost::shared_ptr<device_system> device_system_ptr;
+    typedef std::shared_ptr<device_system> device_system_ptr;
 
     class device_system {
     public:
@@ -23,5 +22,3 @@ namespace autom8 {
         virtual ~device_system() { }
     };
 }
-
-#endif

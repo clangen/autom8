@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_UTILITY_HPP__
-#define __C_AUTOM8_UTILITY_HPP__
+#pragma once
 
 #include <string>
 #include <autom8/util/preferences.hpp>
@@ -14,5 +13,3 @@ namespace autom8 {
         std::string sha256(const char* data, unsigned int len);
     }
 }
-
-#endif

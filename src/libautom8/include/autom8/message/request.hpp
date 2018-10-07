@@ -1,23 +1,19 @@
-#ifndef __C_AUTOM8_REQUEST_HPP__
-#define __C_AUTOM8_REQUEST_HPP__
+#pragma once
 
-#include <autom8/util/json.hpp>
-
+#include <json.hpp>
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace autom8 {
     class request;
-    typedef boost::shared_ptr<request> request_ptr;
+    typedef std::shared_ptr<request> request_ptr;
 
     class request {
     public:
-        static request_ptr create(const std::string& uri, json_value_ref body);
+        static request_ptr create(const std::string& uri, const nlohmann::json& body);
         virtual std::string uri() = 0;
-        virtual json_value_ref body() = 0;
+        virtual const std::shared_ptr<nlohmann::json> body() = 0;
     };
 
 
 }
-
-#endif

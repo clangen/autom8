@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_COMMON_MESSAGES_HPP__
-#define __C_AUTOM8_COMMON_MESSAGES_HPP__
+#pragma once
 
 #include <autom8/message/response.hpp>
 #include <autom8/message/request.hpp>
@@ -25,5 +24,3 @@ namespace autom8 {
         } // responses
     } // messages
 } // autom8
-
-#endif

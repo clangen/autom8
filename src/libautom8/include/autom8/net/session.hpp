@@ -23,10 +23,10 @@ namespace autom8 {
     typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
 
     class session;
-    typedef boost::shared_ptr<session> session_ptr;
+    typedef std::shared_ptr<session> session_ptr;
     typedef boost::scoped_ptr<boost::thread> thread_ptr;
 
-    class session : public boost::enable_shared_from_this<session> {
+    class session : public std::enable_shared_from_this<session> {
     public:
         typedef sigslot::signal1<session_ptr> disconnect_signal_type;
         typedef sigslot::signal1<int> session_destroyed_signal_type;

@@ -18,14 +18,14 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
@@ -57,7 +57,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_68_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;_DEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -83,7 +83,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_68_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0502;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -139,16 +139,10 @@
     <ClInclude Include="include\autom8\net\server.hpp" />
     <ClInclude Include="include\autom8\net\session.hpp" />
     <ClInclude Include="include\autom8\util\debug.hpp" />
-    <ClInclude Include="include\autom8\util\json.hpp" />
     <ClInclude Include="include\autom8\util\preferences.hpp" />
     <ClInclude Include="include\autom8\util\signal_handler.hpp" />
     <ClInclude Include="include\autom8\util\ssl_certificate.hpp" />
     <ClInclude Include="include\autom8\util\utility.hpp" />
-    <ClInclude Include="json\json.h" />
-    <ClInclude Include="json\json_tool.h" />
-    <ClInclude Include="json\reader.h" />
-    <ClInclude Include="json\value.h" />
-    <ClInclude Include="json\writer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="autom8.cpp" />
@@ -166,9 +160,6 @@
     <ClCompile Include="device\x10\x10_device_factory.cpp" />
     <ClCompile Include="device\x10\x10_lamp.cpp" />
     <ClCompile Include="device\x10\x10_security_sensor.cpp" />
-    <ClCompile Include="json\json_reader.cpp" />
-    <ClCompile Include="json\json_value.cpp" />
-    <ClCompile Include="json\json_writer.cpp" />
     <ClCompile Include="message\common_messages.cpp" />
     <ClCompile Include="message\message.cpp" />
     <ClCompile Include="message\request.cpp" />
@@ -182,7 +173,6 @@
     <ClCompile Include="net\server.cpp" />
     <ClCompile Include="net\session.cpp" />
     <ClCompile Include="util\debug.cpp" />
-    <ClCompile Include="util\json.cpp" />
     <ClCompile Include="util\preferences.cpp" />
     <ClCompile Include="util\ssl_certificate.cpp" />
     <ClCompile Include="util\utility.cpp" />

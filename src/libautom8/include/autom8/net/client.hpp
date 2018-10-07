@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_CLIENT_HPP__
-#define __C_AUTOM8_CLIENT_HPP__
+#pragma once
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma warning(disable: 4503) // decorated name length exceeded, truncated
@@ -13,7 +12,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/scoped_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/thread/condition.hpp>
@@ -27,11 +26,11 @@ using boost::system::error_code;
 
 namespace autom8 {
     class client;
-    typedef boost::shared_ptr<client> client_ptr;
-    typedef boost::shared_ptr<boost::asio::deadline_timer> timer_ptr;
+    typedef std::shared_ptr<client> client_ptr;
+    typedef std::shared_ptr<boost::asio::deadline_timer> timer_ptr;
 
     class client: public signal_handler
-                , public boost::enable_shared_from_this<client> {
+                , public std::enable_shared_from_this<client> {
     private:
         typedef boost::scoped_ptr<boost::thread> thread_ptr;
         typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
@@ -119,5 +118,3 @@ namespace autom8 {
         thread_ptr io_service_thread_;
     };
 }
-
-#endif

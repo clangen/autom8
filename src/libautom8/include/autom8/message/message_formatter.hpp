@@ -1,15 +1,15 @@
-#ifndef __C_AUTOM8_MESSAGE_FORMATTER_HPP__
-#define __C_AUTOM8_MESSAGE_FORMATTER_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <base64/base64.h>
 #include <autom8/constants.h>
 #include <autom8/message/request.hpp>
 #include <autom8/message/response.hpp>
+#include <json.hpp>
 
 namespace autom8 {
     class message_formatter;
-    typedef boost::shared_ptr<message_formatter> message_formatter_ptr;
+    typedef std::shared_ptr<message_formatter> message_formatter_ptr;
 
     class message_formatter {
     public:
@@ -27,18 +27,16 @@ namespace autom8 {
 
     private:
         message_formatter(response_ptr response) {
-            build_message_string(response->uri(), response->body());
+            build_message_string(response->uri(), *response->body());
         }
 
         message_formatter(request_ptr request) {
-            build_message_string(request->uri(), request->body());
+            build_message_string(request->uri(), *request->body());
         }
 
     private:
-        void build_message_string(const std::string& uri, json_value_ref body) {
-            json_writer writer;
-            std::string body_string = writer.write(*body);
-            std::string message_string = uri + MESSAGE_URI_DELIMITER + body_string;
+        void build_message_string(const std::string& uri, const nlohmann::json& body) {
+            std::string message_string = uri + MESSAGE_URI_DELIMITER + body.dump();
             formatted_ = base64_encode(message_string) + ((char) END_OF_MESSAGE);
         }
 
@@ -47,5 +45,3 @@ namespace autom8 {
     };
 
 } // namespace autom8
-
-#endif

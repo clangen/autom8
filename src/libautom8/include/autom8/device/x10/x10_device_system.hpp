@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_DEVICE_SYSTEM_HPP__
-#define __C_AUTOM8_X10_DEVICE_SYSTEM_HPP__
+#pragma once
 
 #include <autom8/device/device_system.hpp>
 
@@ -11,5 +10,3 @@ namespace autom8 {
         virtual std::string controller_type() const = 0;
     };
 }
-
-#endif

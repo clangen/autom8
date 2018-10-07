@@ -31,7 +31,7 @@ device_type x10_security_sensor::type() {
     return device_type_security_sensor;
 }
 
-void x10_security_sensor::get_extended_json_attributes(json_value& target) {
+void x10_security_sensor::get_extended_json_attributes(nlohmann::json& target) {
     boost::recursive_mutex::scoped_lock lock(state_mutex_);
     target["armed"] = is_armed_;
     target["tripped"] = is_tripped_;

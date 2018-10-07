@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_DEVICE_CONTROLLER_HPP__
-#define __C_AUTOM8_X10_DEVICE_CONTROLLER_HPP__
+#pragma once
 
 #include <stdio.h>
 
@@ -23,5 +22,3 @@ namespace autom8 {
         get_device_status_func get_device_status;
     };
 }
-
-#endif

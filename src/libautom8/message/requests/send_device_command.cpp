@@ -2,10 +2,10 @@
 #include <autom8/message/response.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/util/debug.hpp>
-#include <autom8/util/json.hpp>
 #include <autom8/message/requests/send_device_command.hpp>
 
 #include <vector>
+#include <json.hpp>
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -18,6 +18,15 @@ static std::string reset_sensor_status_command = "reset_sensor_status";
 static std::string arm_sensor_command = "arm_sensor";
 
 static std::string TAG = "send_device_command";
+
+using namespace nlohmann;
+
+static inline std::string to_string(const json& j) {
+    if (j.type() == json::value_t::string) {
+        return j.get<std::string>();
+    }
+    return j.dump();
+}
 
 send_device_command::send_device_command() {
 
@@ -37,25 +46,19 @@ void send_device_command::operator()(session_ptr session, message_ptr message) {
     param_list params;
 
     try {
-        const json_value& document = message->body();
-        const json_value& command = document["command"];
-        const json_value& parameters = command["parameters"];
+        const json& document = message->body();
+        const json& command = document["command"];
+        const json& parameters = command["parameters"];
 
-        name = command["name"].asString();
-        type = (int) command["type"].asInt(); // json ints are 64 bit
-        address = command["address"].asString();
+        name = command.value("name", "");
+        type = command.value("type", -1);
+        address = command.value("address", "");
 
         typedef std::vector<std::string> key_list;
         typedef key_list::iterator iterator;
 
-        json_value default_value(Json::nullValue);
-        key_list parameter_keys = parameters.getMemberNames();
-        key_list::iterator it = parameter_keys.begin();
-        while (it != parameter_keys.end()) {
-            std::string key_str = *it;
-            json_value value = parameters.get(key_str.c_str(), default_value);
-            params[key_str] = json_value_to_string(value);
-            ++it;
+        for (auto it = parameters.begin(); it != parameters.end(); ++it) {
+            params[it.key()] = to_string(it.value());
         }
     }
     catch (...) {

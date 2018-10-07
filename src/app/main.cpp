@@ -44,6 +44,9 @@
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
 #include <autom8/autom8.h>
+#include <autom8/net/client.hpp>
+#include <autom8/net/server.hpp>
+#include <autom8/util/utility.hpp>
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
@@ -96,7 +99,11 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
-    autom8_init();
+    std::string password = "";
+    std::string host = "";
+    std::string port = "7901";
+    auto client = std::make_shared<autom8::client>(host, port);
+    client->connect(autom8::utility::sha256(password.c_str(), password.size()));
 
     App app(APP_NAME); /* must be before layout creation */
 
@@ -107,8 +114,6 @@ int main(int argc, char* argv[]) {
     });
 
     app.Run(std::make_shared<MainLayout>());
-
-    autom8_deinit();
 
     return 0;
 }

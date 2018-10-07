@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_SSL_CERTIFICATE_HPP__
-#define __C_AUTOM8_SSL_CERTIFICATE_HPP__
+#pragma once
 
 #include <string>
 
@@ -12,5 +11,3 @@ namespace autom8 {
         std::string filename();
     }
 }
-
-#endif

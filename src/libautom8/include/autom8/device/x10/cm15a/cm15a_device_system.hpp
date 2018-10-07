@@ -1,8 +1,7 @@
-#ifndef __C_AUTOM8_CM15A_DEVICE_SYSTEM_HPP__
-#define __C_AUTOM8_CM15A_DEVICE_SYSTEM_HPP__
+#pragma once
 
 #include <windows.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <autom8/util/signal_handler.hpp>
 #include <autom8/device/device_model.hpp>
 #include <autom8/device/x10/x10_device_system.hpp>
@@ -35,5 +34,3 @@ namespace autom8 {
         bool is_functional_;
     };
 }
-
-#endif // __C_AUTOM8_CM15A_DEVICE_SYSTEM_HPP__

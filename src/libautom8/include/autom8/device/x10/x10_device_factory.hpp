@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_DEVICE_FACTORY_HPP__
-#define __C_AUTOM8_X10_DEVICE_FACTORY_HPP__
+#pragma once
 
 #include <autom8/device/device_factory.hpp>
 #include <boost/thread.hpp>
@@ -33,5 +32,3 @@ namespace autom8 {
         boost::mutex id_device_map_mutex_;
     };
 }
-
-#endif

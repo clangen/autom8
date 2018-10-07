@@ -1,11 +1,11 @@
-#ifndef __C_AUTOM8_DEVICE_HPP__
-#define __C_AUTOM8_DEVICE_HPP__
+#pragma once
 
 #include <autom8/constants.h>
-#include <autom8/util/json.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/enable_shared_from_this.hpp>
+
+#include <json.hpp>
 
 #include <sigslot/sigslot.h>
 
@@ -17,9 +17,9 @@ namespace autom8 {
     //      base class for all devices      //
     //////////////////////////////////////////
     class device_base;
-    typedef boost::shared_ptr<device_base> device_ptr;
+    typedef std::shared_ptr<device_base> device_ptr;
 
-    class device_base: public boost::enable_shared_from_this<device_base> {
+    class device_base: public std::enable_shared_from_this<device_base> {
     public:
         sigslot::signal1<device_ptr> status_changed;
 
@@ -37,11 +37,11 @@ namespace autom8 {
         template <typename T>
         T* get_interface(T*& target);
 
-        virtual json_value_ref to_json();
+        virtual nlohmann::json to_json();
 
     protected:
         virtual void on_status_changed();
-        virtual void get_extended_json_attributes(json_value& target);
+        virtual void get_extended_json_attributes(nlohmann::json& target);
     };
 
     template <typename T>
@@ -71,5 +71,3 @@ namespace autom8 {
         virtual bool is_tripped() = 0;
     };
 }
-
-#endif

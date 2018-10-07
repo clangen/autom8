@@ -1,12 +1,12 @@
-#ifndef __C_AUTOM8_RESPONSE_HPP__
-#define __C_AUTOM8_RESPONSE_HPP__
+#pragma once
 
 #include <autom8/message/message.hpp>
-#include <autom8/util/json.hpp>
+#include <json.hpp>
+#include <memory>
 
 namespace autom8 {
     class response;
-    typedef boost::shared_ptr<response> response_ptr;
+    typedef std::shared_ptr<response> response_ptr;
 
     class response {
     public:
@@ -18,13 +18,11 @@ namespace autom8 {
 
         static response_ptr create(
             const std::string& uri,
-            json_value_ref body,
+            const nlohmann::json& body,
             response_target target = requester_only);
 
         virtual std::string uri() = 0;
-        virtual json_value_ref body() = 0;
+        virtual std::shared_ptr<nlohmann::json> body() = 0;
         virtual response_target target() = 0;
     };
 }
-
-#endif

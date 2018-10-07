@@ -1,9 +1,8 @@
-#ifndef __C_AUTOM8_MESSAGE_QUEUE_HPP__
-#define __C_AUTOM8_MESSAGE_QUEUE_HPP__
+#pragma once
 
 #include <queue>
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <base64/base64.h>
 
 #include <autom8/constants.h>
@@ -97,7 +96,5 @@ namespace autom8 {
         }
     };
 
-    typedef boost::shared_ptr<message_queue> message_queue_ptr;
+    typedef std::shared_ptr<message_queue> message_queue_ptr;
 } // namespace autom8
-
-#endif

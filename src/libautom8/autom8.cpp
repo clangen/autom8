@@ -27,6 +27,9 @@
 #endif
 
 using namespace autom8;
+using namespace nlohmann;
+
+using json_ptr = std::shared_ptr<json>;
 
 #define REJECT_IF_NOT_INITIALIZED(input) if (!initialized_) { respond_with_status(input, AUTOM8_NOT_INITIALIZED); return; }
 #define REJECT_IF_INITIALIZED(input) if (initialized_) { respond_with_status(input, AUTOM8_ALREADY_INITIALIZED); return; }
@@ -38,9 +41,10 @@ static void no_op(const char*) {
 }
 
 /* prototypes, forward decls */
+static json_ptr json_ptr_from_string(const std::string& input);
 static void process_rpc_request(const std::string& input);
 static int system_select(const std::string& system);
-static void respond_with_status(json_value_ref input, int status_code);
+static void respond_with_status(json_ptr input, int status_code);
 rpc_callback rpc_callback_ = no_op;
 
 /* constants */
@@ -75,10 +79,7 @@ static void handle_rpc_request(std::string input) {
         debug::log(debug::error, RPC_TAG, "request processing threw for input: " + input);
 
         try {
-            respond_with_status(
-                json_value_from_string(input),
-                AUTOM8_UNEXPECTED_ERROR
-            );
+            respond_with_status(json_ptr_from_string(input), AUTOM8_UNEXPECTED_ERROR);
         }
         catch (...) {
             /* handling the error resulted in an... error. give up. */
@@ -224,57 +225,55 @@ int autom8_deinit() {
 }
 
 /* util */
-static void respond_with_status(json_value_ref input, int status_code) {
-    json_value_ref response = json_value_ref(new json_value());
-    (*response)["id"] = (*input)["id"].asString();
-    (*response)["status"] = status_code;
-    (*response)["message"] = json_value(Json::objectValue);
-    rpc_callback_(json_value_to_string(*response).c_str());
+static void respond_with_status(json_ptr input, int status_code) {
+    json response;
+    response["id"] = (*input)["id"];
+    response["status"] = status_code;
+    response["message"] = json();
+    rpc_callback_(response.dump().c_str());
 }
 
-static void respond_with_status(json_value_ref input, const std::string& errmsg) {
-    json_value_ref response = json_value_ref(new json_value());
-    (*response)["id"] = (*input)["id"].asString();
-    (*response)["status"] = AUTOM8_UNKNOWN;
-    (*response)["message"] = errmsg;
-    rpc_callback_(json_value_to_string(*response).c_str());
+static void respond_with_status(json_ptr input, const std::string& errmsg) {
+    json response;
+    response["id"] = (*input)["id"];
+    response["status"] = AUTOM8_UNKNOWN;
+    response["message"] = errmsg;
+    rpc_callback_(response.dump().c_str());
 }
 
-static void respond_with_status(json_value_ref input, json_value_ref json) {
+static void respond_with_status(json_ptr input, json_ptr status_json) {
     /* note if json looks like this: {status: ..., message: ...} the status
     code will be automatically extracted. otherwise AUTOM8_OK will be used */
 
-    json_value_ref response = json_value_ref(new json_value());
+    json response;
 
-    (*response)["id"] = (*input)["id"].asString();
+    response["id"] = input->value("id", "");
+    response["status"] = status_json->value("status", AUTOM8_OK);
 
-    int status = (int) json->get("status", AUTOM8_OK).asInt();
-    (*response)["status"] = status;
-
-    json_value message = json->get("message", json_value(Json::nullValue));
-    if (!message.isNull()) {
-        (*response)["message"] = json->get("message", "");
+    auto message = (*status_json)["message"];
+    if (!message.is_null()) {
+        response["message"] = message;
     }
     else {
-        (*response)["message"] = *json;
+        response["message"] = *status_json;
     }
 
-    rpc_callback_(json_value_to_string(*response).c_str());
+    rpc_callback_(response.dump().c_str());
 }
 
 /* server command handlers */
 static int server_start();
 static int server_stop();
-static int server_set_preference(json_value& options);
-static json_value_ref server_get_preference(json_value& options);
-static json_value_ref server_status();
+static int server_set_preference(json& options);
+static json_ptr server_get_preference(json& options);
+static json_ptr server_status();
 
-static void handle_server(json_value_ref input) {
-    std::string command = input->get("command", "").asString();
-    json_value options = input->get("options", json_value());
+static void handle_server(json_ptr input) {
+    std::string command = input->value("command", "");
+    json options = input->value("options", json());
 
-    if (options.type() != Json::objectValue) {
-        options = json_value(Json::objectValue);
+    if (!options.is_object()) {
+        options = json();
     }
 
     if (command == "status") {
@@ -299,9 +298,9 @@ static void handle_server(json_value_ref input) {
     }
 }
 
-int server_set_preference(json_value& options) {
-    std::string key = options.get("key", "").asString();
-    std::string value = options.get("value", "").asString();
+int server_set_preference(json& options) {
+    std::string key = options.value("key", "");
+    std::string value = options.value("value", "");
 
     if (key.size() == 0 || value.size() == 0) {
         return AUTOM8_INVALID_ARGUMENT;
@@ -310,11 +309,11 @@ int server_set_preference(json_value& options) {
     return (utility::prefs().set(key, value) ? AUTOM8_OK : AUTOM8_UNKNOWN);
 }
 
-json_value_ref server_get_preference(json_value& options) {
-    json_value_ref result(new json_value());
+json_ptr server_get_preference(json& options) {
+    json_ptr result(new json());
     (*result)["status"] = AUTOM8_OK;
 
-    std::string key = options.get("key", "").asString();
+    std::string key = options.value("key", "");
     if (key.size() == 0) {
         (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
         (*result)["message"] = "key not specified";
@@ -328,7 +327,7 @@ json_value_ref server_get_preference(json_value& options) {
             (*result)["message"] = "key not found";
         }
         else {
-            json_value message;
+            json message;
             message["key"] = key;
             message["value"] = value;
             (*result)["message"] = message;
@@ -338,8 +337,8 @@ json_value_ref server_get_preference(json_value& options) {
     return result;
 }
 
-json_value_ref server_status() {
-    json_value_ref result(new json_value());
+json_ptr server_status() {
+    json_ptr result(new json());
 
     std::string system = "null", fingerprint = "unknown", port = "7901", webClientPort = "7902";
     utility::prefs().get("system.selected", system);
@@ -385,22 +384,22 @@ int server_stop() {
 }
 
 /* system command handlers */
-static json_value_ref system_list() {
-    json_value list = json_value(Json::arrayValue);
+static json_ptr system_list() {
+    auto list = json::array();
 
 #if WIN32
-    list.append("cm15a");
+    list.push_back("cm15a");
 #endif
-    list.append("mochad");
-    list.append("null/mock");
+    list.push_back("mochad");
+    list.push_back("null/mock");
 
-    json_value_ref result(new json_value());
+    json_ptr result(new json());
     (*result)["systems"] = list;
     return result;
 }
 
-static json_value_ref system_selected() {
-    json_value_ref result(new json_value());
+static json_ptr system_selected() {
+    json_ptr result(new json());
 
     std::string system = "null";
     utility::prefs().get("system.selected", system);
@@ -409,8 +408,8 @@ static json_value_ref system_selected() {
     return result;
 }
 
-static int system_select(json_value& options) {
-    return system_select(options["system"].asString());
+static int system_select(json& options) {
+    return system_select(options.value("system", ""));
 }
 
 static int system_select(const std::string& system) {
@@ -439,46 +438,46 @@ static int system_select(const std::string& system) {
     return AUTOM8_OK;
 }
 
-static json_value_ref system_list_devices() {
+static json_ptr system_list_devices() {
     device_system& ds = *device_system::instance();
     device_model& model = ds.model();
     device_list devices;
     model.all_devices(devices);
 
-    json_value list = json_value(Json::arrayValue);
+    auto list = json::array();
     for (size_t i = 0; i < devices.size(); i++) {
-        list.append(*(devices.at(i)->to_json()));
+        list.push_back(devices.at(i)->to_json());
     }
 
-    json_value_ref result(new json_value());
+    json_ptr result(new json());
     (*result)["devices"] = list;
     return result;
 }
 
-void json_array_to_vector(const json_value& value, std::vector<std::string>& target) {
-    if (value.isArray()) {
+static void json_array_to_vector(const json& value, std::vector<std::string>& target) {
+    if (value.is_array()) {
         for (unsigned i = 0; i < value.size(); i++) {
-            target.push_back(value.get(i, "").asString());
+            target.push_back(value.at(i));
         }
     }
 }
 
-static json_value_ref system_edit_device(json_value& options) {
-    json_value_ref result(new json_value()); /* output */
+static json_ptr system_edit_device(json& options) {
+    json_ptr result(new json()); /* output */
 
-    std::string original_address = options.get("address", "").asString();
+    std::string original_address = options.value("address", "");
     device_model& model = device_system::instance()->model();
     device_ptr device = model.find_by_address(original_address);
 
     if (device) {
-        json_value new_values = options.get("device", "");
+        json new_values = options.value("device", "");
 
-        std::string address = new_values.get("address", "").asString();
-        std::string label = new_values.get("label", "").asString();
-        device_type type = (device_type) new_values.get("type", (int) device_type_unknown).asInt();
+        std::string address = new_values.value("address", "");
+        std::string label = new_values.value("label", "");
+        device_type type = (device_type) new_values.value("type", (int) device_type_unknown);
 
         /* json array -> std::vector<> */
-        json_value groups_json = new_values.get("groups", "");
+        json groups_json = new_values.value("groups", "");
         std::vector<std::string> groups;
         json_array_to_vector(groups_json, groups);
 
@@ -492,7 +491,7 @@ static json_value_ref system_edit_device(json_value& options) {
 
             if (updated) {
                 device = model.find_by_address(address);
-                (*result)["device"] = *(device->to_json());
+                (*result)["device"] = device->to_json();
                 return result;
             }
         }
@@ -508,12 +507,12 @@ static json_value_ref system_edit_device(json_value& options) {
     return result;
 }
 
-static json_value_ref system_add_device(json_value& options) {
-    std::string address = options.get("address", "").asString();
-    std::string label = options.get("label", "").asString();
-    device_type type = (device_type) options.get("type", (int) device_type_unknown).asInt();
+static json_ptr system_add_device(json& options) {
+    std::string address = options.value("address", "");
+    std::string label = options.value("label", "");
+    device_type type = (device_type) options.value("type", (int) device_type_unknown);
 
-    json_value_ref result(new json_value()); /* output */
+    json_ptr result(new json()); /* output */
 
     if (address.size() == 0 || label.size() == 0 || type == device_type_unknown) {
         (*result)["message"] = "address, label, or type invalid";
@@ -521,7 +520,7 @@ static json_value_ref system_add_device(json_value& options) {
     }
     else {
         /* json array -> std::vector<> */
-        json_value groups_json = options.get("groups", ""); /* read */
+        json groups_json = options.value("groups", ""); /* read */
         std::vector<std::string> groups;
         json_array_to_vector(groups_json, groups);
 
@@ -529,8 +528,8 @@ static json_value_ref system_add_device(json_value& options) {
         device_ptr device = model.find_by_address(address);
 
         if (device) {
-            json_value device_json; /* ugh, so verbose */
-            device_json["device"] = *device->to_json();
+            json device_json; /* ugh, so verbose */
+            device_json["device"] = device->to_json();
 
             (*result)["message"] = (*result)["message"] = device_json;
             (*result)["status"] = AUTOM8_DEVICE_ALREADY_EXISTS;
@@ -539,7 +538,7 @@ static json_value_ref system_add_device(json_value& options) {
             device = model.add(type, address, label, groups);
 
             if (device) {
-                (*result)["device"] = *(device->to_json());
+                (*result)["device"] = device->to_json();
             }
             else {
                 (*result)["message"] = "failed to create device";
@@ -551,8 +550,8 @@ static json_value_ref system_add_device(json_value& options) {
     return result;
 }
 
-static int system_delete_device(json_value& options) {
-    std::string address = options.get("address", "").asString();
+static int system_delete_device(json& options) {
+    std::string address = options.value("address", "");
 
     if (address.length() == 0) {
         return AUTOM8_INVALID_ARGUMENT;
@@ -572,12 +571,12 @@ static int system_delete_device(json_value& options) {
     return AUTOM8_OK;
 }
 
-static void handle_system(json_value_ref input) {
-    std::string command = input->get("command", "").asString();
-    json_value options = input->get("options", json_value());
+static void handle_system(json_ptr input) {
+    std::string command = input->value("command", "");
+    json options = input->value("options", json());
 
-    if (options.type() != Json::objectValue) {
-        options = json_value(Json::objectValue);
+    if (!options.is_object()) {
+        options = json();
     }
 
     if (command == "list") {
@@ -626,10 +625,10 @@ void autom8_rpc(const char* input) {
 }
 
 static void process_rpc_request(const std::string& input) {
-    json_value_ref parsed;
+    json_ptr parsed;
 
     try {
-        parsed = json_value_from_string(input);
+        parsed = json_ptr_from_string(input);
     }
     catch (...) {
         /* we will return in a sec */
@@ -643,8 +642,8 @@ static void process_rpc_request(const std::string& input) {
         return;
     }
 
-    const std::string component = parsed->get("component", "").asString();
-    const std::string command = parsed->get("command", "").asString();
+    const std::string component = parsed->value("component", "");
+    const std::string command = parsed->value("command", "");
 
     debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command + "'"));
 
@@ -657,6 +656,11 @@ static void process_rpc_request(const std::string& input) {
     else {
         debug::log(debug::error, TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");
     }
+}
+
+static json_ptr json_ptr_from_string(const std::string& input) {
+    auto parsed = json::parse(input);
+    return std::make_shared<json>(parsed);
 }
 
 const char* autom8_version() {

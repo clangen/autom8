@@ -1,7 +1,5 @@
-#ifndef __C_AUTOM8_MESSAGE_MATCHER_HPP__
-#define __C_AUTOM8_MESSAGE_MATCHER_HPP__
+#pragma once
 
-#include <autom8/util/json.hpp>
 #include <boost/asio.hpp>
 
 namespace autom8 {
@@ -36,5 +34,3 @@ namespace autom8 {
         size_t max_length_, length_;
     };
 }
-
-#endif

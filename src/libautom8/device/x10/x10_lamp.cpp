@@ -52,7 +52,7 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
     }
 }
 
-void x10_lamp::get_extended_json_attributes(json_value& target) {
+void x10_lamp::get_extended_json_attributes(nlohmann::json& target) {
     boost::recursive_mutex::scoped_lock lock(state_mutex());
     target["brightness"] = brightness_;
 }

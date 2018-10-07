@@ -1,7 +1,6 @@
-#ifndef __C_AUTOM8_MOCHAD_DEVICE_SYSTEM_HPP__
-#define __C_AUTOM8_MOCHAD_DEVICE_SYSTEM_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <autom8/util/signal_handler.hpp>
 #include <autom8/device/x10/x10_device_system.hpp>
@@ -34,5 +33,3 @@ namespace autom8 {
         std::string last_house_unit_;
     };
 }
-
-#endif

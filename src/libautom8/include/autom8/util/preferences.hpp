@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_PREFERENCES_HPP__
-#define __C_AUTOM8_PREFERENCES_HPP__
+#pragma once
 
 #include <string>
 #include <sqlite/sqlite3.h>
@@ -93,5 +92,3 @@ namespace autom8 {
         return (result == SQLITE_DONE);
     }
 }
-
-#endif

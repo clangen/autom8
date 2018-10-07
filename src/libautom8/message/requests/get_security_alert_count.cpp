@@ -5,7 +5,10 @@
 #include <autom8/device/device_system.hpp>
 #include <autom8/message/requests/get_security_alert_count.hpp>
 
+#include <json.hpp>
+
 using namespace autom8;
+using namespace nlohmann;
 
 bool get_security_alert_count::can_handle(session_ptr session, message_ptr request) {
     return (request->name() == "get_security_alert_count");
@@ -31,8 +34,8 @@ void get_security_alert_count::operator()(session_ptr session, message_ptr reque
         }
 
         // build JSON body
-        json_value_ref document(new json_value());
-        (*document)["security_alert_count"] = count;
+        nlohmann::json document;
+        document["security_alert_count"] = count;
 
         // send response
         response_ptr response = response::create(

@@ -7,13 +7,15 @@
 #include <autom8/message/common_messages.hpp>
 
 #include <ostream>
+
+#include <json.hpp>
+
 #include <boost/bind.hpp>
-
 #include <base64/base64.h>
-
 #include <boost/format.hpp>
 
 using namespace autom8;
+using namespace nlohmann;
 
 typedef boost::format format;
 static request_ptr ping_(messages::requests::ping());
@@ -228,7 +230,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
         if (message->type() == message::message_type_request) {
             on_recv(request::create(
                 "autom8://request/" + message->name(),
-                json_value_ref(new json_value(message->body()))));
+                message->body()));
         }
         else if (message->type() == message::message_type_response) {
             /*
@@ -236,7 +238,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
              */
             response_ptr response = response::create(
                 "autom8://response/" + message->name(),
-                json_value_ref(new json_value(message->body())),
+                message->body(),
                 response::requester_only);
 
             /*

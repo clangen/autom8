@@ -1,8 +1,7 @@
-#ifndef __C_AUTOM8_MESSAGE_HPP__
-#define __C_AUTOM8_MESSAGE_HPP__
+#pragma once
 
-#include <autom8/util/json.hpp>
 #include <boost/asio.hpp>
+#include <json.hpp>
 
 namespace autom8 {
     class message {
@@ -21,7 +20,7 @@ namespace autom8 {
         message();
 
         const std::string& name() const;
-        const json_value& body() const;
+        const nlohmann::json& body() const;
         message_type type() const;
 
         streambuf& read_buffer();
@@ -32,11 +31,9 @@ namespace autom8 {
 
         streambuf read_buffer_;
         std::string name_;
-        json_value_ref body_;
+        nlohmann::json body_;
         message_type type_;
     };
 
-    typedef boost::shared_ptr<message> message_ptr;
+    typedef std::shared_ptr<message> message_ptr;
 }
-
-#endif

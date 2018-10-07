@@ -5,8 +5,9 @@
 #include <autom8/device/device_system.hpp>
 #include <autom8/message/requests/get_device_list.hpp>
 
-#include <json/writer.h>
+#include <json.hpp>
 
+using namespace nlohmann;
 using namespace autom8;
 
 //////////////
@@ -17,15 +18,15 @@ public:
         return "autom8://response/get_device_list";
     }
 
-    virtual json_value_ref body() {
+    virtual std::shared_ptr<json> body() {
         device_list devices;
         device_system::instance()->model().all_devices(devices);
 
-        json_value_ref body(new json_value());
-        json_value& devices_node = (*body)["devices"] = Json::Value(Json::arrayValue);
+        auto body = std::make_shared<json>();
+        auto devices_node = (*body)["devices"] = json::array();
 
-        for (size_t i = 0; i < devices.size(); i++) {
-            devices_node.append((*devices[i]->to_json()));
+        for (auto device : devices) {
+            devices_node.push_back(device->to_json());
         }
 
         return body;

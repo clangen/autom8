@@ -1,9 +1,7 @@
-#ifndef __C_AUTOM8_SIMPLE_DEVICE_HPP__
-#define __C_AUTOM8_SIMPLE_DEVICE_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/thread.hpp>
-
 #include <autom8/device/device_base.hpp>
 
 namespace autom8 {
@@ -52,5 +50,3 @@ namespace autom8 {
         boost::recursive_mutex state_mutex_;
     };
 }
-
-#endif

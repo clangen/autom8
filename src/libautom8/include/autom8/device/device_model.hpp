@@ -1,7 +1,6 @@
-#ifndef __C_AUTOM8_DEVICE_MODEL_HPP__
-#define __C_AUTOM8_DEVICE_MODEL_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/thread.hpp>
 #include <autom8/device/device_factory.hpp>
 #include <sqlite/sqlite3.h>
@@ -57,7 +56,5 @@ namespace autom8 {
         boost::mutex connection_mutex_;
     };
 
-    typedef boost::shared_ptr<device_model> device_model_ptr;
+    typedef std::shared_ptr<device_model> device_model_ptr;
 }
-
-#endif

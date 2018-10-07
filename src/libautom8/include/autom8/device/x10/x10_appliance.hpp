@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_APPLIANCE_HPP__
-#define __C_AUTOM8_X10_APPLIANCE_HPP__
+#pragma once
 
 #include <autom8/device/x10/x10_device.hpp>
 
@@ -16,5 +15,3 @@ namespace autom8 {
         virtual device_type type();
     };
 }
-
-#endif

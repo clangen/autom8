@@ -1,7 +1,6 @@
-#ifndef __C_AUTOM8_X10_DEVICE_HPP__
-#define __C_AUTOM8_X10_DEVICE_HPP__
+#pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <autom8/device/simple_device.hpp>
 #include <autom8/device/x10/x10_device_system.hpp>
 
@@ -33,5 +32,3 @@ namespace autom8 {
         x10_device_system* owner_;
     };
 }
-
-#endif

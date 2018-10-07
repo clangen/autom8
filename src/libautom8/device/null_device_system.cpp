@@ -3,8 +3,10 @@
 #include <autom8/device/simple_device.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/message/common_messages.hpp>
+#include <json.hpp>
 
 using namespace autom8;
+using namespace nlohmann;
 
 class null_device: public simple_device, public lamp, public security_sensor {
 public:
@@ -37,7 +39,7 @@ public:
     }
 
     /* device base */
-    void get_extended_json_attributes(json_value& target) {
+    void get_extended_json_attributes(json& target) {
         boost::recursive_mutex::scoped_lock lock(state_mutex());
 
         if (type_ == device_type_lamp) {

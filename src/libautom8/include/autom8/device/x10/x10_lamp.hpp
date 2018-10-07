@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_LAMP_HPP__
-#define __C_AUTOM8_X10_LAMP_HPP__
+#pragma once
 
 #include <autom8/device/x10/x10_device.hpp>
 
@@ -23,12 +22,10 @@ namespace autom8 {
         virtual void on_controller_message(const std::vector<std::string>& status_values);
 
     protected:
-        virtual void get_extended_json_attributes(json_value& target);
+        virtual void get_extended_json_attributes(nlohmann::json& target);
 
     private:
         int brightness_;
         int last_brightness_;
     };
 }
-
-#endif

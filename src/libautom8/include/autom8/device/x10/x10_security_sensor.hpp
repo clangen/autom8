@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_X10_SECURITY_SENSOR_HPP__
-#define __C_AUTOM8_X10_SECURITY_SENSOR_HPP__
+#pragma once
 
 #include <autom8/device/x10/x10_device.hpp>
 
@@ -32,12 +31,10 @@ namespace autom8 {
 
     protected:
         virtual void on_status_changed();
-        virtual void get_extended_json_attributes(json_value& target);
+        virtual void get_extended_json_attributes(nlohmann::json& target);
 
     protected:
         bool is_tripped_;
         bool is_armed_;
     };
 }
-
-#endif

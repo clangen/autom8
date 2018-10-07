@@ -1,30 +1,30 @@
 #include <autom8/device/device_base.hpp>
 #include <boost/format.hpp>
-
-#include <json/value.h>
-#include <json/writer.h>
+#include <json.hpp>
 
 using namespace autom8;
+using namespace nlohmann;
 
-json_value_ref device_base::to_json() {
-    json_value_ref result(new Json::Value(Json::objectValue));
+json device_base::to_json() {
+    json result;
 
-    (*result)["address"] = Json::Value(this->address());
-    (*result)["type"] = Json::Value(this->type());
-    (*result)["label"] = Json::Value(this->label());
-    (*result)["status"] = Json::Value(this->status());
+    result["address"] = this->address();
+    result["type"] = this->type();
+    result["label"] = this->label();
+    result["status"] = this->status();
 
     std::vector<std::string> groups;
     this->groups(groups);
-    (*result)["groups"] = autom8::string_vector_to_json_array(groups);
+    result["groups"] = groups;
 
-    (*result)["attributes"] = Json::Value(Json::objectValue);
-    this->get_extended_json_attributes((*result)["attributes"]);
+    json attributes;
+    this->get_extended_json_attributes(attributes);
+    result["attributes"] = attributes;
 
     return result;
 }
 
-void device_base::get_extended_json_attributes(json_value& target) {
+void device_base::get_extended_json_attributes(json& target) {
 }
 
 void device_base::on_status_changed() {
