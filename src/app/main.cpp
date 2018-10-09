@@ -57,20 +57,31 @@ static const int MIN_HEIGHT = 12;
 
 using namespace cursespp;
 
+using client_ptr = std::shared_ptr<autom8::client>;
+
 static void initUtf8Filesystem() {
     std::locale locale = std::locale();
     std::locale utf8Locale(locale, new boost::filesystem::detail::utf8_codecvt_facet);
     boost::filesystem::path::imbue(utf8Locale);
 }
 
-class MainLayout: public LayoutBase, public IViewRoot {
+class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots<> {
     public:
-        MainLayout() : LayoutBase() {
+        MainLayout(client_ptr client)
+        : LayoutBase() 
+        , client(client) {
+            this->status = std::make_shared<TextLabel>();
+            this->status->SetText("disconnected", text::AlignCenter);
+            this->status->SetContentColor(CURSESPP_BANNER);
+            this->AddWindow(status);
+
             this->label = std::make_shared<TextLabel>();
             this->label->SetText("hello, autom8", text::AlignCenter);
-            this->SetFrameVisible(true);
-            this->SetFrameTitle("devices");
             this->AddWindow(label);
+
+            client->connected.connect(this, &MainLayout::OnConnected);
+            client->disconnected.connect(this, &MainLayout::OnDisconnected);
+            this->Update();
         }
 
         virtual void ResizeToViewport() override {
@@ -78,11 +89,44 @@ class MainLayout: public LayoutBase, public IViewRoot {
         }
 
         virtual void OnLayout() override {
-            this->label->MoveAndResize(0, this->GetContentHeight() / 2, this->GetContentWidth(), 1);
+            int cx = this->GetContentWidth();
+            this->status->MoveAndResize(0, 0, cx, 1);
+            this->label->MoveAndResize(0, this->GetContentHeight() / 2, cx, 1);
         }
 
     private:
+        void Update() {
+            using S = autom8::client::connection_state;
+
+            auto str = "disconnected";
+            auto color = CURSESPP_BANNER;
+            switch (client->state()) {
+                case S::state_connected:
+                    str = "connected";
+                    color = CURSESPP_FOOTER;
+                case S::state_disconnected:
+                case S::state_disconnecting:
+                    break;
+                default:
+                    str = "connecting";
+                    break;
+            }
+
+            this->status->SetText(str, cursespp::text::AlignCenter);
+            this->status->SetContentColor(color);
+        }
+
+        void OnConnected() {
+            this->Update();
+        }
+
+        void OnDisconnected(autom8::client::reason reason) {
+            this->Update();
+        }
+
+        client_ptr client;
         std::shared_ptr<TextLabel> label;
+        std::shared_ptr<TextLabel> status;
 };
 
 #ifdef WIN32
@@ -99,21 +143,30 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
-    std::string password = "";
-    std::string host = "";
+    std::string password = "842655";
+    std::string host = "ricochet.ydns.eu";
     std::string port = "7901";
+    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
     auto client = std::make_shared<autom8::client>(host, port);
-    client->connect(autom8::utility::sha256(password.c_str(), password.size()));
+    client->connect(hashed);
 
     App app(APP_NAME); /* must be before layout creation */
 
     app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
 
     app.SetKeyHandler([&](const std::string& kn) -> bool {
+        if (kn == "d") {
+            client->disconnect();
+            return true;
+        }
+        else if (kn == "r") {
+            client->connect(hashed);
+            return true;
+        }
         return false;
     });
 
-    app.Run(std::make_shared<MainLayout>());
+    app.Run(std::make_shared<MainLayout>(client));
 
     return 0;
 }
