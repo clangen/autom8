@@ -20,6 +20,9 @@
 
 #include <sigslot/sigslot.h>
 #include <set>
+#include <memory>
+#include <utility>
+#include <future>
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;
@@ -33,7 +36,6 @@ namespace autom8 {
                 , public std::enable_shared_from_this<client> {
     private:
         typedef boost::scoped_ptr<boost::thread> thread_ptr;
-        typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
 
     public:
         enum connection_state {
@@ -106,15 +108,56 @@ namespace autom8 {
         void set_disconnect_reason(reason r);
 
     private:
+        struct connection {
+            using ssl_socket = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
+            using ssl_socket_ptr = std::unique_ptr<ssl_socket> ;
+            using ssl_context =  boost::asio::ssl::context;
+            using ssl_context_ptr = std::unique_ptr<ssl_context>;
+            using io_service_ptr = std::unique_ptr <boost::asio::io_service>;
+            using thread = boost::thread;
+            using thread_ptr = std::unique_ptr<thread>;
+
+            ssl_context_ptr ssl_context_;
+            ssl_socket_ptr socket_;
+            io_service_ptr io_service_;
+            thread_ptr service_thread_;
+
+            connection() { reset(); }
+
+            ~connection() { close(); }
+
+            void close() {
+                std::async(std::launch::async, [ /* deferred disconnect */
+                    io_service_ = std::move(this->io_service_),
+                    service_thread_ = std::move(this->service_thread_),
+                    socket_ = std::move(this->socket_),
+                    ssl_context_ = std::move(this->ssl_context_)]
+                { 
+                    if (io_service_) { io_service_->stop(); }
+                    if (service_thread_) { service_thread_->join(); }
+                });
+            }
+
+            void reset() {
+                close();
+                io_service_ = std::make_unique<boost::asio::io_service>();
+                ssl_context_ = std::make_unique<ssl_context>(boost::asio::ssl::context::sslv23);
+                ssl_context_->set_verify_mode(boost::asio::ssl::context::verify_peer);
+                ssl_context_->set_options(boost::asio::ssl::context::default_workarounds);
+                socket_ = std::make_unique<ssl_socket>(*io_service_, *ssl_context_);
+            }
+
+            void started(thread* t) {
+                service_thread_.reset(t);
+            }
+        };
+        
+        connection connection_;
         std::string hostname_;
         std::string port_;
         std::string password_;
-        boost::asio::io_service io_service_;
-        boost::asio::ssl::context ssl_context_;
-        ssl_socket socket_;
         connection_state state_;
         boost::mutex state_lock_;
         reason disconnect_reason_;
-        thread_ptr io_service_thread_;
     };
 }

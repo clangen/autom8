@@ -26,9 +26,6 @@ static const std::string TAG = "client";
 client::client(const std::string& hostname, const std::string& port)
 : hostname_(hostname)
 , port_(port)
-, io_service_()
-, ssl_context_(boost::asio::ssl::context::sslv23)
-, socket_(io_service_, ssl_context_)
 , state_(state_disconnected)
 , disconnect_reason_(client::unknown)
 {
@@ -50,6 +47,7 @@ void client::connect(const std::string& password) {
     if (state_ == state_dead) {
         debug::log(debug::error, TAG, "cannot reuse old client, create a new instance");
         throw std::exception();
+        throw std::exception();
     }
     else if (state_ != state_disconnected) {
         debug::log(debug::warning, TAG, "connect() called but not disconnected");
@@ -59,15 +57,12 @@ void client::connect(const std::string& password) {
     state_ = state_connecting;
     password_ = password;
 
-    io_service_thread_.reset(
-        new boost::thread(
-            boost::bind(
-                &client::io_service_thread_proc,
-                this)));
+    connection_.started(new boost::thread(
+        boost::bind(&client::io_service_thread_proc, this)));
 }
 
 void client::io_service_thread_proc() {
-    tcp::resolver resolver(io_service_);
+    tcp::resolver resolver(*connection_.io_service_);
     tcp::resolver::query query(hostname_, port_);
 
     boost::system::error_code error;
@@ -78,13 +73,10 @@ void client::io_service_thread_proc() {
         disconnect("failed to resolve host");
     }
     else {
-        ssl_context_.set_verify_mode(boost::asio::ssl::context::verify_peer);
-        ssl_context_.set_options(boost::asio::ssl::context::default_workarounds);
-
-        socket_.set_verify_callback(
+        connection_.socket_->set_verify_callback(
             boost::bind(&client::verify_certificate, this, _1, _2));
 
-        socket_.lowest_layer().async_connect(
+        connection_.socket_->lowest_layer().async_connect(
             *iterator,
             boost::bind(
                 &client::handle_connect,
@@ -92,7 +84,7 @@ void client::io_service_thread_proc() {
                 boost::asio::placeholders::error,
                 iterator));
 
-        io_service_.run();
+        connection_.io_service_->run();
     }
 
     debug::log(debug::info, TAG, "i/o service thread done");
@@ -146,27 +138,14 @@ void client::disconnect(const std::string& reason) {
 
     debug::log(debug::info, TAG, "disconnect: " + reason);
 
-    /*
-     * shut down our i/o service and close the socket
-     */
-    if (io_service_thread_) {
-        io_service_.stop();
-        io_service_thread_.reset();
-    }
+    connection_.reset();
 
-    socket_.lowest_layer().close();
-
-    /*
-     * lock it down, kill it
-     */
     {
         boost::mutex::scoped_lock lock(state_lock_);
-        state_ = state_dead;
+        state_ = state_disconnected;
+        //state_ = state_dead; // WHY?
     }
 
-    /*
-     * notify observers
-     */
     disconnected(disconnect_reason_);
 }
 
@@ -186,7 +165,7 @@ void client::handle_connect(
 
         debug::log(debug::info, TAG, "handled_connect ok, starting handshake");
 
-        socket_.async_handshake(
+        connection_.socket_->async_handshake(
             boost::asio::ssl::stream_base::client,
             boost::bind(
                 &client::handle_handshake,
@@ -286,7 +265,7 @@ void client::async_read_next_message() {
     message_ptr m(new message());
 
     boost::asio::async_read_until(
-        socket_,
+        *connection_.socket_,
         m->read_buffer(),
         message_matcher(),
         boost::bind(
@@ -313,7 +292,7 @@ void client::send(request_ptr r) {
 
 void client::send(message_formatter_ptr f) {
     boost::asio::async_write(
-        socket_,
+        *connection_.socket_,
         boost::asio::buffer(f->to_string()),
         boost::bind(
             &client::handle_post_send,
