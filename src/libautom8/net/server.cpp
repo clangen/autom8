@@ -57,10 +57,7 @@ void server::start_instance() {
     debug::log(debug::info, TAG, "started");
 
     io_service_thread_.reset(
-        new boost::thread(
-            boost::bind(
-                &server::io_service_thread_proc,
-                this)));
+        new boost::thread(boost::bind(&server::io_service_thread_proc, this)));
 }
 
 void server::stop_instance() {

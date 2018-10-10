@@ -1,3 +1,5 @@
+#include <f8n/utf/conv.h>
+
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/util/utility.hpp>
 #include <autom8/util/debug.hpp>
@@ -7,12 +9,19 @@
 #include <openssl/x509v3.h>
 #include <openssl/engine.h>
 #include <openssl/md5.h>
+#include <openssl/rsa.h>
 
 #include <boost/filesystem.hpp>
+
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 static const std::string TAG = "ssl_certificate";
 
 using namespace autom8;
+using namespace f8n::utf;
 
 #include <utf8/utf8.h>
 
@@ -36,7 +45,7 @@ namespace autom8 {
             return utility::settings_directory() + "autom8_ssl.pem";
         }
 
-        std::string rsa_md5(BIGNUM* pubkey_bignum) {
+        std::string rsa_md5(const BIGNUM* pubkey_bignum) {
             char* pubkey_bytes = BN_bn2hex(pubkey_bignum);
             size_t pubkey_size = strlen(pubkey_bytes);
 
@@ -60,7 +69,7 @@ namespace autom8 {
                 if (i < (MD5_DIGEST_LENGTH - 1)) md5s_stream << ':';
             }
 
-            delete pubkey_bytes;
+            OPENSSL_free(pubkey_bytes);
 
             return md5s_stream.str();
         }
@@ -79,66 +88,70 @@ namespace autom8 {
         bool generate() {
             static const int days = 365 * 10;
 
-            CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
-
             bool result = true;
+
             FILE* outfile = NULL;
             X509* x509 = X509_new();
-            EVP_PKEY* key = EVP_PKEY_new();
-            RSA *rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL);
 
-            // store
-            if ( ! rsa->n) {
-                debug::log(debug::error, TAG, "*** fatal: rsa key has no public modulus??");
-                throw std::exception();
-            }
+            BIGNUM* e = BN_new();
+            BN_set_word(e, RSA_F4);
+            RSA* rsa = RSA_new();
 
-            std::string md5 = rsa_md5((BIGNUM *) rsa->n);
-            utility::prefs().set("fingerprint", md5);
-
-            if ( ! EVP_PKEY_assign_RSA(key, rsa)) {
-                result = false;
-            }
-
-            X509_set_version(x509, 2);
-            ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
-            X509_gmtime_adj(X509_get_notBefore(x509), 0);
-            X509_gmtime_adj(X509_get_notAfter(x509), (long) (60*60*24*days));
-            X509_set_pubkey(x509, key);
-
-            X509_NAME* name = X509_get_subject_name(x509);
-            X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC, (unsigned char*) "US", -1, -1, 0);
-            X509_NAME_add_entry_by_txt(name,"CN", MBSTRING_ASC, (unsigned char*) "autom8", -1, -1, 0);
-
-            X509_set_issuer_name(x509, name);
-
-            if ( ! X509_sign(x509, key,EVP_md5())) {
-                result = false;
-            }
-            else {
-#if defined(WIN32)
-                std::string utf8fn = filename();
-                std::wstring utf16fn;
-                utf8::utf8to16(utf8fn.begin(), utf8fn.end(), back_inserter(utf16fn));
-
-                ::_wfopen_s(&outfile, utf16fn.c_str(), L"w+");
-#else
-                outfile = fopen(filename().c_str(), "w+");
-#endif
-
-                if (outfile) {
-                    PEM_write_PrivateKey(outfile, key, NULL, NULL, 0, NULL, NULL);
-                    PEM_write_X509(outfile, x509);
-                    fflush(outfile);
-                    fclose(outfile);
+            if (RSA_generate_key_ex(rsa, 1024, e, nullptr)) {
+                EVP_PKEY* key = EVP_PKEY_new();
+                if (!EVP_PKEY_set1_RSA(key, rsa)) {
+                    result = false;
                 }
+
+                const BIGNUM* publicExponent = nullptr;
+                const BIGNUM* unused = nullptr;
+                RSA_get0_key(rsa, &publicExponent, &unused, &unused);
+
+                std::string md5 = rsa_md5(publicExponent);
+                utility::prefs().set("fingerprint", md5);
+
+                X509_set_version(x509, 2);
+                ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
+                X509_gmtime_adj(X509_get_notBefore(x509), 0);
+                X509_gmtime_adj(X509_get_notAfter(x509), (long)(60 * 60 * 24 * days));
+                X509_set_pubkey(x509, key);
+
+                X509_NAME* name = X509_get_subject_name(x509);
+                X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC, (unsigned char*) "US", -1, -1, 0);
+                X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, (unsigned char*) "autom8", -1, -1, 0);
+
+                X509_set_issuer_name(x509, name);
+
+                if (!X509_sign(x509, key, EVP_md5())) {
+                    result = false;
+                }
+                else {
+#if defined(WIN32)
+                    ::_wfopen_s(&outfile, u8to16(filename()).c_str(), L"w+");
+#else
+                    outfile = fopen(filename().c_str(), "w+");
+#endif
+                    if (outfile) {
+                        BIO* bio = BIO_new(BIO_s_mem());
+                        PEM_write_bio_PrivateKey(bio, key, nullptr, nullptr, 0, nullptr, nullptr);
+                        PEM_write_bio_X509(bio, x509);
+                        int toWriteLen = BIO_pending(bio);
+                        unsigned char* toWrite = (unsigned char*) malloc(toWriteLen + 1);
+                        BIO_read(bio, toWrite, toWriteLen);
+                        toWrite[toWriteLen] = '\0';
+                        fwrite(toWrite, 1, toWriteLen, outfile);
+                        free(toWrite);
+                        fclose(outfile);
+                        BIO_free_all(bio);
+                    }
+                }
+
+                X509_free(x509);
+                EVP_PKEY_free(key);
             }
 
-            X509_free(x509);
-            EVP_PKEY_free(key);
-
-            ENGINE_cleanup();
-            CRYPTO_cleanup_all_ex_data();
+            RSA_free(rsa);
+            BN_free(e);
 
             return result;
         }

@@ -32,6 +32,20 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WINVER
+#define WINVER 0x0502
+#define _WIN32_WINNT 0x0502
+#endif
+#include <windows.h>
+#endif
+
 #include <boost/locale.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -68,7 +82,7 @@ static void initUtf8Filesystem() {
 class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots<> {
     public:
         MainLayout(client_ptr client)
-        : LayoutBase() 
+        : LayoutBase()
         , client(client) {
             this->status = std::make_shared<TextLabel>();
             this->status->SetText("disconnected", text::AlignCenter);
@@ -143,8 +157,10 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
-    std::string password = "842655";
-    std::string host = "ricochet.ydns.eu";
+    autom8::server::start(7901);
+
+    std::string password = "changeme";
+    std::string host = "localhost";
     std::string port = "7901";
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
     auto client = std::make_shared<autom8::client>(host, port);
@@ -167,6 +183,8 @@ int main(int argc, char* argv[]) {
     });
 
     app.Run(std::make_shared<MainLayout>(client));
+
+    autom8::server::stop();
 
     return 0;
 }
