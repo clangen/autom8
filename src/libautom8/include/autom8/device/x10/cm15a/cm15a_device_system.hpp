@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef WIN32
+
 #include <windows.h>
 #include <memory>
 #include <autom8/util/signal_handler.hpp>
@@ -34,3 +36,5 @@ namespace autom8 {
         bool is_functional_;
     };
 }
+
+#endif

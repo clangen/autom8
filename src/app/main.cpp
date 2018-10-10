@@ -32,12 +32,6 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <cursespp/App.h>
-#include <cursespp/Screen.h>
-#include <cursespp/TextLabel.h>
-#include <cursespp/LayoutBase.h>
-#include <cursespp/IViewRoot.h>
-
 #include <boost/locale.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -47,6 +41,12 @@
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
+
+#include <cursespp/App.h>
+#include <cursespp/Screen.h>
+#include <cursespp/TextLabel.h>
+#include <cursespp/LayoutBase.h>
+#include <cursespp/IViewRoot.h>
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;

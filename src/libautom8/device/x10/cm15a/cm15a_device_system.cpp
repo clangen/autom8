@@ -1,3 +1,5 @@
+#ifdef WIN32
+
 #include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 
 #include <boost/thread.hpp>
@@ -150,3 +152,5 @@ void cm15a_device_system::on_device_updated(database_id id) {
     x10_device_factory* x10_factory = (x10_device_factory*) factory_.get();
     x10_factory->device_updated(id);
 }
+
+#endif

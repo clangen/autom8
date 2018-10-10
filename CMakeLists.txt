@@ -16,7 +16,7 @@ if (${LINK_STATICALLY} MATCHES "true")
   set(Boost_USE_STATIC_LIBS ON)
 endif()
 
-set (BOOST_LIBS system filesystem)
+set (BOOST_LIBS system filesystem thread regex)
 find_package(Boost 1.55.0 REQUIRED ${BOOST_LIBS})
 add_definitions (-DHAVE_BOOST -D_FILE_OFFSET_BITS=64 -DSIGSLOT_USE_POSIX_THREADS)
 set (BOOST_LINK_LIBS ${Boost_LIBRARIES})
@@ -28,15 +28,48 @@ include_directories (
   "${autom8_curses_SOURCE_DIR}/src/cursespp/f8n/src"
   "${autom8_curses_SOURCE_DIR}/src/cursespp/f8n/src/3rdparty/include"
   "${autom8_curses_SOURCE_DIR}/src/cursespp/src"
+  "${autom8_curses_SOURCE_DIR}/src/libautom8/include"
 )
 
 # "/usr/local" doesn't seem to be included by default on macOS 10.12+
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
   link_directories ("/usr/local/lib")
   include_directories("/usr/local/include")
+  include_directories("/usr/local/opt/openssl/include")
 endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 set (autom8_curses_SRCS
+  ./src/libautom8/net/client.cpp
+  ./src/libautom8/net/session.cpp
+  ./src/libautom8/net/server.cpp
+  ./src/libautom8/util/preferences.cpp
+  ./src/libautom8/util/ssl_certificate.cpp
+  ./src/libautom8/util/debug.cpp
+  ./src/libautom8/util/utility.cpp
+  ./src/libautom8/autom8.cpp
+  ./src/libautom8/message/request_handler_registrar.cpp
+  ./src/libautom8/message/message.cpp
+  ./src/libautom8/message/request.cpp
+  ./src/libautom8/message/requests/get_device_list.cpp
+  ./src/libautom8/message/requests/send_device_command.cpp
+  ./src/libautom8/message/requests/get_security_alert_count.cpp
+  ./src/libautom8/message/response.cpp
+  ./src/libautom8/message/request_handler_factory.cpp
+  ./src/libautom8/message/common_messages.cpp
+  ./src/libautom8/db/db.cpp
+  ./src/libautom8/device/device_base.cpp
+  ./src/libautom8/device/null_device_system.cpp
+  ./src/libautom8/device/simple_device.cpp
+  ./src/libautom8/device/x10/cm15a/cm15a_device_system.cpp
+  ./src/libautom8/device/x10/mochad/mochad_device_system.cpp
+  ./src/libautom8/device/x10/mochad/mochad_controller.cpp
+  ./src/libautom8/device/x10/x10_device.cpp
+  ./src/libautom8/device/x10/x10_security_sensor.cpp
+  ./src/libautom8/device/x10/x10_lamp.cpp
+  ./src/libautom8/device/x10/x10_device_factory.cpp
+  ./src/libautom8/device/x10/x10_appliance.cpp
+  ./src/libautom8/device/device_system.cpp
+  ./src/libautom8/device/device_model.cpp
   ./src/app/main.cpp
 )
 
@@ -47,9 +80,9 @@ add_subdirectory("${autom8_curses_SOURCE_DIR}/src/cursespp/")
 add_dependencies(autom8_curses f8n cursespp)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} ncursesw panelw f8n cursespp)
+  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} ncursesw panelw f8n cursespp ssl crypto)
 else (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} curses panel)
+  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} curses panel f8n cursespp ssl crypto)
 endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 # install(
