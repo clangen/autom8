@@ -27,6 +27,7 @@ client::client(const std::string& hostname, const std::string& port)
 : hostname_(hostname)
 , port_(port)
 , state_(state_disconnected)
+, reason_(none)
 , disconnect_reason_(client::unknown)
 {
 }
@@ -35,30 +36,22 @@ client::~client() {
     disconnect();
 }
 
-void client::set_disconnect_reason(reason r) {
-    if (disconnect_reason_ == client::unknown) {
-        disconnect_reason_ = r;
-    }
-}
-
 void client::connect(const std::string& password) {
-    boost::mutex::scoped_lock lock(state_lock_);
+    {
+        boost::recursive_mutex::scoped_lock lock(state_lock_);
 
-    if (state_ == state_dead) {
-        debug::log(debug::error, TAG, "cannot reuse old client, create a new instance");
-        throw std::exception();
-        throw std::exception();
+        if (state_ != state_disconnected) {
+            debug::log(debug::warning, TAG, "connect() called but not disconnected");
+            return;
+        }
+
+        password_ = password;
+
+        connection_.started(new boost::thread(
+            boost::bind(&client::io_service_thread_proc, this)));
     }
-    else if (state_ != state_disconnected) {
-        debug::log(debug::warning, TAG, "connect() called but not disconnected");
-        return;
-    }
 
-    state_ = state_connecting;
-    password_ = password;
-
-    connection_.started(new boost::thread(
-        boost::bind(&client::io_service_thread_proc, this)));
+    set_state(state_connecting);
 }
 
 void client::io_service_thread_proc() {
@@ -69,8 +62,7 @@ void client::io_service_thread_proc() {
     tcp::resolver::iterator iterator = resolver.resolve(query, error);
 
     if (error) {
-        set_disconnect_reason(connect_failed);
-        disconnect("failed to resolve host");
+        disconnect(connect_failed);
     }
     else {
         connection_.socket_->set_verify_callback(
@@ -112,41 +104,40 @@ bool client::verify_certificate(bool preverified, boost::asio::ssl::verify_conte
 }
 
 void client::disconnect() {
-    set_disconnect_reason(client::ok);
-    disconnect("clean (external or dtor)");
+    disconnect(client::ok);
 }
 
-void client::disconnect(const std::string& reason) {
-    /*
-     * lock it down, check enter disconnecting state
-     */
-    {
-        boost::mutex::scoped_lock lock(state_lock_);
+void client::disconnect(reason disconnect_reason) {
+    debug::log(debug::info, TAG, "attempting do disconnect: " + disconnect_reason);
 
-        password_.clear(); // be paranoid. it should already be cleared, but, just in case...
+    /* return early if disconnected/ing */
+    {
+        boost::recursive_mutex::scoped_lock lock(state_lock_);
+
+        password_.clear();
 
         if (state_ == state_disconnected ||
-            state_ == state_disconnecting ||
-            state_ == state_dead)
+            state_ == state_disconnecting)
         {
             debug::log(debug::info, TAG, "disconnect called, but already disconnect[ed|ing]");
             return;
         }
-
-        state_ = state_disconnecting;
     }
 
-    debug::log(debug::info, TAG, "disconnect: " + reason);
+    set_state(state_disconnecting, disconnect_reason);
 
     connection_.reset();
 
-    {
-        boost::mutex::scoped_lock lock(state_lock_);
-        state_ = state_disconnected;
-        //state_ = state_dead; // WHY?
-    }
+    set_state(state_disconnected, disconnect_reason);
+}
 
-    disconnected(disconnect_reason_);
+void client::set_state(connection_state state, reason reason) {
+    boost::recursive_mutex::scoped_lock lock(state_lock_);
+    if (state != state_) {
+        state_ = state;
+        reason_ = reason;
+        state_changed(state, reason);
+    }
 }
 
 void client::handle_connect(
@@ -154,14 +145,10 @@ void client::handle_connect(
     tcp::resolver::iterator endpoint_iterator)
 {
     if (error) {
-        set_disconnect_reason(client::connect_failed);
-        disconnect("handled_connect received error");
+        disconnect(client::connect_failed);
     }
     else {
-        {
-            boost::mutex::scoped_lock lock(state_lock_);
-            state_ = state_authenticating;
-        }
+        set_state(state_authenticating);
 
         debug::log(debug::info, TAG, "handled_connect ok, starting handshake");
 
@@ -176,19 +163,18 @@ void client::handle_connect(
 
 void client::handle_handshake(const boost::system::error_code& error) {
     if (error) {
-        set_disconnect_reason(client::handshake_failed);
-        disconnect("handle_handshake received error");
+        disconnect(client::handshake_failed);
     }
     else {
         std::string pw;
 
         {
-            boost::mutex::scoped_lock lock(state_lock_);
+            boost::recursive_mutex::scoped_lock lock(state_lock_);
             pw = password_;
             password_.clear();
-            state_ = state_authenticating;
         }
 
+        set_state(state_authenticating);
         send(messages::requests::authenticate(pw));
         async_read_next_message();
     }
@@ -196,8 +182,7 @@ void client::handle_handshake(const boost::system::error_code& error) {
 
 void client::handle_next_read_message(message_ptr message, const boost::system::error_code& error, std::size_t size) {
     if (error) {
-        set_disconnect_reason(client::read_failed);
-        disconnect("handle_next_read_message reported error");
+        disconnect(client::read_failed);
     }
     else {
         if ( ! message->parse_message(size)) {
@@ -227,16 +212,10 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
              */
             if (state_ == state_authenticating) {
                 if (authenticate_->uri() == response->uri()) {
-                    {
-                        boost::mutex::scoped_lock lock(state_lock_);
-                        state_ = state_connected;
-                    }
-
-                    connected(); /* notify observers */
+                    set_state(state_connected);
                 }
                 else {
-                    set_disconnect_reason(client::auth_failed);
-                    disconnect("auth failed");
+                    set_state(state_disconnected, client::auth_failed);
                     return;
                 }
             }
@@ -245,8 +224,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
             }
         }
         else {
-            set_disconnect_reason(client::bad_message);
-            disconnect("message parsed, but invalid type?");
+            disconnect(client::bad_message);
             return;
         }
 
@@ -256,8 +234,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
 
 void client::handle_post_send(message_formatter_ptr formatter, const boost::system::error_code& error, std::size_t size) {
     if (error) {
-        set_disconnect_reason(client::write_failed);
-        disconnect("send() failed");
+        disconnect(client::write_failed);
     }
 }
 

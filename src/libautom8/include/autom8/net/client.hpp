@@ -44,26 +44,25 @@ namespace autom8 {
             state_connected,
             state_authenticating,
             state_disconnecting,
-            state_dead
         };
 
         enum reason {
             unknown = -1,
-            ok = 0,
-            connect_failed = 1,
-            handshake_failed = 2,
-            auth_failed = 3,
-            bad_message = 4,
-            read_failed = 5,
-            write_failed = 6
+            none = 0,
+            ok = 1,
+            connect_failed = 2,
+            handshake_failed = 3,
+            auth_failed = 4,
+            bad_message = 5,
+            read_failed = 6,
+            write_failed = 7
         };
 
     public:
         client(const std::string& hostname, const std::string& port);
         virtual ~client();
 
-        sigslot::signal0<> connected;
-        sigslot::signal1<reason> disconnected;
+        sigslot::signal2<connection_state, reason> state_changed;
         sigslot::signal1<request_ptr> recv_request;
         sigslot::signal1<response_ptr> recv_response;
 
@@ -98,14 +97,14 @@ namespace autom8 {
 
         void async_read_next_message();
 
+        void set_state(connection_state state, reason reason = none);
+
         void on_recv(response_ptr);
         void on_recv(request_ptr);
         void io_service_thread_proc();
 
         void send(message_formatter_ptr);
-        void disconnect(const std::string& reason);
-
-        void set_disconnect_reason(reason r);
+        void disconnect(reason disconnect_reason);
 
     private:
         struct connection {
@@ -132,7 +131,7 @@ namespace autom8 {
                     service_thread_ = std::move(this->service_thread_),
                     socket_ = std::move(this->socket_),
                     ssl_context_ = std::move(this->ssl_context_)]
-                { 
+                {
                     if (io_service_) { io_service_->stop(); }
                     if (service_thread_) { service_thread_->join(); }
                 });
@@ -151,13 +150,14 @@ namespace autom8 {
                 service_thread_.reset(t);
             }
         };
-        
+
         connection connection_;
         std::string hostname_;
         std::string port_;
         std::string password_;
         connection_state state_;
-        boost::mutex state_lock_;
+        reason reason_;
+        boost::recursive_mutex state_lock_;
         reason disconnect_reason_;
     };
 }

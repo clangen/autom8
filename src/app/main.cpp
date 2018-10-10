@@ -93,8 +93,7 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             this->label->SetText("hello, autom8", text::AlignCenter);
             this->AddWindow(label);
 
-            client->connected.connect(this, &MainLayout::OnConnected);
-            client->disconnected.connect(this, &MainLayout::OnDisconnected);
+            client->state_changed.connect(this, &MainLayout::OnStateChanged);
             this->Update();
         }
 
@@ -115,14 +114,15 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             auto str = "disconnected";
             auto color = CURSESPP_BANNER;
             switch (client->state()) {
+                case S::state_connecting:
+                    str = "connecting";
+                    break;
                 case S::state_connected:
                     str = "connected";
                     color = CURSESPP_FOOTER;
-                case S::state_disconnected:
-                case S::state_disconnecting:
                     break;
-                default:
-                    str = "connecting";
+                case S::state_disconnecting:
+                    str = "disconnecting";
                     break;
             }
 
@@ -134,7 +134,7 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             this->Update();
         }
 
-        void OnDisconnected(autom8::client::reason reason) {
+        void OnStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
             this->Update();
         }
 
