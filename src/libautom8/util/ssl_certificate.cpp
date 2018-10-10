@@ -99,6 +99,8 @@ namespace autom8 {
 
             if (RSA_generate_key_ex(rsa, 1024, e, nullptr)) {
                 EVP_PKEY* key = EVP_PKEY_new();
+
+#if OPENSSL_VERSION_NUMBER >= 0x10100000
                 if (!EVP_PKEY_set1_RSA(key, rsa)) {
                     result = false;
                 }
@@ -108,6 +110,14 @@ namespace autom8 {
                 RSA_get0_key(rsa, &publicExponent, &unused, &unused);
 
                 std::string md5 = rsa_md5(publicExponent);
+#else
+                if (!EVP_PKEY_assign_RSA(key, rsa)) { /* note: takes ownership of rsa, DO NOT FREE IT! */
+                    return false;
+                }
+
+                std::string md5 = rsa_md5((BIGNUM *) rsa->n);
+#endif
+
                 utility::prefs().set("fingerprint", md5);
 
                 X509_set_version(x509, 2);
@@ -150,9 +160,11 @@ namespace autom8 {
                 EVP_PKEY_free(key);
             }
 
-            RSA_free(rsa);
             BN_free(e);
 
+#if OPENSSL_VERSION_NUMBER >= 0x10100000
+            RSA_free(rsa);
+#endif
             return result;
         }
     }
