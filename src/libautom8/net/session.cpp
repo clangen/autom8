@@ -13,7 +13,7 @@
 using namespace autom8;
 using namespace nlohmann;
 
-static std::atomic<int> instance_count_ = 0;
+static std::atomic<int> instance_count_ { 0 };
 static const std::string TAG = "session";
 
 inline void print_instance_count() {
