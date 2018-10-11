@@ -88,8 +88,9 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
 
             auto document = message->body();
             std::string received_password = document["password"];
+            session->is_authenticated_ = (stored_password == received_password);
 
-            if (session->is_authenticated_ = (stored_password == received_password)) {
+            if (session->is_authenticated_) {
                 server::send(session, messages::responses::authenticated());
                 return true;
             }
@@ -131,7 +132,7 @@ bool session::handle_incoming_message(session_ptr session, message_ptr m) {
 
                 debug::log(debug::info, TAG, "recv: autom8://request/" + m->name());
                 request_handler_factory_ptr factory = request_handler_factory::instance();
-                if ( ! factory->handle_request(session, m)) {
+                if (!factory->handle_request(session, m)) {
                     return false;
                 }
             }
@@ -144,9 +145,10 @@ bool session::handle_incoming_message(session_ptr session, message_ptr m) {
                 }
             }
             return true;
-    }
 
-    return false;
+        default:
+            return false;
+    }
 }
 
 void session::on_disconnected() {
@@ -154,7 +156,7 @@ void session::on_disconnected() {
 }
 
 void session::disconnect(const std::string& reason) {
-    if ( ! is_disconnected_) {
+    if (!is_disconnected_) {
         if (reason.size()) {
             debug::log(debug::info, TAG, reason);
         }
@@ -186,7 +188,7 @@ void session::read_thread_proc() {
 
         message_ptr m;
 
-        while ( ! is_disconnected_) {
+        while (!is_disconnected_) {
             m.reset(new message());
             boost::system::error_code error;
 
@@ -197,16 +199,16 @@ void session::read_thread_proc() {
                 disconnect("[E] [SESSION] socket read() failed");
             }
             else if (bytes_read > 0) {
-                if ( ! m->parse_message(bytes_read)) {
+                if (!m->parse_message(bytes_read)) {
                     disconnect("[E] [SESSION] failed to parse message, disconnecting");
                 }
                 // the first message must always be "authenticate"
-                else if ( ! is_authenticated()) {
-                    if ( ! handle_authentication(session, m)) {
+                else if (!is_authenticated()) {
+                    if (!handle_authentication(session, m)) {
                         disconnect("[E] [SESSION] session failed to authenticate");
                     }
                 }
-                else if ( ! handle_incoming_message(session, m)) {
+                else if (!handle_incoming_message(session, m)) {
                     disconnect("[E] [SESSION] failed to process request: " + m->name());
                 }
             }
@@ -226,12 +228,12 @@ void session::write_thread_proc() {
         message_queue_ptr q = write_queue_;
         message_formatter_ptr f;
 
-        while (( ! is_disconnected_) && (f = q->pop_top())) {
+        while ((!is_disconnected_) && (f = q->pop_top())) {
             /*
              * Looks like someone is trying to make us do something fishy, we shouldn't
              * ever need to write() at this point until we're authenticated.
              */
-            if ( ! is_authenticated_) {
+            if (!is_authenticated_) {
                 disconnect("[E] [SESSION] trying to write() when not authenticated");
                 return;
             }
