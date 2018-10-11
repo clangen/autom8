@@ -11,14 +11,10 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/thread.hpp>
-#include <memory>
-#include <boost/scoped_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/thread/condition.hpp>
 #include <boost/asio/ssl.hpp>
 
 #include <sigslot/sigslot.h>
+#include <memory>
 #include <set>
 #include <memory>
 #include <utility>
@@ -34,9 +30,6 @@ namespace autom8 {
 
     class client: public signal_handler
                 , public std::enable_shared_from_this<client> {
-    private:
-        typedef boost::scoped_ptr<boost::thread> thread_ptr;
-
     public:
         enum connection_state {
             state_disconnected = 0,
@@ -113,7 +106,7 @@ namespace autom8 {
             using ssl_context =  boost::asio::ssl::context;
             using ssl_context_ptr = std::unique_ptr<ssl_context>;
             using io_service_ptr = std::unique_ptr <boost::asio::io_service>;
-            using thread = boost::thread;
+            using thread = std::thread;
             using thread_ptr = std::unique_ptr<thread>;
 
             ssl_context_ptr ssl_context_;
@@ -126,7 +119,7 @@ namespace autom8 {
             ~connection() { close(); }
 
             void close() {
-                std::async(std::launch::async, [ /* deferred disconnect */
+                std::thread([ /* deferred disconnect */
                     io_service_ = std::move(this->io_service_),
                     service_thread_ = std::move(this->service_thread_),
                     socket_ = std::move(this->socket_),
@@ -134,7 +127,7 @@ namespace autom8 {
                 {
                     if (io_service_) { io_service_->stop(); }
                     if (service_thread_) { service_thread_->join(); }
-                });
+                }).detach();
             }
 
             void reset() {
@@ -157,7 +150,7 @@ namespace autom8 {
         std::string password_;
         connection_state state_;
         reason reason_;
-        boost::recursive_mutex state_lock_;
+        std::recursive_mutex state_lock_;
         reason disconnect_reason_;
     };
 }

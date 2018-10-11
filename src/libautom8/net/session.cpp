@@ -7,14 +7,13 @@
 #include <autom8/util/utility.hpp>
 #include <autom8/message/message_matcher.hpp>
 
-#include <boost/bind.hpp>
 #include <boost/format.hpp>
+#include <atomic>
 
 using namespace autom8;
 using namespace nlohmann;
 
-static boost::mutex instance_count_mutex_;
-static int instance_count_ = 0;
+static std::atomic<int> instance_count_ = 0;
 static const std::string TAG = "session";
 
 inline void print_instance_count() {
@@ -22,13 +21,11 @@ inline void print_instance_count() {
 }
 
 inline void inc_instance_count() {
-    boost::mutex::scoped_lock lock(instance_count_mutex_);
     ++instance_count_;
     print_instance_count();
 }
 
 inline void dec_instance_count() {
-    boost::mutex::scoped_lock lock(instance_count_mutex_);
     --instance_count_;
     print_instance_count();
 }
@@ -64,17 +61,11 @@ void session::start() {
     is_disconnected_ = false;
     ip_address_ = (socket_.lowest_layer().remote_endpoint().address().to_string());
 
-    read_thread_.reset(
-        new boost::thread(
-            boost::bind(
-                &session::read_thread_proc,
-                this)));
+    read_thread_.reset(new std::thread(
+        std::bind(&session::read_thread_proc, this)));
 
-    write_thread_.reset(
-        new boost::thread(
-            boost::bind(
-                &session::write_thread_proc,
-                this)));
+    write_thread_.reset(new std::thread(
+        std::bind(&session::write_thread_proc, this)));
 }
 
 std::string session::ip_address() const {
@@ -116,7 +107,7 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
 
     // send failed response immediately, then disconnect
     {
-        boost::mutex::scoped_lock lock(session->write_lock_);
+        std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
 
         message_formatter_ptr f =
             message_formatter::create(
@@ -245,7 +236,7 @@ void session::write_thread_proc() {
                 return;
             }
 
-            boost::mutex::scoped_lock lock(write_lock_);
+            std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
             write(socket_, boost::asio::buffer(f->to_string()));
         }
     }

@@ -5,18 +5,14 @@
 #include <autom8/net/session.hpp>
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/message/common_messages.hpp>
-
-#include <ostream>
-#include <boost/bind.hpp>
-
-#include <base64/base64.h>
-
 #include <boost/format.hpp>
+#include <base64/base64.h>
+#include <ostream>
 
 using namespace autom8;
 
 static server_ptr instance_;
-static boost::mutex instance_mutex_;
+static std::mutex instance_mutex_;
 sigslot::signal0<> server::started;
 sigslot::signal0<> server::stopped;
 
@@ -30,8 +26,8 @@ server::server(int port)
 , acceptor_(io_service_, endpoint_)
 , ssl_context_(boost::asio::ssl::context::sslv23)
 , stopped_(false) {
-    if ( ! ssl_certificate::exists()) {
-        if ( ! ssl_certificate::generate()) {
+    if (!ssl_certificate::exists()) {
+        if (!ssl_certificate::generate()) {
             debug::log(debug::error, TAG, "unable to generate SSL certificate! aborting!");
             throw std::exception();
         }
@@ -56,8 +52,8 @@ server::~server() {
 void server::start_instance() {
     debug::log(debug::info, TAG, "started");
 
-    io_service_thread_.reset(
-        new boost::thread(boost::bind(&server::io_service_thread_proc, this)));
+    io_service_thread_.reset(new std::thread(
+        std::bind(&server::io_service_thread_proc, this)));
 }
 
 void server::stop_instance() {
@@ -80,8 +76,7 @@ void server::stop_instance() {
         session_list active_sessions;
 
         {
-            boost::mutex::scoped_lock lock(protect_session_list_mutex_);
-
+            std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
             active_sessions = session_list_;
             session_list_.clear();
         }
@@ -130,9 +125,9 @@ void server::handle_accept(const boost::system::error_code& error, session_ptr s
 }
 
 bool server::start(int port) {
-    boost::mutex::scoped_lock lock(instance_mutex_);
+    std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
 
-    if ( ! instance_) {
+    if (!instance_) {
         request_handler_registrar::register_all();
 
         instance_ = server_ptr(new server(port));
@@ -158,7 +153,7 @@ bool server::stop() {
     ** instance_ before calling stop_instance().
     */
     {
-        boost::mutex::scoped_lock lock(instance_mutex_);
+        std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
         s = instance_;
         instance_ = server_ptr();
     }
@@ -172,7 +167,7 @@ bool server::stop() {
 }
 
 bool server::is_running() {
-    boost::mutex::scoped_lock lock(instance_mutex_);
+    std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
     return (instance_ ? true : false);
 }
 
@@ -180,7 +175,7 @@ void server::send(session_ptr session, response_ptr response) {
     server_ptr server;
 
     {
-        boost::mutex::scoped_lock lock(instance_mutex_);
+        std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
         server = instance_;
     }
 
@@ -193,7 +188,7 @@ void server::send(session_ptr session, request_ptr response) {
     server_ptr server;
 
     {
-        boost::mutex::scoped_lock lock(instance_mutex_);
+        std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
         server = instance_;
     }
 
@@ -213,12 +208,13 @@ void server::send(response_ptr response) {
 void server::send(request_ptr request) {
     server_ptr server;
     {
-        boost::mutex::scoped_lock lock(instance_mutex_);
+        std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
         server = instance_;
     }
 
     if (server) {
-        boost::mutex::scoped_lock lock(server->protect_session_list_mutex_);
+        std::unique_lock<decltype(server->state_mutex_)> lock(server->state_mutex_);
+
         session_list::iterator it = server->session_list_.begin();
         for ( ; it != server->session_list_.end(); it++) {
             server::send(*it, request);
@@ -228,7 +224,7 @@ void server::send(request_ptr request) {
 
 void server::handle_scheduled_ping(const error_code& error) {
     ping_timer_ = timer_ptr();
-    if (( ! error) && ( ! stopped_)) {
+    if ((!error) && (!stopped_)) {
         server::send(messages::requests::ping());
         schedule_ping();
     }
@@ -250,7 +246,7 @@ void server::schedule_ping() {
 }
 
 void server::on_session_disconnected(session_ptr session) {
-    boost::mutex::scoped_lock lock(protect_session_list_mutex_);
+    std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
 
     session_list::iterator it = session_list_.find(session);
     if (it != session_list_.end()) {
@@ -267,7 +263,7 @@ void server::on_session_disconnected(session_ptr session) {
 }
 
 void server::dispatch_request(session_ptr session, request_ptr request) {
-    if ( ! session) {
+    if (!session) {
         debug::log(debug::error, TAG, "can't dispatch request: no session specified");
         return;
     }
@@ -284,7 +280,7 @@ void server::dispatch_request(session_ptr session, request_ptr request) {
 void server::dispatch_response(session_ptr session, response_ptr response) {
     // if no session was specified, and the response type is target only,
     // we can't send the message. someone messed up. TODO: throw?
-    if (( ! session) && (response->target() == response::requester_only)) {
+    if ((!session) && (response->target() == response::requester_only)) {
         debug::log(debug::error, TAG, "can't dispatch message to requester, no session specified");
         return;
     }
@@ -299,7 +295,7 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
 
     case response::all_sessions:
     case response::all_other_sessions: {
-            boost::mutex::scoped_lock lock(protect_session_list_mutex_);
+            std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
             session_list::iterator it = session_list_.begin();
             for ( ; it != session_list_.end(); it++) {
                 if ((response->target() == response::all_other_sessions)
@@ -321,7 +317,7 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
 }
 
 void server::boostrap_new_session(session_ptr session) {
-    boost::mutex::scoped_lock lock(protect_session_list_mutex_);
+    std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
     session_list_.insert(session);
     session->disconnect_signal().connect(this, &server::on_session_disconnected);
     session->start();

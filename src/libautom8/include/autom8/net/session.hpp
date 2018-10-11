@@ -11,9 +11,7 @@
 #include <autom8/message/response.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/thread.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <sigslot/sigslot.h>
 
 using boost::asio::ip::tcp;
@@ -24,7 +22,7 @@ namespace autom8 {
 
     class session;
     typedef std::shared_ptr<session> session_ptr;
-    typedef boost::scoped_ptr<boost::thread> thread_ptr;
+    typedef std::unique_ptr<std::thread> thread_ptr;
 
     class session : public std::enable_shared_from_this<session> {
     public:
@@ -56,7 +54,7 @@ namespace autom8 {
         volatile bool is_authenticated_;
         volatile bool is_disconnected_;
         std::string ip_address_;
-        boost::mutex write_lock_;
+        std::mutex write_lock_;
         boost::barrier wait_for_io_threads_;
         thread_ptr read_thread_, write_thread_;
         disconnect_signal_type disconnect_signal_;

@@ -10,13 +10,10 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/thread.hpp>
-#include <memory>
-#include <boost/scoped_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/thread/condition.hpp>
 
 #include <sigslot/sigslot.h>
+
+#include <memory>
 #include <set>
 
 using boost::asio::ip::tcp;
@@ -31,7 +28,7 @@ namespace autom8 {
                 , public std::enable_shared_from_this<server> {
     private:
         typedef std::set<session_ptr> session_list;
-        typedef boost::scoped_ptr<boost::thread> thread_ptr;
+        typedef std::unique_ptr<std::thread> thread_ptr;
 
     public:
         virtual ~server();
@@ -69,7 +66,7 @@ namespace autom8 {
         tcp::endpoint endpoint_;
         tcp::acceptor acceptor_;
         session_list session_list_;
-        boost::mutex protect_session_list_mutex_;
+        std::mutex state_mutex_;
         volatile bool stopped_;
         thread_ptr io_service_thread_;
         timer_ptr ping_timer_;

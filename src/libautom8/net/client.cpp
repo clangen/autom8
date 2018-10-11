@@ -38,7 +38,7 @@ client::~client() {
 
 void client::connect(const std::string& password) {
     {
-        boost::recursive_mutex::scoped_lock lock(state_lock_);
+        std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
         if (state_ != state_disconnected) {
             debug::log(debug::warning, TAG, "connect() called but not disconnected");
@@ -47,7 +47,7 @@ void client::connect(const std::string& password) {
 
         password_ = password;
 
-        connection_.started(new boost::thread(
+        connection_.started(new std::thread(
             boost::bind(&client::io_service_thread_proc, this)));
     }
 
@@ -108,11 +108,11 @@ void client::disconnect() {
 }
 
 void client::disconnect(reason disconnect_reason) {
-    debug::log(debug::info, TAG, "attempting do disconnect: " + disconnect_reason);
+    debug::log(debug::info, TAG, "attempting do disconnect: " + std::to_string(disconnect_reason));
 
     /* return early if disconnected/ing */
     {
-        boost::recursive_mutex::scoped_lock lock(state_lock_);
+        std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
         password_.clear();
 
@@ -132,7 +132,7 @@ void client::disconnect(reason disconnect_reason) {
 }
 
 void client::set_state(connection_state state, reason reason) {
-    boost::recursive_mutex::scoped_lock lock(state_lock_);
+    std::unique_lock<std::recursive_mutex> lock(state_lock_);
     if (state != state_) {
         state_ = state;
         reason_ = reason;
@@ -169,7 +169,7 @@ void client::handle_handshake(const boost::system::error_code& error) {
         std::string pw;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_lock_);
+            std::unique_lock<std::recursive_mutex> lock(state_lock_);
             pw = password_;
             password_.clear();
         }
