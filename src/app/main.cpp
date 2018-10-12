@@ -68,8 +68,9 @@ static const int DEFAULT_WIDTH = 100;
 static const int MIN_WIDTH = 54;
 static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 12;
-
+static const int UPDATE_STATUS_MESSAGE = 1024;
 using namespace cursespp;
+using namespace f8n::runtime;
 
 using client_ptr = std::shared_ptr<autom8::client>;
 
@@ -84,16 +85,24 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
         MainLayout(client_ptr client)
         : LayoutBase()
         , client(client) {
-            this->status = std::make_shared<TextLabel>();
-            this->status->SetText("disconnected", text::AlignCenter);
-            this->status->SetContentColor(CURSESPP_BANNER);
-            this->AddWindow(status);
+            this->clientStatus = std::make_shared<TextLabel>();
+            this->clientStatus->SetText("client: disconnected", text::AlignCenter);
+            this->clientStatus->SetContentColor(CURSESPP_BANNER);
+            this->AddWindow(clientStatus);
+
+            this->serverStatus = std::make_shared<TextLabel>();
+            this->serverStatus->SetText("server: disconnected", text::AlignCenter);
+            this->serverStatus->SetContentColor(CURSESPP_BANNER);
+            this->AddWindow(serverStatus);
 
             this->label = std::make_shared<TextLabel>();
             this->label->SetText("hello, autom8", text::AlignCenter);
             this->AddWindow(label);
 
-            client->state_changed.connect(this, &MainLayout::OnStateChanged);
+            client->state_changed.connect(this, &MainLayout::OnClientStateChanged);
+            autom8::server::started.connect(this, &MainLayout::OnServerStateChanged);
+            autom8::server::stopped.connect(this, &MainLayout::OnServerStateChanged);
+
             this->Update();
         }
 
@@ -103,8 +112,15 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
 
         virtual void OnLayout() override {
             int cx = this->GetContentWidth();
-            this->status->MoveAndResize(0, 0, cx, 1);
+            this->clientStatus->MoveAndResize(0, 0, (cx / 2) - 1, 1);
+            this->serverStatus->MoveAndResize(cx / 2, 0, cx - (cx / 2), 1);
             this->label->MoveAndResize(0, this->GetContentHeight() / 2, cx, 1);
+        }
+
+        virtual void ProcessMessage(IMessage& message) {
+            if (message.Type() == UPDATE_STATUS_MESSAGE) {
+                this->Update();
+            }
         }
 
     private:
@@ -126,21 +142,32 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
                     break;
             }
 
-            this->status->SetText(str, cursespp::text::AlignCenter);
-            this->status->SetContentColor(color);
+            this->clientStatus->SetText(std::string("client: ") + str, cursespp::text::AlignCenter);
+            this->clientStatus->SetContentColor(color);
+
+            str = "disconnected";
+            color = CURSESPP_BANNER;
+            if (autom8::server::is_running()) {
+                str = "connected";
+                color = CURSESPP_FOOTER;
+            }
+
+            this->serverStatus->SetText(std::string("server: ") + str, cursespp::text::AlignCenter);
+            this->serverStatus->SetContentColor(color);
         }
 
-        void OnConnected() {
-            this->Update();
+        void OnServerStateChanged() {
+            this->Post(UPDATE_STATUS_MESSAGE);
         }
 
-        void OnStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
-            this->Update();
+        void OnClientStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
+            this->Post(UPDATE_STATUS_MESSAGE);
         }
 
         client_ptr client;
         std::shared_ptr<TextLabel> label;
-        std::shared_ptr<TextLabel> status;
+        std::shared_ptr<TextLabel> clientStatus;
+        std::shared_ptr<TextLabel> serverStatus;
 };
 
 #ifdef WIN32
