@@ -50,14 +50,20 @@ namespace autom8 {
         void read_thread_proc();
         void write_thread_proc();
 
+        void async_read_next_message();
+
+        void handle_next_read_message(
+            message_ptr next_read,
+            const boost::system::error_code& error,
+            std::size_t size);
+
     private:
         ssl_socket socket_;
         volatile bool is_authenticated_;
         volatile bool is_disconnected_;
         std::string ip_address_;
         std::mutex write_lock_;
-        boost::barrier wait_for_io_threads_;
-        thread_ptr read_thread_, write_thread_;
+        thread_ptr write_thread_;
         disconnect_signal_type disconnect_signal_;
         message_queue_ptr write_queue_;
     };

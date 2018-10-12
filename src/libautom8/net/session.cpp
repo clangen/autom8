@@ -34,9 +34,7 @@ session::session(boost::asio::io_service& io_service, boost::asio::ssl::context&
 : socket_(io_service, context)
 , is_authenticated_(false)
 , is_disconnected_(true)
-, write_queue_(new message_queue())
-, wait_for_io_threads_(2)
-{
+, write_queue_(new message_queue()) {
     inc_instance_count();
 }
 
@@ -53,19 +51,25 @@ ssl_socket& session::socket() {
 }
 
 void session::start() {
-    if (read_thread_ || write_thread_) {
+    if (!is_disconnected_) {
         disconnect("[E] [SESSION] session already started, but start() called. disconnecting now.");
         return;
     }
 
-    is_disconnected_ = false;
-    ip_address_ = (socket_.lowest_layer().remote_endpoint().address().to_string());
+    try {
+        socket_.handshake(boost::asio::ssl::stream_base::server);
 
-    read_thread_.reset(new std::thread(
-        std::bind(&session::read_thread_proc, this)));
+        is_disconnected_ = false;
+        ip_address_ = (socket_.lowest_layer().remote_endpoint().address().to_string());
 
-    write_thread_.reset(new std::thread(
-        std::bind(&session::write_thread_proc, this)));
+        async_read_next_message();
+
+        write_thread_.reset(new std::thread(
+            std::bind(&session::write_thread_proc, this)));
+    }
+    catch (...) {
+        disconnect("[E] [SESSION] exception caught, session disconnecting");
+    }
 }
 
 std::string session::ip_address() const {
@@ -164,6 +168,8 @@ void session::disconnect(const std::string& reason) {
         is_disconnected_ = true;
 
         try {
+            boost::system::error_code ec;
+            socket_.lowest_layer().cancel(ec);
             socket_.lowest_layer().close();
         }
         catch(...) {
@@ -177,64 +183,56 @@ void session::disconnect(const std::string& reason) {
 }
 
 void session::join() {
-    if (read_thread_ && read_thread_->joinable()) {
-        read_thread_->join();
-        read_thread_.reset();
-    }
-
     if (write_thread_ && write_thread_->joinable()) {
         write_thread_->join();
         write_thread_.reset();
     }
 }
 
-void session::read_thread_proc() {
-    session_ptr session = shared_from_this();
+void session::async_read_next_message() {
+    message_ptr m = message_ptr(new message());
 
-    wait_for_io_threads_.wait();
+    boost::asio::async_read_until(
+        socket_,
+        m->read_buffer(),
+        message_matcher(),
+        boost::bind(
+            &session::handle_next_read_message,
+            this,
+            m,
+            boost::asio::placeholders::error,
+            boost::asio::placeholders::bytes_transferred));
+}
 
-    try {
-        socket_.handshake(boost::asio::ssl::stream_base::server);
-
-        debug::log(debug::info, TAG, "session established: " + ip_address_);
-
-        message_ptr m;
-
-        while (!is_disconnected_) {
-            m.reset(new message());
-            boost::system::error_code error;
-
-            size_t bytes_read = read_until(
-                socket_, m->read_buffer(), message_matcher(), error);
-
-            if (error) {
-                disconnect("[E] [SESSION] socket read() failed");
-            }
-            else if (bytes_read > 0) {
-                if (!m->parse_message(bytes_read)) {
-                    disconnect("[E] [SESSION] failed to parse message, disconnecting");
-                }
-                // the first message must always be "authenticate"
-                else if (!is_authenticated()) {
-                    if (!handle_authentication(session, m)) {
-                        disconnect("[E] [SESSION] session failed to authenticate");
-                    }
-                }
-                else if (!handle_incoming_message(session, m)) {
-                    disconnect("[E] [SESSION] failed to process request: " + m->name());
-                }
+void session::handle_next_read_message(
+    message_ptr next_read,
+    const boost::system::error_code& error,
+    std::size_t bytes_read)
+{
+    if (error) {
+        disconnect("[E] [SESSION] socket read() failed");
+    }
+    else if (bytes_read > 0) {
+        if (!next_read->parse_message(bytes_read)) {
+            disconnect("[E] [SESSION] failed to parse message, disconnecting");
+        }
+        // the first message must always be "authenticate"
+        else if (!is_authenticated()) {
+            if (!handle_authentication(shared_from_this(), next_read)) {
+                disconnect("[E] [SESSION] session failed to authenticate");
             }
         }
+        else if (!handle_incoming_message(shared_from_this(), next_read)) {
+            disconnect("[E] [SESSION] failed to process request: " + next_read->name());
+        }
     }
-    catch (...) {
-        disconnect("[E] [SESSION] exception caught, session disconnecting");
+    else if (!is_disconnected_) {
+        async_read_next_message();
     }
 }
 
 void session::write_thread_proc() {
     session_ptr session = shared_from_this();
-
-    wait_for_io_threads_.wait();
 
     try {
         message_queue_ptr q = write_queue_;
