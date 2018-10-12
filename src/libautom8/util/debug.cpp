@@ -4,6 +4,8 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <condition_variable>
+#include <functional>
 
 using namespace autom8;
 

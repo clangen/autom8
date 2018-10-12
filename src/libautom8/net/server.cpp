@@ -8,6 +8,8 @@
 #include <boost/format.hpp>
 #include <base64/base64.h>
 #include <ostream>
+#include <functional>
+#include <condition_variable>
 
 using namespace autom8;
 

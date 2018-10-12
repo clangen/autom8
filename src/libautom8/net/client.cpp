@@ -77,7 +77,8 @@ void client::io_service_thread_proc() {
     tcp::resolver::query query(hostname_, std::to_string(port_));
 
     boost::system::error_code error;
-    auto results = resolver.resolve(query, error);
+    tcp::resolver::iterator begin = resolver.resolve(query, error);
+    tcp::resolver::iterator end;
 
     if (error) {
         disconnect(connect_failed);
@@ -88,8 +89,8 @@ void client::io_service_thread_proc() {
 
         boost::asio::async_connect(
             connection_.socket_->lowest_layer(),
-            results.begin(),
-            results.end(),
+            begin,
+            end,
             boost::bind(
                 &client::handle_connect,
                 this,
