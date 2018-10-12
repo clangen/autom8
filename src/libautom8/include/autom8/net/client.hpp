@@ -52,14 +52,22 @@ namespace autom8 {
         };
 
     public:
-        client(const std::string& hostname, const std::string& port);
+        client();
+        client(const std::string& hostname, unsigned short port);
+
         virtual ~client();
 
         sigslot::signal2<connection_state, reason> state_changed;
         sigslot::signal1<request_ptr> recv_request;
         sigslot::signal1<response_ptr> recv_response;
 
-        void connect(const std::string& password);
+        void connect(
+            const std::string& hostname,
+            unsigned short port,
+            const std::string& password);
+
+        void reconnect(const std::string& password);
+
         void disconnect();
         connection_state state();
 
@@ -146,7 +154,7 @@ namespace autom8 {
 
         connection connection_;
         std::string hostname_;
-        std::string port_;
+        unsigned short port_;
         std::string password_;
         connection_state state_;
         reason reason_;

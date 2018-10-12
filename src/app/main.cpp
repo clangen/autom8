@@ -160,11 +160,11 @@ int main(int argc, char* argv[]) {
     autom8::server::start(7901);
 
     std::string password = "changeme";
-    std::string host = "localhost";
-    std::string port = "7901";
+    std::string host = "0.0.0.0";
+    unsigned short port = 7901;
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
-    auto client = std::make_shared<autom8::client>(host, port);
-    client->connect(hashed);
+    auto client = std::make_shared<autom8::client>();
+    client->connect(host, port, hashed);
 
     App app(APP_NAME); /* must be before layout creation */
 
@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
             return true;
         }
         else if (kn == "r") {
-            client->connect(hashed);
+            client->reconnect(hashed);
             return true;
         }
         return false;

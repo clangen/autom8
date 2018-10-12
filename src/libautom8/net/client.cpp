@@ -23,7 +23,15 @@ static response_ptr pong_(messages::responses::pong());
 static response_ptr authenticate_(messages::responses::authenticated());
 static const std::string TAG = "client";
 
-client::client(const std::string& hostname, const std::string& port)
+client::client()
+: hostname_("")
+, port_(0)
+, state_(state_disconnected)
+, reason_(none)
+, disconnect_reason_(client::unknown) {
+}
+
+client::client(const std::string& hostname, unsigned short port)
 : hostname_(hostname)
 , port_(port)
 , state_(state_disconnected)
@@ -36,7 +44,17 @@ client::~client() {
     disconnect();
 }
 
-void client::connect(const std::string& password) {
+void client::connect(
+    const std::string& hostname,
+    unsigned short port,
+    const std::string& password)
+{
+    hostname_ = hostname;
+    port_ = port;
+    reconnect(password);
+}
+
+void client::reconnect(const std::string& password) {
     {
         std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
@@ -56,7 +74,7 @@ void client::connect(const std::string& password) {
 
 void client::io_service_thread_proc() {
     tcp::resolver resolver(*connection_.io_service_);
-    tcp::resolver::query query(hostname_, port_);
+    tcp::resolver::query query(hostname_, std::to_string(port_));
 
     boost::system::error_code error;
     tcp::resolver::iterator iterator = resolver.resolve(query, error);

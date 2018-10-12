@@ -2,24 +2,23 @@
 
 #include <autom8/util/signal_handler.hpp>
 #include <autom8/constants.h>
-
 #include <autom8/message/message.hpp>
 #include <autom8/message/response.hpp>
 #include <autom8/message/request_handler_factory.hpp>
 #include <autom8/message/request_handler_registrar.hpp>
-
 #include <autom8/net/server.hpp>
 #include <autom8/net/session.hpp>
-
 #include <autom8/util/debug.hpp>
 #include <autom8/util/utility.hpp>
-
 #include <autom8/device/null_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
 
 #include <boost/date_time.hpp>
-#include <boost/thread/thread.hpp>
+
 #include <sqlite/sqlite3.h>
+
+#include <thread>
+#include <mutex>
 #include <iostream>
 
 #ifdef WIN32
@@ -55,9 +54,9 @@ rpc_callback rpc_callback_ = no_op;
 
 /* processing thread */
 static volatile int rpc_mode_ = AUTOM8_RPC_MODE_ASYNC;
-static boost::thread* io_thread_ = 0;
-static boost::recursive_mutex enforce_serial_lock_;
-static boost::mutex io_thread_lock_;
+static std::thread* io_thread_ = 0;
+static std::recursive_mutex enforce_serial_lock_;
+static std::mutex io_thread_lock_;
 static boost::asio::io_service io_service_;
 
 static void io_thread_proc() {
@@ -88,22 +87,22 @@ static void handle_rpc_request(std::string input) {
 }
 
 static void enqueue_rpc_request(const std::string& request) {
-    boost::mutex::scoped_lock lock(io_thread_lock_);
-    io_service_.post(boost::bind(&handle_rpc_request, request));
+    std::unique_lock<decltype(io_thread_lock_)> lock(io_thread_lock_);
+    io_service_.post(std::bind(&handle_rpc_request, request));
 }
 
 static void start_rpc_queue() {
-    boost::mutex::scoped_lock lock(io_thread_lock_);
+    std::unique_lock<decltype(io_thread_lock_)> lock(io_thread_lock_);
 
     if (io_thread_ == 0) {
-        io_thread_ = new boost::thread(boost::bind(&io_thread_proc));
+        io_thread_ = new std::thread(std::bind(&io_thread_proc));
     }
 
     debug::log(debug::info, RPC_TAG, "initialized");
 }
 
 static void stop_rpc_queue() {
-    boost::mutex::scoped_lock lock(io_thread_lock_);
+    std::unique_lock<decltype(io_thread_lock_)> lock(io_thread_lock_);
 
     io_service_.stop();
     io_thread_->join();
@@ -619,7 +618,7 @@ void autom8_rpc(const char* input) {
         NOTE: we use a recursive_lock here just in case a poorly implemented
         client decides to make another RPC call while processing the result
         of another call, leading to a re-entrant autom8_rpc() call. */
-        boost::recursive_mutex::scoped_lock lock(enforce_serial_lock_);
+        std::unique_lock<decltype(enforce_serial_lock_)> lock(enforce_serial_lock_);
         handle_rpc_request(std::string(input));
     }
 }

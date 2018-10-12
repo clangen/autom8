@@ -11,8 +11,8 @@
 #include <autom8/message/response.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/thread.hpp>
 #include <sigslot/sigslot.h>
+#include <thread>
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;
@@ -20,12 +20,11 @@ using boost::system::error_code;
 namespace autom8 {
     typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
 
-    class session;
-    typedef std::shared_ptr<session> session_ptr;
-    typedef std::unique_ptr<std::thread> thread_ptr;
-
     class session : public std::enable_shared_from_this<session> {
     public:
+        using session_ptr = std::shared_ptr<session>;
+        using thread_ptr = std::unique_ptr<std::thread>;
+
         typedef sigslot::signal1<session_ptr> disconnect_signal_type;
         typedef sigslot::signal1<int> session_destroyed_signal_type;
 
@@ -39,7 +38,9 @@ namespace autom8 {
         bool is_authenticated() const;
         void enqueue_write(message_formatter_ptr formatter);
         disconnect_signal_type& disconnect_signal();
+
         void disconnect(const std::string& reason = "");
+        void join();
 
     private:
         static bool handle_incoming_message(session_ptr session, message_ptr message);

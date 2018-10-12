@@ -3,18 +3,21 @@
 
 using namespace autom8;
 
+using session_ptr = session::session_ptr;
+using factory_ptr = request_handler_factory::ptr;
+
 static boost::mutex protect_instance_mutex_;
 
 request_handler_factory::request_handler_factory() {
 }
 
-request_handler_factory_ptr request_handler_factory::instance() {
+factory_ptr request_handler_factory::instance() {
     boost::mutex::scoped_lock lock(protect_instance_mutex_);
 
-    static request_handler_factory_ptr instance;
+    static factory_ptr instance;
 
-    if ( ! instance) {
-        instance = request_handler_factory_ptr(new request_handler_factory());
+    if (!instance) {
+        instance = ptr(new request_handler_factory());
     }
 
     return instance;

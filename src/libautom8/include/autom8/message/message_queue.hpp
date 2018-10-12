@@ -29,7 +29,7 @@ namespace autom8 {
 
     private:
         std::queue<message_formatter_ptr> queue_;
-        boost::condition_variable wait_for_next_item_condition_;
+        std::condition_variable_any wait_for_next_item_condition_;
         boost::mutex queue_mutex_;
         volatile bool active_;
 

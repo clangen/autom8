@@ -1,7 +1,8 @@
 #include <autom8/util/debug.hpp>
 
 #include <queue>
-#include <boost/thread.hpp>
+#include <thread>
+#include <mutex>
 #include <memory>
 
 using namespace autom8;
@@ -32,8 +33,8 @@ namespace autom8 {
 
     private:
         std::queue<log_entry*> queue_;
-        boost::condition_variable wait_for_next_item_condition_;
-        boost::mutex queue_mutex_;
+        std::condition_variable wait_for_next_item_condition_;
+        std::mutex queue_mutex_;
         volatile bool active_;
 
     public:
@@ -42,7 +43,7 @@ namespace autom8 {
         }
 
         log_entry* pop_top() {
-            boost::mutex::scoped_lock lock(queue_mutex_);
+            std::unique_lock<decltype(queue_mutex_)> lock(queue_mutex_);
             while ((queue_.size() == 0) && (active_ == true)) {
                 wait_for_next_item_condition_.wait(lock);
             }
@@ -57,7 +58,7 @@ namespace autom8 {
         }
 
         bool push(log_entry* f) {
-            boost::mutex::scoped_lock lock(queue_mutex_);
+            std::unique_lock<decltype(queue_mutex_)> lock(queue_mutex_);
 
             if (active_) {
                 bool was_empty = (queue_.size() == 0);
@@ -74,7 +75,7 @@ namespace autom8 {
         }
 
         void stop() {
-            boost::mutex::scoped_lock lock(queue_mutex_);
+            std::unique_lock<decltype(queue_mutex_)> lock(queue_mutex_);
             active_ = false;
 
             while (queue_.size() > 0) {
@@ -88,9 +89,9 @@ namespace autom8 {
     };
 } // namespace autom8
 
-static boost::thread* thread_ = NULL;
+static std::thread* thread_ = NULL;
 static log_queue* queue_ = NULL;
-static boost::recursive_mutex system_mutex_;
+static std::recursive_mutex system_mutex_;
 static volatile bool cancel_ = true;
 
 static void thread_proc() {
@@ -107,7 +108,7 @@ static void thread_proc() {
 }
 
 void debug::init() {
-    boost::recursive_mutex::scoped_lock lock(system_mutex_);
+    std::unique_lock<decltype(system_mutex_)> lock(system_mutex_);
 
     if (queue_ || thread_) {
         return;
@@ -117,11 +118,11 @@ void debug::init() {
 
     cancel_ = false;
     queue_ = new log_queue();
-    thread_ = new boost::thread(boost::bind(&thread_proc));
+    thread_ = new std::thread(std::bind(&thread_proc));
 }
 
 void debug::deinit() {
-    boost::recursive_mutex::scoped_lock lock(system_mutex_);
+    std::unique_lock<decltype(system_mutex_)> lock(system_mutex_);
 
     cancel_ = true;
 
@@ -141,7 +142,7 @@ void debug::deinit() {
 }
 
 void debug::log(debug_level level, const std::string& tag, const std::string& string) {
-    boost::recursive_mutex::scoped_lock lock(system_mutex_);
+    std::unique_lock<decltype(system_mutex_)> lock(system_mutex_);
 
     if (queue_) {
         queue_->push(new log_queue::log_entry(level, tag, string));

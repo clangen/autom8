@@ -131,7 +131,7 @@ bool session::handle_incoming_message(session_ptr session, message_ptr m) {
                 }
 
                 debug::log(debug::info, TAG, "recv: autom8://request/" + m->name());
-                request_handler_factory_ptr factory = request_handler_factory::instance();
+                request_handler_factory::ptr factory = request_handler_factory::instance();
                 if (!factory->handle_request(session, m)) {
                     return false;
                 }
@@ -173,7 +173,19 @@ void session::disconnect(const std::string& reason) {
         write_queue_->stop();
     }
 
-    on_disconnected();
+    std::thread([this] { this->on_disconnected(); }).detach();
+}
+
+void session::join() {
+    if (read_thread_ && read_thread_->joinable()) {
+        read_thread_->join();
+        read_thread_.reset();
+    }
+
+    if (write_thread_ && write_thread_->joinable()) {
+        write_thread_->join();
+        write_thread_.reset();
+    }
 }
 
 void session::read_thread_proc() {

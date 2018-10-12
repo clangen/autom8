@@ -1,5 +1,4 @@
-#ifndef __C_AUTOM8_REQUEST_HANDLER_FACTORY_HPP__
-#define __C_AUTOM8_REQUEST_HANDLER_FACTORY_HPP__
+#pragma once
 
 #include <autom8/message/request_handler.hpp>
 #include <boost/thread.hpp>
@@ -8,23 +7,22 @@
 namespace autom8 {
     class session;
 
-    class request_handler_factory;
-    typedef std::shared_ptr<request_handler_factory> request_handler_factory_ptr;
-
     class request_handler_factory {
-    private:
-        typedef std::vector<request_handler_ptr> request_handler_list;
-        request_handler_factory(); // singleton
+        public:
+            using session_ptr = std::shared_ptr<session>;
+            typedef std::shared_ptr<request_handler_factory> ptr;
 
-    public:
-        static request_handler_factory_ptr instance();
-        bool handle_request(std::shared_ptr<session>, message_ptr);
-        void register_handler(request_handler_ptr);
+        private:
+            typedef std::vector<request_handler_ptr> request_handler_list;
+            request_handler_factory(); /* singleton */
 
-    private:
-        boost::mutex protect_handler_list_mutex_;
-        request_handler_list request_handlers_;
+        public:
+            static ptr instance();
+            bool handle_request(session_ptr, message_ptr);
+            void register_handler(request_handler_ptr);
+
+        private:
+            boost::mutex protect_handler_list_mutex_;
+            request_handler_list request_handlers_;
     };
 }
-
-#endif

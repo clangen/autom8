@@ -11,7 +11,7 @@
 
 using namespace autom8;
 
-static server_ptr instance_;
+static server::server_ptr instance_;
 static std::mutex instance_mutex_;
 sigslot::signal0<> server::started;
 sigslot::signal0<> server::stopped;
@@ -84,6 +84,7 @@ void server::stop_instance() {
         session_list::iterator it = active_sessions.begin();
         while (it != active_sessions.end()) {
             (*it)->disconnect("session disconnecting, server shutting down");
+            (*it)->join();
              ++it;
         }
     }
@@ -250,6 +251,7 @@ void server::on_session_disconnected(session_ptr session) {
 
     session_list::iterator it = session_list_.find(session);
     if (it != session_list_.end()) {
+        (*it)->join();
         session_list_.erase(it);
 
         // there was a bug here where we were trying to access socket.lowest_layer.remote_endpoint

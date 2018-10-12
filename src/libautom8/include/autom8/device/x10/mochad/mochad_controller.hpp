@@ -2,9 +2,10 @@
 
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-#include <boost/thread.hpp>
 #include <memory>
 #include <queue>
+#include <thread>
+#include <mutex>
 #include <sigslot/sigslot.h>
 
 namespace autom8 {
@@ -50,11 +51,11 @@ namespace autom8 {
         boost::asio::io_service io_service_;
         boost::asio::ip::tcp::socket* socket_;
         boost::asio::ip::tcp::resolver resolver_;
-        std::shared_ptr<boost::thread> io_thread_;
         boost::asio::streambuf read_buffer_;
-        std::queue<std::string> write_queue_;
-        boost::mutex write_queue_lock_, connection_lock_;
-        volatile bool initialized_, connected_, reconnecting_, writing_;
         boost::asio::deadline_timer reconnect_timer_, ping_timer_;
+        std::shared_ptr<std::thread> io_thread_;
+        std::queue<std::string> write_queue_;
+        std::mutex write_queue_lock_, connection_lock_;
+        volatile bool initialized_, connected_, reconnecting_, writing_;
     };
 }

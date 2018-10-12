@@ -33,7 +33,7 @@ mochad_controller::~mochad_controller() {
 bool mochad_controller::init() {
     if (!initialized_) {
         io_thread_.reset(
-            new boost::thread(boost::bind(
+            new std::thread(boost::bind(
                 &mochad_controller::io_thread_proc,
                 this
             ))
@@ -56,7 +56,7 @@ void mochad_controller::deinit() {
 }
 
 void mochad_controller::disconnect() {
-    boost::mutex::scoped_lock lock(connection_lock_);
+    std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     debug::log(debug::info, TAG, "disconnected");
 
@@ -73,7 +73,7 @@ void mochad_controller::disconnect() {
 
 void mochad_controller::send_ping() {
     {
-        boost::mutex::scoped_lock lock(connection_lock_);
+        std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
         if (!connected_) {
             return;
@@ -96,7 +96,7 @@ void mochad_controller::schedule_ping() {
     std::cerr << "scheduling ping...\n";
 #endif
 
-    boost::mutex::scoped_lock lock(connection_lock_);
+    std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (connected_) {
         ping_timer_.expires_from_now(boost::posix_time::seconds(10));
@@ -108,7 +108,7 @@ void mochad_controller::schedule_ping() {
 }
 
 void mochad_controller::schedule_reconnect() {
-    boost::mutex::scoped_lock lock(connection_lock_);
+    std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (!connected_ && !reconnecting_) {
 #ifdef LOG_CONNECTION
@@ -128,7 +128,7 @@ void mochad_controller::schedule_reconnect() {
 
 void mochad_controller::handle_write(const boost::system::error_code& error) {
     {
-        boost::mutex::scoped_lock lock(write_queue_lock_);
+        std::unique_lock<decltype(write_queue_lock_)> lock(write_queue_lock_);
         writing_ = false;
     }
 
@@ -138,7 +138,7 @@ void mochad_controller::handle_write(const boost::system::error_code& error) {
 #endif
 
         {
-            boost::mutex::scoped_lock lock(connection_lock_);
+            std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
             connected_ = false;
         }
 
@@ -160,7 +160,7 @@ void mochad_controller::handle_read(const boost::system::error_code& error, size
 }
 
 void mochad_controller::read_next_message() {
-    boost::mutex::scoped_lock lock(connection_lock_);
+    std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (connected_) {
         boost::asio::async_read_until(
@@ -182,7 +182,7 @@ void mochad_controller::handle_connect(
     tcp::resolver::iterator endpoint_iterator)
 {
     {
-        boost::mutex::scoped_lock lock(connection_lock_);
+        std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
         if (error) { connected_ = false; } else { connected_ = true; }
         reconnecting_ = false;
     }
@@ -242,7 +242,7 @@ void mochad_controller::start_connecting() {
 #endif
 
     {
-        boost::mutex::scoped_lock lock(connection_lock_);
+        std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
         if (connected_) {
 #ifdef LOG_CONNECTION
@@ -293,7 +293,7 @@ void mochad_controller::io_thread_proc() {
 
 void mochad_controller::start_next_write() {
     {
-        boost::mutex::scoped_lock lock(connection_lock_);
+        std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
         if (!connected_) {
 #ifdef LOG_SEND
@@ -303,7 +303,7 @@ void mochad_controller::start_next_write() {
         }
     }
 
-    boost::mutex::scoped_lock lock(write_queue_lock_);
+    std::unique_lock<decltype(write_queue_lock_)> lock(write_queue_lock_);
 
     writing_ = false;
     if (!writing_ && write_queue_.size() > 0) {
@@ -340,7 +340,7 @@ bool mochad_controller::send(std::string message) {
 #endif
 
         {
-            boost::mutex::scoped_lock lock(write_queue_lock_);
+            std::unique_lock<decltype(write_queue_lock_)> lock(write_queue_lock_);
             write_queue_.push(message);
         }
 

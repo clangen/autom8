@@ -20,17 +20,17 @@ using boost::asio::ip::tcp;
 using boost::system::error_code;
 
 namespace autom8 {
-    class server;
-    typedef std::shared_ptr<server> server_ptr;
-    typedef std::shared_ptr<boost::asio::deadline_timer> timer_ptr;
-
     class server: public signal_handler
                 , public std::enable_shared_from_this<server> {
     private:
-        typedef std::set<session_ptr> session_list;
-        typedef std::unique_ptr<std::thread> thread_ptr;
+        using timer_ptr = std::shared_ptr<boost::asio::deadline_timer>;
+        using session_ptr = session::session_ptr;
+        using session_list =  std::set<session_ptr>;
+        using thread_ptr = std::unique_ptr<std::thread>;
 
     public:
+        using server_ptr = std::shared_ptr<server>;
+
         virtual ~server();
 
         static sigslot::signal0<> started;
