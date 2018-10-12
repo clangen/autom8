@@ -192,51 +192,46 @@ void session::join() {
 void session::async_read_next_message() {
     message_ptr m = message_ptr(new message());
 
+    auto callback = [this, m](const boost::system::error_code& error, std::size_t bytes_read) {
+        if (error) {
+            this->disconnect("[E] [SESSION] socket read() failed");
+        }
+        else if (bytes_read > 0) {
+            if (!m->parse_message(bytes_read)) {
+                this->disconnect("[E] [SESSION] failed to parse message, disconnecting");
+            }
+            // the first message must always be "authenticate"
+            else if (!is_authenticated()) {
+                if (!handle_authentication(shared_from_this(), m)) {
+                    this->disconnect("[E] [SESSION] session failed to authenticate");
+                }
+            }
+            else if (!handle_incoming_message(shared_from_this(), m)) {
+                this->disconnect("[E] [SESSION] failed to process request: " + m->name());
+            }
+        }
+        else if (!is_disconnected_) {
+            this->async_read_next_message();
+        }
+    };
+
     boost::asio::async_read_until(
         socket_,
         m->read_buffer(),
         message_matcher(),
-        boost::bind(
-            &session::handle_next_read_message,
-            this,
-            m,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
-}
-
-void session::handle_next_read_message(
-    message_ptr next_read,
-    const boost::system::error_code& error,
-    std::size_t bytes_read)
-{
-    if (error) {
-        disconnect("[E] [SESSION] socket read() failed");
-    }
-    else if (bytes_read > 0) {
-        if (!next_read->parse_message(bytes_read)) {
-            disconnect("[E] [SESSION] failed to parse message, disconnecting");
-        }
-        // the first message must always be "authenticate"
-        else if (!is_authenticated()) {
-            if (!handle_authentication(shared_from_this(), next_read)) {
-                disconnect("[E] [SESSION] session failed to authenticate");
-            }
-        }
-        else if (!handle_incoming_message(shared_from_this(), next_read)) {
-            disconnect("[E] [SESSION] failed to process request: " + next_read->name());
-        }
-    }
-    else if (!is_disconnected_) {
-        async_read_next_message();
-    }
+        callback);
 }
 
 void session::write_thread_proc() {
-    session_ptr session = shared_from_this();
-
     try {
         message_queue_ptr q = write_queue_;
         message_formatter_ptr f;
+
+        auto callback = [this](const boost::system::error_code& error, std::size_t bytes) {
+            if (error) {
+                this->disconnect("message write failed");
+            }
+        };
 
         while ((!is_disconnected_) && (f = q->pop_top())) {
             /*
@@ -248,14 +243,16 @@ void session::write_thread_proc() {
                 return;
             }
 
+            session_ptr session = shared_from_this();
             std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
-            write(socket_, boost::asio::buffer(f->to_string()));
+
+            boost::asio::async_write(
+                socket_,
+                boost::asio::buffer(f->to_string()),
+                callback);
         }
     }
     catch (message_queue::stopped_exception&) {
         disconnect("[I] [SESSION] write_queue_ stopped, disconnecting");
-    }
-    catch (...) {
-        disconnect("[E] [SESSION] write() failed, disconnecting");
     }
 }

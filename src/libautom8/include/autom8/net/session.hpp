@@ -47,15 +47,8 @@ namespace autom8 {
         static bool handle_authentication(session_ptr session, message_ptr message);
 
         void on_disconnected();
-        void read_thread_proc();
         void write_thread_proc();
-
         void async_read_next_message();
-
-        void handle_next_read_message(
-            message_ptr next_read,
-            const boost::system::error_code& error,
-            std::size_t size);
 
     private:
         ssl_socket socket_;
