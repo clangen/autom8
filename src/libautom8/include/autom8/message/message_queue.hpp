@@ -3,6 +3,7 @@
 #include <queue>
 #include <boost/thread.hpp>
 #include <memory>
+#include <condition_variable>
 #include <base64/base64.h>
 
 #include <autom8/constants.h>

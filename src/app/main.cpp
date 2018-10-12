@@ -117,7 +117,7 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             this->label->MoveAndResize(0, this->GetContentHeight() / 2, cx, 1);
         }
 
-        virtual void ProcessMessage(IMessage& message) {
+        virtual void ProcessMessage(IMessage& message) override {
             if (message.Type() == UPDATE_STATUS_MESSAGE) {
                 this->Update();
             }
@@ -139,6 +139,8 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
                     break;
                 case S::state_disconnecting:
                     str = "disconnecting";
+                    break;
+                default:
                     break;
             }
 
