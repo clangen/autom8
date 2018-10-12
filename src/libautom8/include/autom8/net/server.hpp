@@ -36,7 +36,7 @@ namespace autom8 {
         static sigslot::signal0<> started;
         static sigslot::signal0<> stopped;
 
-        static bool start(int port = 7901);
+        static bool start(unsigned short port = 7901);
         static bool stop();
         static bool is_running();
         static void send(session_ptr, response_ptr);
@@ -45,7 +45,7 @@ namespace autom8 {
         static void send(request_ptr);
 
     private:
-        server(int port);
+        server(unsigned short port);
 
         void start_instance();
         void stop_instance();

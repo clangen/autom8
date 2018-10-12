@@ -77,7 +77,7 @@ void client::io_service_thread_proc() {
     tcp::resolver::query query(hostname_, std::to_string(port_));
 
     boost::system::error_code error;
-    tcp::resolver::iterator iterator = resolver.resolve(query, error);
+    auto results = resolver.resolve(query, error);
 
     if (error) {
         disconnect(connect_failed);
@@ -86,13 +86,15 @@ void client::io_service_thread_proc() {
         connection_.socket_->set_verify_callback(
             boost::bind(&client::verify_certificate, this, _1, _2));
 
-        connection_.socket_->lowest_layer().async_connect(
-            *iterator,
+        boost::asio::async_connect(
+            connection_.socket_->lowest_layer(),
+            results.begin(),
+            results.end(),
             boost::bind(
                 &client::handle_connect,
                 this,
                 boost::asio::placeholders::error,
-                iterator));
+                boost::asio::placeholders::iterator));
 
         connection_.io_service_->run();
     }

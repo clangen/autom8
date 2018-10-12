@@ -20,7 +20,7 @@ static const std::string TAG = "server";
 
 typedef boost::format format;
 
-server::server(int port)
+server::server(unsigned short port)
 : endpoint_(tcp::v4(), port)
 , io_service_()
 , acceptor_(io_service_, endpoint_)
@@ -125,7 +125,7 @@ void server::handle_accept(const boost::system::error_code& error, session_ptr s
     start_accept();
 }
 
-bool server::start(int port) {
+bool server::start(unsigned short port) {
     std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
 
     if (!instance_) {

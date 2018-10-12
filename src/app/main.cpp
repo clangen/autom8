@@ -55,6 +55,7 @@
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
+#include <autom8/util/preferences.hpp>
 
 #include <cursespp/App.h>
 #include <cursespp/Screen.h>
@@ -69,6 +70,7 @@ static const int MIN_WIDTH = 54;
 static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 12;
 static const int UPDATE_STATUS_MESSAGE = 1024;
+
 using namespace cursespp;
 using namespace f8n::runtime;
 
@@ -91,7 +93,7 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             this->AddWindow(clientStatus);
 
             this->serverStatus = std::make_shared<TextLabel>();
-            this->serverStatus->SetText("server: disconnected", text::AlignCenter);
+            this->serverStatus->SetText("server: stopped", text::AlignCenter);
             this->serverStatus->SetContentColor(CURSESPP_BANNER);
             this->AddWindow(serverStatus);
 
@@ -147,10 +149,10 @@ class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots
             this->clientStatus->SetText(std::string("client: ") + str, cursespp::text::AlignCenter);
             this->clientStatus->SetContentColor(color);
 
-            str = "disconnected";
+            str = "stopped";
             color = CURSESPP_BANNER;
             if (autom8::server::is_running()) {
-                str = "connected";
+                str = "running";
                 color = CURSESPP_FOOTER;
             }
 
@@ -186,12 +188,15 @@ int main(int argc, char* argv[]) {
     srand((unsigned int)time(0));
     initUtf8Filesystem();
 
+    std::string password = "changeme";
+    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
+    std::string host = "localhost";
+    unsigned short port = 7901;
+
+    autom8::utility::prefs().set("password", hashed);
+
     autom8::server::start(7901);
 
-    std::string password = "changeme";
-    std::string host = "0.0.0.0";
-    unsigned short port = 7901;
-    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
     auto client = std::make_shared<autom8::client>();
     client->connect(host, port, hashed);
 
@@ -204,8 +209,16 @@ int main(int argc, char* argv[]) {
             client->disconnect();
             return true;
         }
-        else if (kn == "r") {
+        else if (kn == "c") {
             client->reconnect(hashed);
+            return true;
+        }
+        else if (kn == "s") {
+            autom8::server::stop();
+            return true;
+        }
+        else if (kn == "r") {
+            autom8::server::start(7901);
             return true;
         }
         return false;
