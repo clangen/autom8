@@ -24,30 +24,34 @@ namespace autom8 {
     public:
         using session_ptr = std::shared_ptr<session>;
         using thread_ptr = std::unique_ptr<std::thread>;
-
-        typedef sigslot::signal1<session_ptr> disconnect_signal_type;
-        typedef sigslot::signal1<int> session_destroyed_signal_type;
+        using disconnect_signal_type = sigslot::signal1<session_ptr>;
 
     public:
-        session(boost::asio::io_service& io_service, boost::asio::ssl::context& context);
+        session(
+            boost::asio::io_service& io_service,
+            boost::asio::ssl::context& context);
+
         virtual ~session();
 
-        ssl_socket& socket();
         void start();
+        void disconnect(const std::string& reason = "");
+
+        void enqueue_write(message_formatter_ptr formatter);
+
+        ssl_socket& socket();
         std::string ip_address() const;
         bool is_authenticated() const;
-        void enqueue_write(message_formatter_ptr formatter);
+
         disconnect_signal_type& disconnect_signal();
 
-        void disconnect(const std::string& reason = "");
-        void join();
-
     private:
-        static bool handle_incoming_message(session_ptr session, message_ptr message);
-        static bool handle_authentication(session_ptr session, message_ptr message);
+        static bool handle_incoming_message(
+            session_ptr session, message_ptr message);
+
+        static bool handle_authentication(
+            session_ptr session, message_ptr message);
 
         void on_disconnected();
-        void write_thread_proc();
         void async_read_next_message();
 
     private:
@@ -55,10 +59,7 @@ namespace autom8 {
         volatile bool is_authenticated_;
         volatile bool is_disconnected_;
         std::string ip_address_;
-        std::mutex write_lock_;
-        thread_ptr write_thread_;
         disconnect_signal_type disconnect_signal_;
-        message_queue_ptr write_queue_;
     };
 }
 

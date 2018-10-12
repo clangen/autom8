@@ -33,8 +33,7 @@ inline void dec_instance_count() {
 session::session(boost::asio::io_service& io_service, boost::asio::ssl::context& context)
 : socket_(io_service, context)
 , is_authenticated_(false)
-, is_disconnected_(true)
-, write_queue_(new message_queue()) {
+, is_disconnected_(true) {
     inc_instance_count();
 }
 
@@ -63,9 +62,6 @@ void session::start() {
         ip_address_ = (socket_.lowest_layer().remote_endpoint().address().to_string());
 
         async_read_next_message();
-
-        write_thread_.reset(new std::thread(
-            std::bind(&session::write_thread_proc, this)));
     }
     catch (...) {
         disconnect("[E] [SESSION] exception caught, session disconnecting");
@@ -81,7 +77,20 @@ bool session::is_authenticated() const {
 }
 
 void session::enqueue_write(message_formatter_ptr formatter) {
-    write_queue_->push(formatter);
+    /* we should never be asked to write before we auth. */
+    if (!is_authenticated_) {
+        disconnect("[E] [SESSION] trying to write() when not authenticated");
+        return;
+    }
+
+    boost::asio::async_write(
+        socket_,
+        boost::asio::buffer(formatter->to_string()),
+        [this](const boost::system::error_code& error, std::size_t bytes) {
+            if (error) {
+                this->disconnect("message write failed");
+            }
+        });
 }
 
 bool session::handle_authentication(session_ptr session, message_ptr message) {
@@ -111,7 +120,7 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
     }
 
     // send failed response immediately, then disconnect
-    {
+    /*{
         std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
 
         message_formatter_ptr f =
@@ -120,7 +129,7 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
 
         write(session->socket_, boost::asio::buffer(f->to_string()));
     }
-
+*/
     return false;
 }
 
@@ -176,16 +185,7 @@ void session::disconnect(const std::string& reason) {
             debug::log(debug::warning, TAG, "failed to close() socket");
         }
 
-        write_queue_->stop();
-    }
-
-    std::thread([this] { this->on_disconnected(); }).detach();
-}
-
-void session::join() {
-    if (write_thread_ && write_thread_->joinable()) {
-        write_thread_->join();
-        write_thread_.reset();
+        std::thread([this] { this->on_disconnected(); }).detach();
     }
 }
 
@@ -220,39 +220,4 @@ void session::async_read_next_message() {
         m->read_buffer(),
         message_matcher(),
         callback);
-}
-
-void session::write_thread_proc() {
-    try {
-        message_queue_ptr q = write_queue_;
-        message_formatter_ptr f;
-
-        auto callback = [this](const boost::system::error_code& error, std::size_t bytes) {
-            if (error) {
-                this->disconnect("message write failed");
-            }
-        };
-
-        while ((!is_disconnected_) && (f = q->pop_top())) {
-            /*
-             * Looks like someone is trying to make us do something fishy, we shouldn't
-             * ever need to write() at this point until we're authenticated.
-             */
-            if (!is_authenticated_) {
-                disconnect("[E] [SESSION] trying to write() when not authenticated");
-                return;
-            }
-
-            session_ptr session = shared_from_this();
-            std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
-
-            boost::asio::async_write(
-                socket_,
-                boost::asio::buffer(f->to_string()),
-                callback);
-        }
-    }
-    catch (message_queue::stopped_exception&) {
-        disconnect("[I] [SESSION] write_queue_ stopped, disconnecting");
-    }
 }
