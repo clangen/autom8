@@ -145,9 +145,8 @@ int autom8_init(int rpc_mode) {
         start_rpc_queue();
     }
 
-    /* TODO FIXME: initialize logging to a console backend */
-    // debug::start({ new debug::ConsoleBackend() });
-    
+    debug::start({ new debug::ConsoleBackend() });
+
     /* select the last selected system, or null by default */
     std::string system = "null";
     utility::prefs().get("system.selected", system);
