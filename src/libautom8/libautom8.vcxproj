@@ -126,7 +126,6 @@
     <ClInclude Include="include\autom8\message\message.hpp" />
     <ClInclude Include="include\autom8\message\message_formatter.hpp" />
     <ClInclude Include="include\autom8\message\message_matcher.hpp" />
-    <ClInclude Include="include\autom8\message\message_queue.hpp" />
     <ClInclude Include="include\autom8\message\request.hpp" />
     <ClInclude Include="include\autom8\message\requests\get_device_list.hpp" />
     <ClInclude Include="include\autom8\message\requests\get_security_alert_count.hpp" />
@@ -138,7 +137,6 @@
     <ClInclude Include="include\autom8\net\client.hpp" />
     <ClInclude Include="include\autom8\net\server.hpp" />
     <ClInclude Include="include\autom8\net\session.hpp" />
-    <ClInclude Include="include\autom8\util\debug.hpp" />
     <ClInclude Include="include\autom8\util\preferences.hpp" />
     <ClInclude Include="include\autom8\util\signal_handler.hpp" />
     <ClInclude Include="include\autom8\util\ssl_certificate.hpp" />
@@ -172,7 +170,6 @@
     <ClCompile Include="net\client.cpp" />
     <ClCompile Include="net\server.cpp" />
     <ClCompile Include="net\session.cpp" />
-    <ClCompile Include="util\debug.cpp" />
     <ClCompile Include="util\preferences.cpp" />
     <ClCompile Include="util\ssl_certificate.cpp" />
     <ClCompile Include="util\utility.cpp" />

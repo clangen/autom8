@@ -105,9 +105,6 @@
     <ClInclude Include="include\autom8\message\message_matcher.hpp">
       <Filter>src\message</Filter>
     </ClInclude>
-    <ClInclude Include="include\autom8\message\message_queue.hpp">
-      <Filter>src\message</Filter>
-    </ClInclude>
     <ClInclude Include="include\autom8\message\request.hpp">
       <Filter>src\message</Filter>
     </ClInclude>
@@ -151,9 +148,6 @@
       <Filter>src\util</Filter>
     </ClInclude>
     <ClInclude Include="include\autom8\util\utility.hpp">
-      <Filter>src\util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\autom8\util\debug.hpp">
       <Filter>src\util</Filter>
     </ClInclude>
   </ItemGroup>
@@ -237,9 +231,6 @@
       <Filter>src\util</Filter>
     </ClCompile>
     <ClCompile Include="util\utility.cpp">
-      <Filter>src\util</Filter>
-    </ClCompile>
-    <ClCompile Include="util\debug.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
     <ClCompile Include="util\preferences.cpp">

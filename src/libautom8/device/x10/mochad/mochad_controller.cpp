@@ -1,6 +1,6 @@
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
-#include <autom8/util/debug.hpp>
 #include <autom8/util/utility.hpp>
+#include <f8n/debug/debug.h>
 
 #define TAG "mochad"
 #undef LOG_CONNECTION
@@ -10,6 +10,7 @@ static std::string default_mochad_host_ = "127.0.0.1";
 static std::string default_mochad_port_ = "1099";
 
 using namespace autom8;
+using debug = f8n::debug;
 using boost::asio::ip::tcp;
 
 mochad_controller::mochad_controller()
@@ -58,7 +59,7 @@ void mochad_controller::deinit() {
 void mochad_controller::disconnect() {
     std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
-    debug::log(debug::info, TAG, "disconnected");
+    debug::info(TAG, "disconnected");
 
     if (socket_) {
         socket_->close();
@@ -115,7 +116,7 @@ void mochad_controller::schedule_reconnect() {
         std::cerr << "scheduling reconnect..." << std::endl;
 #endif
 
-        debug::log(debug::info, TAG, "scheduling reconnect in 10 seconds");
+        debug::info(TAG, "scheduling reconnect in 10 seconds");
         reconnect_timer_.expires_from_now(boost::posix_time::seconds(10));
 
         reconnect_timer_.async_wait(boost::bind(
@@ -192,7 +193,7 @@ void mochad_controller::handle_connect(
         std::cerr << "connected..." << std::endl;
 #endif
 
-        debug::log(debug::info, TAG, "connected to socket");
+        debug::info(TAG, "connected to socket");
         send_ping();
         start_next_write();
         read_next_message();
@@ -264,7 +265,7 @@ void mochad_controller::start_connecting() {
     utility::prefs().get("mochad.host", host);
     utility::prefs().get("mochad.port", port);
 
-    debug::log(debug::info, TAG, "connecting to " + host + ":" + port);
+    debug::info(TAG, "connecting to " + host + ":" + port);
 
     tcp::resolver::query query(host, port);
 

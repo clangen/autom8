@@ -8,10 +8,11 @@
 #include <autom8/message/request_handler_registrar.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/net/session.hpp>
-#include <autom8/util/debug.hpp>
 #include <autom8/util/utility.hpp>
 #include <autom8/device/null_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
+
+#include <f8n/debug/debug.h>
 
 #include <boost/date_time.hpp>
 
@@ -27,6 +28,7 @@
 
 using namespace autom8;
 using namespace nlohmann;
+using debug = f8n::debug;
 
 using json_ptr = std::shared_ptr<json>;
 
@@ -60,14 +62,14 @@ static std::mutex io_thread_lock_;
 static boost::asio::io_service io_service_;
 
 static void io_thread_proc() {
-    debug::log(debug::info, RPC_TAG, "thread started");
+    debug::info(RPC_TAG, "thread started");
 
     /* the io_service will close itself if it thinks there is no
     more work to be done. this line prevents it from auto-stopping */
     boost::asio::io_service::work work(io_service_);
     io_service_.run();
 
-    debug::log(debug::info, RPC_TAG, "thread finished");
+    debug::info(RPC_TAG, "thread finished");
 }
 
 static void handle_rpc_request(std::string input) {
@@ -75,7 +77,7 @@ static void handle_rpc_request(std::string input) {
         process_rpc_request(input);
     }
     catch (...) {
-        debug::log(debug::error, RPC_TAG, "request processing threw for input: " + input);
+        debug::error(RPC_TAG, "request processing threw for input: " + input);
 
         try {
             respond_with_status(json_ptr_from_string(input), AUTOM8_UNEXPECTED_ERROR);
@@ -98,7 +100,7 @@ static void start_rpc_queue() {
         io_thread_ = new std::thread(std::bind(&io_thread_proc));
     }
 
-    debug::log(debug::info, RPC_TAG, "initialized");
+    debug::info(RPC_TAG, "initialized");
 }
 
 static void stop_rpc_queue() {
@@ -109,7 +111,7 @@ static void stop_rpc_queue() {
     delete io_thread_;
     io_thread_ = NULL;
 
-    debug::log(debug::info, RPC_TAG, "deinitialized");
+    debug::info(RPC_TAG, "deinitialized");
 }
 
 /* logging */
@@ -127,44 +129,6 @@ int autom8_set_rpc_callback(rpc_callback callback) {
     return AUTOM8_OK;
 }
 
-class console_logger: public signal_handler {
-public:
-    console_logger() {
-        debug::string_logged.connect(this, &console_logger::on_string_logged);
-    }
-
-    void on_string_logged(debug::debug_level level, std::string tag, std::string string) {
-        using namespace boost::posix_time;
-        using namespace boost::gregorian;
-        bool logged = false;
-
-        {
-            boost::mutex::scoped_lock lock(external_logger_mutex_);
-
-            if (external_logger_) {
-                try {
-                    if (external_logger_) {
-                        external_logger_((int) level, tag.c_str(), string.c_str());
-                        logged = true;
-                    }
-                }
-                catch (...) {
-                    std::cerr << "remote log write failed! result will be dumped to stdout." << std::endl;
-                }
-            }
-        }
-
-         /* external process couldn't handle logging. dump to stdout! */
-        if (!logged) {
-            time_facet* facet(new time_facet("--> [%x %X] "));
-            std::cout.imbue(std::locale(std::cout.getloc(), facet));
-            ptime time(microsec_clock::local_time());
-            std::cout << time << string << std::endl;
-        }
-    }
-};
-
-static console_logger* default_logger_ = 0;
 
 /* init, deinit */
 static bool initialized_ = false;
@@ -181,12 +145,9 @@ int autom8_init(int rpc_mode) {
         start_rpc_queue();
     }
 
-    {
-        boost::mutex::scoped_lock lock(external_logger_mutex_);
-        default_logger_ = new console_logger();
-        debug::init();
-    }
-
+    /* TODO FIXME: initialize logging to a console backend */
+    // debug::start({ new debug::ConsoleBackend() });
+    
     /* select the last selected system, or null by default */
     std::string system = "null";
     utility::prefs().get("system.selected", system);
@@ -203,17 +164,7 @@ int autom8_deinit() {
     }
 
     server::stop();
-
-    {
-        boost::mutex::scoped_lock lock(external_logger_mutex_);
-
-        debug::deinit();
-
-        if (default_logger_) {
-            delete default_logger_;
-            default_logger_ = 0;
-        }
-    }
+    debug::stop();
 
     external_logger_ = 0;
     initialized_ = false;
@@ -636,7 +587,7 @@ static void process_rpc_request(const std::string& input) {
     REJECT_IF_NOT_INITIALIZED(parsed)
 
     if (!parsed) {
-        debug::log(debug::error, TAG, "autom8_rpc input parse failed");
+        debug::error(TAG, "autom8_rpc input parse failed");
         respond_with_status(parsed, AUTOM8_PARSE_ERROR);
         return;
     }
@@ -644,7 +595,7 @@ static void process_rpc_request(const std::string& input) {
     const std::string component = parsed->value("component", "");
     const std::string command = parsed->value("command", "");
 
-    debug::log(debug::info, TAG, (std::string("handling '") + component + "' command '" + command + "'"));
+    debug::info(TAG, (std::string("handling '") + component + "' command '" + command + "'"));
 
     if (component == "server") {
         handle_server(parsed);
@@ -653,7 +604,7 @@ static void process_rpc_request(const std::string& input) {
         handle_system(parsed);
     }
     else {
-        debug::log(debug::error, TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");
+        debug::error(TAG, std::string("invalid component '") + component + "' specified. rpc call ignored");
     }
 }
 

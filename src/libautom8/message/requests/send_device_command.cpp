@@ -1,16 +1,19 @@
 #include <autom8/device/device_system.hpp>
 #include <autom8/message/response.hpp>
 #include <autom8/net/server.hpp>
-#include <autom8/util/debug.hpp>
 #include <autom8/message/requests/send_device_command.hpp>
 
 #include <vector>
 #include <json.hpp>
 
+#include <f8n/debug/debug.h>
+
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace autom8;
+using namespace nlohmann;
+using debug = f8n::debug;
 
 static std::string set_status_command = "set_status";
 static std::string set_brightness_command = "set_brightness";
@@ -18,8 +21,6 @@ static std::string reset_sensor_status_command = "reset_sensor_status";
 static std::string arm_sensor_command = "arm_sensor";
 
 static std::string TAG = "send_device_command";
-
-using namespace nlohmann;
 
 static inline std::string to_string(const json& j) {
     if (j.type() == json::value_t::string) {
@@ -62,7 +63,7 @@ void send_device_command::operator()(session_ptr session, message_ptr message) {
         }
     }
     catch (...) {
-        debug::log(debug::warning, TAG, "set_device_status: message body parse failed!");
+        debug::warning(TAG, "set_device_status: message body parse failed!");
         return;
     }
 
@@ -72,7 +73,7 @@ void send_device_command::operator()(session_ptr session, message_ptr message) {
             dispatch(device, name, params);
         }
         catch (...) {
-            debug::log(debug::warning, TAG, "failed to dispatch send_device_command message! invalid message!");
+            debug::warning(TAG, "failed to dispatch send_device_command message! invalid message!");
         }
     }
 }

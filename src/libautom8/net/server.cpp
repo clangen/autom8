@@ -1,10 +1,10 @@
 #include <autom8/constants.h>
-#include <autom8/util/debug.hpp>
 #include <autom8/message/request_handler_registrar.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/net/session.hpp>
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/message/common_messages.hpp>
+#include <f8n/debug/debug.h>
 #include <boost/format.hpp>
 #include <base64/base64.h>
 #include <ostream>
@@ -12,6 +12,7 @@
 #include <condition_variable>
 
 using namespace autom8;
+using debug = f8n::debug;
 
 static server::server_ptr instance_;
 static std::mutex instance_mutex_;
@@ -30,7 +31,7 @@ server::server(unsigned short port)
 , stopped_(false) {
     if (!ssl_certificate::exists()) {
         if (!ssl_certificate::generate()) {
-            debug::log(debug::error, TAG, "unable to generate SSL certificate! aborting!");
+            debug::error(TAG, "unable to generate SSL certificate! aborting!");
             throw std::exception();
         }
     }
@@ -41,7 +42,7 @@ server::server(unsigned short port)
         ssl_context_.set_options(boost::asio::ssl::context::verify_none);
     }
     catch (...) {
-        debug::log(debug::error, TAG, "ssl certificate generated, apparently, but unable to load?");
+        debug::error(TAG, "ssl certificate generated, apparently, but unable to load?");
         ssl_certificate::remove();
         throw std::exception();
     }
@@ -52,7 +53,7 @@ server::~server() {
 }
 
 void server::start_instance() {
-    debug::log(debug::info, TAG, "started");
+    debug::info(TAG, "started");
 
     io_service_thread_.reset(new std::thread(
         std::bind(&server::io_service_thread_proc, this)));
@@ -93,7 +94,7 @@ void server::stop_instance() {
     io_service_.stop();
     io_service_thread_->join();
 
-    debug::log(debug::info, TAG, "stopped");
+    debug::info(TAG, "stopped");
 }
 
 void server::io_service_thread_proc() {
@@ -118,7 +119,7 @@ void server::start_accept() {
 
 void server::handle_accept(const boost::system::error_code& error, session_ptr sess) {
     if (error) {
-        debug::log(debug::info, TAG, "socket accept failed, connection error or server shutting down");
+        debug::info(TAG, "socket accept failed, connection error or server shutting down");
         return;
     }
 
@@ -257,8 +258,8 @@ void server::on_session_disconnected(session_ptr session) {
         // there was a bug here where we were trying to access socket.lowest_layer.remote_endpoint
         // after the socket had been shut down, which sometimes could raise an exception. now the
         // ip address is cached in the session instance itself
-        debug::log(
-            debug::info, TAG,
+        debug::info(
+            TAG,
             "session disconnected: " + session->ip_address() + ", " +
             (format("count=%1%") % session_list_.size()).str());
     }
@@ -266,7 +267,7 @@ void server::on_session_disconnected(session_ptr session) {
 
 void server::dispatch_request(session_ptr session, request_ptr request) {
     if (!session) {
-        debug::log(debug::error, TAG, "can't dispatch request: no session specified");
+        debug::error(TAG, "can't dispatch request: no session specified");
         return;
     }
 
@@ -275,7 +276,7 @@ void server::dispatch_request(session_ptr session, request_ptr request) {
     // suppress the pings, they just pollute the log file.
     std::string uri = request->uri();
     if (uri != "autom8://request/ping") {
-        debug::log(debug::info, TAG, "send: " + uri);
+        debug::info(TAG, "send: " + uri);
     }
 }
 
@@ -283,7 +284,7 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
     // if no session was specified, and the response type is target only,
     // we can't send the message. someone messed up. TODO: throw?
     if ((!session) && (response->target() == response::requester_only)) {
-        debug::log(debug::error, TAG, "can't dispatch message to requester, no session specified");
+        debug::error(TAG, "can't dispatch message to requester, no session specified");
         return;
     }
 
@@ -314,7 +315,7 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
     // suppress the pings, they just pollute the log file.
     std::string uri = response->uri();
     if (uri != "autom8://response/pong") {
-        debug::log(debug::info, TAG, "send: " + uri);
+        debug::info(TAG, "send: " + uri);
     }
 }
 
@@ -323,5 +324,5 @@ void server::boostrap_new_session(session_ptr session) {
     session_list_.insert(session);
     session->disconnect_signal().connect(this, &server::on_session_disconnected);
     session->start();
-    debug::log(debug::info, TAG, (format("session starting, count=%1%") % session_list_.size()).str());
+    debug::info(TAG, (format("session starting, count=%1%") % session_list_.size()).str());
 }

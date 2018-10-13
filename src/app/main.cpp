@@ -46,11 +46,6 @@
 #include <windows.h>
 #endif
 
-#include <boost/locale.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
-
 #include <autom8/autom8.h>
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
@@ -62,6 +57,9 @@
 #include <cursespp/TextLabel.h>
 #include <cursespp/LayoutBase.h>
 #include <cursespp/IViewRoot.h>
+
+#include <f8n/debug/debug.h>
+#include <f8n/environment/Environment.h>
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
@@ -75,12 +73,6 @@ using namespace cursespp;
 using namespace f8n::runtime;
 
 using client_ptr = std::shared_ptr<autom8::client>;
-
-static void initUtf8Filesystem() {
-    std::locale locale = std::locale();
-    std::locale utf8Locale(locale, new boost::filesystem::detail::utf8_codecvt_facet);
-    boost::filesystem::path::imbue(utf8Locale);
-}
 
 class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots<> {
     public:
@@ -185,8 +177,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 #else
 int main(int argc, char* argv[]) {
 #endif
-    srand((unsigned int)time(0));
-    initUtf8Filesystem();
+
+    f8n::env::Initialize(APP_NAME, 1);
+
+    f8n::debug::start({
+        new f8n::debug::FileBackend(f8n::env::GetDataDirectory() + "log.txt")
+    });
+
+    f8n::debug::info("main", "test!");
 
     std::string password = "changeme";
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
@@ -227,6 +225,8 @@ int main(int argc, char* argv[]) {
     app.Run(std::make_shared<MainLayout>(client));
 
     autom8::server::stop();
+
+    f8n::debug::stop();
 
     return 0;
 }

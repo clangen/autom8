@@ -1,12 +1,14 @@
 #include <autom8/device/device_model.hpp>
 #include <autom8/util/utility.hpp>
-#include <autom8/util/debug.hpp>
 #include <autom8/db/db.hpp>
+
+#include <f8n/debug/debug.h>
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
 using namespace autom8;
+using debug = f8n::debug;
 
 /* table names are prefixed by factory type */
 #define DEVICE_TABLE_SUFFIX "_device"
@@ -31,7 +33,7 @@ device_model::device_model(device_factory_ptr factory)
     // connect to the db.
     std::string filename = utility::settings_directory() + "devices.db";
     if (sqlite3_open_v2(filename.c_str(), &connection_, OPEN_FLAGS, 0) != SQLITE_OK) {
-        debug::log(debug::error, TAG, "unable to open devices database!");
+        debug::error(TAG, "unable to open devices database!");
         throw std::exception();
     }
 
@@ -62,7 +64,7 @@ void device_model::create_tables() {
 
         autom8::db::statement stmt(connection_, create_table);
         if (!stmt.execute()) {
-            debug::log(debug::error, TAG, "unable to create devices table");
+            debug::error(TAG, "unable to create devices table");
             throw std::exception();
         }
     }
@@ -81,7 +83,7 @@ void device_model::create_tables() {
 
         autom8::db::statement stmt(connection_, create_table);
         if (!stmt.execute()) {
-            debug::log(debug::error, TAG, "unable to create devices table");
+            debug::error(TAG, "unable to create devices table");
             throw std::exception();
         }
     }

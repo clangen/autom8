@@ -1,10 +1,11 @@
 #include <autom8/constants.h>
-#include <autom8/util/debug.hpp>
 #include <autom8/net/client.hpp>
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/message/message_formatter.hpp>
 #include <autom8/message/message_matcher.hpp>
 #include <autom8/message/common_messages.hpp>
+
+#include <f8n/debug/debug.h>
 
 #include <ostream>
 
@@ -16,6 +17,7 @@
 
 using namespace autom8;
 using namespace nlohmann;
+using debug = f8n::debug;
 
 typedef boost::format format;
 static request_ptr ping_(messages::requests::ping());
@@ -59,7 +61,7 @@ void client::reconnect(const std::string& password) {
         std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
         if (state_ != state_disconnected) {
-            debug::log(debug::warning, TAG, "connect() called but not disconnected");
+            debug::warning(TAG, "connect() called but not disconnected");
             return;
         }
 
@@ -100,7 +102,7 @@ void client::io_service_thread_proc() {
         connection_.io_service_->run();
     }
 
-    debug::log(debug::info, TAG, "i/o service thread done");
+    debug::info(TAG, "i/o service thread done");
 }
 
 bool client::verify_certificate(bool preverified, boost::asio::ssl::verify_context& ctx) {
@@ -129,7 +131,7 @@ void client::disconnect() {
 }
 
 void client::disconnect(reason disconnect_reason) {
-    debug::log(debug::info, TAG, "attempting do disconnect: " + std::to_string(disconnect_reason));
+    debug::info(TAG, "attempting do disconnect: " + std::to_string(disconnect_reason));
 
     /* return early if disconnected/ing */
     {
@@ -140,7 +142,7 @@ void client::disconnect(reason disconnect_reason) {
         if (state_ == state_disconnected ||
             state_ == state_disconnecting)
         {
-            debug::log(debug::info, TAG, "disconnect called, but already disconnect[ed|ing]");
+            debug::info(TAG, "disconnect called, but already disconnect[ed|ing]");
             return;
         }
     }
@@ -171,7 +173,7 @@ void client::handle_connect(
     else {
         set_state(state_authenticating);
 
-        debug::log(debug::info, TAG, "handled_connect ok, starting handshake");
+        debug::info(TAG, "handled_connect ok, starting handshake");
 
         connection_.socket_->async_handshake(
             boost::asio::ssl::stream_base::client,
@@ -207,10 +209,10 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
     }
     else {
         if ( ! message->parse_message(size)) {
-            debug::log(debug::error, TAG, "message parse failed");
+            debug::error(TAG, "message parse failed");
         }
 
-        debug::log(debug::info, TAG, "read message: " + message->name());
+        debug::info(TAG, "read message: " + message->name());
 
         if (message->type() == message::message_type_request) {
             on_recv(request::create(
@@ -279,12 +281,12 @@ client::connection_state client::state() {
 }
 
 void client::send(response_ptr r) {
-    debug::log(debug::info, TAG, "sending response: " + r->uri());
+    debug::info(TAG, "sending response: " + r->uri());
     send(message_formatter::create(r));
 }
 
 void client::send(request_ptr r) {
-    debug::log(debug::info, TAG, "sending request: " + r->uri());
+    debug::info(TAG, "sending request: " + r->uri());
     send(message_formatter::create(r));
 }
 
@@ -301,12 +303,12 @@ void client::send(message_formatter_ptr f) {
 }
 
 void client::on_recv(response_ptr response) {
-    debug::log(debug::info, TAG, "on_recv(response): " + response->uri());
+    debug::info(TAG, "on_recv(response): " + response->uri());
     recv_response(response); /* notify observers */
 }
 
 void client::on_recv(request_ptr request) {
-    debug::log(debug::info, TAG, "on_recv(request): " + request->uri());
+    debug::info(TAG, "on_recv(request): " + request->uri());
 
     if (request->uri() == ping_->uri()) {
         send(pong_);

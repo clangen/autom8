@@ -1,6 +1,7 @@
 #include <autom8/message/message.hpp>
 #include <autom8/constants.h>
-#include <autom8/util/debug.hpp>
+
+#include <f8n/debug/debug.h>
 
 #include <boost/algorithm/string_regex.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -9,7 +10,9 @@
 
 using namespace nlohmann;
 using namespace autom8;
-typedef message::message_type message_type;
+
+using debug = f8n::debug;
+using message_type = message::message_type;
 
 static const std::string TAG = "message";
 
@@ -88,7 +91,7 @@ bool message::parse_message(size_t bytes_read) {
         /* swallow, we'll report an error below... */
     }
 
-	debug::log(debug::error, TAG, "could not parse message! " + plain_text);
+	debug::error(TAG, "could not parse message! " + plain_text);
     return false;
 }
 

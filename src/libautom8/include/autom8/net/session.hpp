@@ -7,7 +7,6 @@
 
 #include <autom8/message/message.hpp>
 #include <autom8/message/message_formatter.hpp>
-#include <autom8/message/message_queue.hpp>
 #include <autom8/message/response.hpp>
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>

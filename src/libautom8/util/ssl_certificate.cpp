@@ -2,7 +2,8 @@
 
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/util/utility.hpp>
-#include <autom8/util/debug.hpp>
+
+#include <f8n/debug/debug.h>
 
 #include <openssl/pem.h>
 #include <openssl/conf.h>
@@ -22,6 +23,7 @@ static const std::string TAG = "ssl_certificate";
 
 using namespace autom8;
 using namespace f8n::utf;
+using debug = f8n::debug;
 
 #include <utf8/utf8.h>
 
@@ -50,7 +52,7 @@ namespace autom8 {
             size_t pubkey_size = strlen(pubkey_bytes);
 
             if ( ! pubkey_size) {
-                debug::log(debug::error, TAG, "*** fatal: rsa key size mismatch??");
+                debug::error(TAG, "*** fatal: rsa key size mismatch??");
                 throw std::exception();
             }
 

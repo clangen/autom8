@@ -7,7 +7,6 @@
 
 #include <autom8/message/common_messages.hpp>
 #include <autom8/net/server.hpp>
-#include <autom8/util/debug.hpp>
 
 #include <autom8/device/x10/x10_security_sensor.hpp>
 #include <autom8/device/x10/x10_device_system.hpp>

@@ -1,10 +1,10 @@
 #include <autom8/util/preferences.hpp>
 #include <autom8/util/utility.hpp>
-#include <autom8/util/debug.hpp>
-
+#include <f8n/debug/debug.h>
 #include <boost/format.hpp>
 
 using namespace autom8;
+using debug = f8n::debug;
 
 static const std::string TAG = "preferences";
 static const int OPEN_FLAGS = SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX;
@@ -14,7 +14,7 @@ preferences::preferences(const std::string& name)
 , name_(name) {
     std::string filename = utility::settings_directory() + "preferences.db";
     if (sqlite3_open_v2(filename.c_str(), &connection_, OPEN_FLAGS, 0) != SQLITE_OK) {
-        debug::log(debug::error, TAG, "unable to open preferences file!");
+        debug::error(TAG, "unable to open preferences file!");
         throw std::exception();
     }
 
@@ -39,7 +39,7 @@ preferences::preferences(const std::string& name)
     sqlite3_finalize(stmt);
 
     if (result != SQLITE_DONE) {
-        debug::log(debug::error, TAG, "unable to create preferences table");
+        debug::error(TAG, "unable to create preferences table");
         throw std::exception();
     }
 }

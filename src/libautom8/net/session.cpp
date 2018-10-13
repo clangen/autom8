@@ -1,23 +1,23 @@
 #include <autom8/constants.h>
 #include <autom8/net/session.hpp>
-#include <autom8/util/debug.hpp>
 #include <autom8/message/request_handler_factory.hpp>
 #include <autom8/message/common_messages.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
 #include <autom8/message/message_matcher.hpp>
-
+#include <f8n/debug/debug.h>
 #include <boost/format.hpp>
 #include <atomic>
 
 using namespace autom8;
 using namespace nlohmann;
+using debug = f8n::debug;
 
 static std::atomic<int> instance_count_ { 0 };
 static const std::string TAG = "session";
 
 inline void print_instance_count() {
-    //debug::log((boost::format("[D] session instance count: %1%") % instance_count_).str());
+    debug::info(TAG, (boost::format("session instance count: %1%") % instance_count_).str());
 }
 
 inline void inc_instance_count() {
@@ -51,7 +51,7 @@ ssl_socket& session::socket() {
 
 void session::start() {
     if (!is_disconnected_) {
-        disconnect("[E] [SESSION] session already started, but start() called. disconnecting now.");
+        disconnect("session already started, but start() called. disconnecting now.");
         return;
     }
 
@@ -64,7 +64,7 @@ void session::start() {
         async_read_next_message();
     }
     catch (...) {
-        disconnect("[E] [SESSION] exception caught, session disconnecting");
+        disconnect("exception caught, session disconnecting");
     }
 }
 
@@ -79,7 +79,7 @@ bool session::is_authenticated() const {
 void session::enqueue_write(message_formatter_ptr formatter) {
     /* we should never be asked to write before we auth. */
     if (!is_authenticated_) {
-        disconnect("[E] [SESSION] trying to write() when not authenticated");
+        disconnect("trying to write() when not authenticated");
         return;
     }
 
@@ -108,15 +108,15 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
                 return true;
             }
             else {
-                debug::log(debug::error, TAG, "authenticate password mismatch");
+                debug::error(TAG, "authenticate password mismatch");
             }
         }
         else {
-            debug::log(debug::error, TAG, "expected authenticate, but got: " + message->name());
+            debug::error(TAG, "expected authenticate, but got: " + message->name());
         }
     }
     else {
-        debug::log(debug::error, TAG, "expected request, but got response");
+        debug::error(TAG, "expected request, but got response");
     }
 
     // send failed response immediately, then disconnect
@@ -143,7 +143,7 @@ bool session::handle_incoming_message(session_ptr session, message_ptr m) {
                     return true;
                 }
 
-                debug::log(debug::info, TAG, "recv: autom8://request/" + m->name());
+                debug::info(TAG, "recv: autom8://request/" + m->name());
                 request_handler_factory::ptr factory = request_handler_factory::instance();
                 if (!factory->handle_request(session, m)) {
                     return false;
@@ -154,7 +154,7 @@ bool session::handle_incoming_message(session_ptr session, message_ptr m) {
         case message::message_type_response:
             {
                 if (m->name() != "pong") { /* these pollute the the log */
-                    debug::log(debug::info, TAG, "recv: autom8://response/" + m->name());
+                    debug::info(TAG, "recv: autom8://response/" + m->name());
                 }
             }
             return true;
@@ -171,7 +171,7 @@ void session::on_disconnected() {
 void session::disconnect(const std::string& reason) {
     if (!is_disconnected_) {
         if (reason.size()) {
-            debug::log(debug::info, TAG, reason);
+            debug::info(TAG, reason);
         }
 
         is_disconnected_ = true;
@@ -182,7 +182,7 @@ void session::disconnect(const std::string& reason) {
             socket_.lowest_layer().close();
         }
         catch(...) {
-            debug::log(debug::warning, TAG, "failed to close() socket");
+            debug::warning(TAG, "failed to close() socket");
         }
 
         std::thread([this] { this->on_disconnected(); }).detach();
@@ -194,16 +194,16 @@ void session::async_read_next_message() {
 
     auto callback = [this, m](const boost::system::error_code& error, std::size_t bytes_read) {
         if (error) {
-            this->disconnect("[E] [SESSION] socket read() failed");
+            this->disconnect("socket read() failed");
         }
         else if (bytes_read > 0) {
             if (!m->parse_message(bytes_read)) {
-                this->disconnect("[E] [SESSION] failed to parse message, disconnecting");
+                this->disconnect("failed to parse message, disconnecting");
             }
             // the first message must always be "authenticate"
             else if (!is_authenticated()) {
                 if (!handle_authentication(shared_from_this(), m)) {
-                    this->disconnect("[E] [SESSION] session failed to authenticate");
+                    this->disconnect("session failed to authenticate");
                 }
             }
             else if (!handle_incoming_message(shared_from_this(), m)) {
