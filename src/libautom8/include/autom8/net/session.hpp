@@ -12,6 +12,7 @@
 #include <boost/asio/ssl.hpp>
 #include <sigslot/sigslot.h>
 #include <thread>
+#include <mutex>
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;

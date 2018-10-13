@@ -13,6 +13,7 @@
 
 #include <sigslot/sigslot.h>
 
+#include <mutex>
 #include <memory>
 #include <set>
 
