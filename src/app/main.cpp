@@ -53,13 +53,13 @@
 #include <autom8/util/preferences.hpp>
 
 #include <cursespp/App.h>
-#include <cursespp/Screen.h>
-#include <cursespp/TextLabel.h>
-#include <cursespp/LayoutBase.h>
-#include <cursespp/IViewRoot.h>
+
+#include <app/layout/MainLayout.h>
 
 #include <f8n/debug/debug.h>
 #include <f8n/environment/Environment.h>
+
+#include <layout/MainLayout.h>
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
@@ -67,104 +67,11 @@ static const int DEFAULT_WIDTH = 100;
 static const int MIN_WIDTH = 54;
 static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 12;
-static const int UPDATE_STATUS_MESSAGE = 1024;
 
 using namespace cursespp;
-using namespace f8n::runtime;
+using namespace autom8::app;
 
 using client_ptr = std::shared_ptr<autom8::client>;
-
-class MainLayout: public LayoutBase, public IViewRoot, public sigslot::has_slots<> {
-    public:
-        MainLayout(client_ptr client)
-        : LayoutBase()
-        , client(client) {
-            this->clientStatus = std::make_shared<TextLabel>();
-            this->clientStatus->SetText("client: disconnected", text::AlignCenter);
-            this->clientStatus->SetContentColor(CURSESPP_BANNER);
-            this->AddWindow(clientStatus);
-
-            this->serverStatus = std::make_shared<TextLabel>();
-            this->serverStatus->SetText("server: stopped", text::AlignCenter);
-            this->serverStatus->SetContentColor(CURSESPP_BANNER);
-            this->AddWindow(serverStatus);
-
-            this->label = std::make_shared<TextLabel>();
-            this->label->SetText("hello, autom8", text::AlignCenter);
-            this->AddWindow(label);
-
-            client->state_changed.connect(this, &MainLayout::OnClientStateChanged);
-            autom8::server::started.connect(this, &MainLayout::OnServerStateChanged);
-            autom8::server::stopped.connect(this, &MainLayout::OnServerStateChanged);
-
-            this->Update();
-        }
-
-        virtual void ResizeToViewport() override {
-            this->MoveAndResize(0, 0, Screen::GetWidth(), Screen::GetHeight());
-        }
-
-        virtual void OnLayout() override {
-            int cx = this->GetContentWidth();
-            this->clientStatus->MoveAndResize(0, 0, (cx / 2) - 1, 1);
-            this->serverStatus->MoveAndResize(cx / 2, 0, cx - (cx / 2), 1);
-            this->label->MoveAndResize(0, this->GetContentHeight() / 2, cx, 1);
-        }
-
-        virtual void ProcessMessage(IMessage& message) override {
-            if (message.Type() == UPDATE_STATUS_MESSAGE) {
-                this->Update();
-            }
-        }
-
-    private:
-        void Update() {
-            using S = autom8::client::connection_state;
-
-            auto str = "disconnected";
-            auto color = CURSESPP_BANNER;
-            switch (client->state()) {
-                case S::state_connecting:
-                    str = "connecting";
-                    break;
-                case S::state_connected:
-                    str = "connected";
-                    color = CURSESPP_FOOTER;
-                    break;
-                case S::state_disconnecting:
-                    str = "disconnecting";
-                    break;
-                default:
-                    break;
-            }
-
-            this->clientStatus->SetText(std::string("client: ") + str, cursespp::text::AlignCenter);
-            this->clientStatus->SetContentColor(color);
-
-            str = "stopped";
-            color = CURSESPP_BANNER;
-            if (autom8::server::is_running()) {
-                str = "running";
-                color = CURSESPP_FOOTER;
-            }
-
-            this->serverStatus->SetText(std::string("server: ") + str, cursespp::text::AlignCenter);
-            this->serverStatus->SetContentColor(color);
-        }
-
-        void OnServerStateChanged() {
-            this->Post(UPDATE_STATUS_MESSAGE);
-        }
-
-        void OnClientStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
-            this->Post(UPDATE_STATUS_MESSAGE);
-        }
-
-        client_ptr client;
-        std::shared_ptr<TextLabel> label;
-        std::shared_ptr<TextLabel> clientStatus;
-        std::shared_ptr<TextLabel> serverStatus;
-};
 
 #ifdef WIN32
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {

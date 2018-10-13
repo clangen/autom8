@@ -5,10 +5,39 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="src\layout">
+      <UniqueIdentifier>{5f80be78-3aa4-4946-a459-2814606bd318}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="layout\MainLayout.cpp">
+      <Filter>src\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="layout\ServerLayout.cpp">
+      <Filter>src\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="layout\SettingsLayout.cpp">
+      <Filter>src\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="layout\ClientLayout.cpp">
+      <Filter>src\layout</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="layout\MainLayout.h">
+      <Filter>src\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="layout\ClientLayout.h">
+      <Filter>src\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="layout\ServerLayout.h">
+      <Filter>src\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="layout\SettingsLayout.h">
+      <Filter>src\layout</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
