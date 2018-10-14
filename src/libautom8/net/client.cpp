@@ -38,8 +38,7 @@ client::client(const std::string& hostname, unsigned short port)
 , port_(port)
 , state_(state_disconnected)
 , reason_(none)
-, disconnect_reason_(client::unknown)
-{
+, disconnect_reason_(client::unknown) {
 }
 
 client::~client() {
@@ -56,6 +55,19 @@ void client::connect(
     reconnect(password);
 }
 
+void client::destroy() {
+    connection_.close();
+
+    io_service_.stop();
+    io_service_.reset();
+
+    if (service_thread_) {
+        service_thread_->detach();
+    }
+
+    service_thread_.reset();
+}
+
 void client::reconnect(const std::string& password) {
     {
         std::unique_lock<std::recursive_mutex> lock(state_lock_);
@@ -66,41 +78,42 @@ void client::reconnect(const std::string& password) {
         }
 
         password_ = password;
-
-        connection_.started(new std::thread(
-            boost::bind(&client::io_service_thread_proc, this)));
     }
+
+    destroy();
+
+    service_thread_ = thread_ptr(new std::thread(
+        boost::bind(&client::io_service_thread_proc, this)));
 
     set_state(state_connecting);
 }
 
 void client::io_service_thread_proc() {
-    tcp::resolver resolver(*connection_.io_service_);
+    debug::info(TAG, "i/o service thread started");
+
+    tcp::resolver resolver(io_service_);
     tcp::resolver::query query(hostname_, std::to_string(port_));
 
     boost::system::error_code error;
     tcp::resolver::iterator begin = resolver.resolve(query, error);
     tcp::resolver::iterator end;
 
-    if (error) {
-        disconnect(connect_failed);
-    }
-    else {
-        connection_.socket_->set_verify_callback(
-            boost::bind(&client::verify_certificate, this, _1, _2));
+    connection_.reset(io_service_);
 
-        boost::asio::async_connect(
-            connection_.socket_->lowest_layer(),
-            begin,
-            end,
-            boost::bind(
-                &client::handle_connect,
-                this,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::iterator));
+    connection_.socket_->set_verify_callback(
+        boost::bind(&client::verify_certificate, this, _1, _2));
 
-        connection_.io_service_->run();
-    }
+    boost::asio::async_connect(
+        connection_.socket_->lowest_layer(),
+        begin,
+        end,
+        boost::bind(
+            &client::handle_connect,
+            this,
+            boost::asio::placeholders::error,
+            boost::asio::placeholders::iterator));
+
+    io_service_.run();
 
     debug::info(TAG, "i/o service thread done");
 }
@@ -149,7 +162,7 @@ void client::disconnect(reason disconnect_reason) {
 
     set_state(state_disconnecting, disconnect_reason);
 
-    connection_.reset();
+    destroy();
 
     set_state(state_disconnected, disconnect_reason);
 }
