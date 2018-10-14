@@ -1,13 +1,13 @@
 #pragma once
 
+#include <autom8/net/client.hpp>
+#include <autom8/net/server.hpp>
+
 #include <cursespp/LayoutBase.h>
 #include <cursespp/Screen.h>
 #include <cursespp/TextLabel.h>
 #include <cursespp/LayoutBase.h>
 #include <cursespp/IViewRoot.h>
-
-#include <autom8/net/client.hpp>
-#include <autom8/net/server.hpp>
 
 #include <f8n/runtime/IMessage.h>
 
