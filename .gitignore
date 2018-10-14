@@ -2,6 +2,7 @@
 **/__output
 **/.vs
 **/*.user
+build
 CMakeCache.txt
 CMakeFiles/
 Makefile
