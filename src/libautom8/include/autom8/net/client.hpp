@@ -133,6 +133,7 @@ namespace autom8 {
                     socket_ = std::move(this->socket_),
                     ssl_context_ = std::move(this->ssl_context_)]
                 {
+                    if (socket_) { socket_->lowest_layer().close(); }
                     if (io_service_) { io_service_->stop(); }
                     if (service_thread_) { service_thread_->join(); }
                 }).detach();

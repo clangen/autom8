@@ -320,9 +320,15 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
 }
 
 void server::boostrap_new_session(session_ptr session) {
-    std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
-    session_list_.insert(session);
-    session->disconnect_signal().connect(this, &server::on_session_disconnected);
-    session->start();
-    debug::info(TAG, (format("session starting, count=%1%") % session_list_.size()).str());
+    {
+        std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
+        session_list_.insert(session);
+        session->disconnect_signal().connect(this, &server::on_session_disconnected);
+        session->start();
+        debug::info(TAG, (format("session starting, count=%1%") % session_list_.size()).str());
+    }
+
+    /* implicitly wakes up idle sessions, and will cause the OS to detect
+    and close dead sockets, cleaning up stale instances. */
+    server::send(messages::requests::ping());
 }

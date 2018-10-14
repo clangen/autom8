@@ -79,7 +79,7 @@ bool session::is_authenticated() const {
 void session::enqueue_write(message_formatter_ptr formatter) {
     /* we should never be asked to write before we auth. */
     if (!is_authenticated_) {
-        disconnect("trying to write() when not authenticated");
+        debug::warning(TAG, "message received before authenticated. ignoring.");
         return;
     }
 
@@ -119,17 +119,13 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
         debug::error(TAG, "expected request, but got response");
     }
 
-    // send failed response immediately, then disconnect
-    /*{
-        std::unique_lock<decltype(session->write_lock_)> lock(session->write_lock_);
+    message_formatter_ptr f =message_formatter::create(
+        messages::responses::authenticate_failed());
 
-        message_formatter_ptr f =
-            message_formatter::create(
-                messages::responses::authenticate_failed());
+    boost::system::error_code ec;
+    write(session->socket_, boost::asio::buffer(f->to_string()), ec);
+    session->disconnect("authenticate failed");
 
-        write(session->socket_, boost::asio::buffer(f->to_string()));
-    }
-*/
     return false;
 }
 
