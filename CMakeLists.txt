@@ -70,10 +70,10 @@ set (autom8_curses_SRCS
   ./src/libautom8/device/device_system.cpp
   ./src/libautom8/device/device_model.cpp
   ./src/app/main.cpp
-  ./src/layout/ClientLayout.cpp
-  ./src/layout/ServerLayout.cpp
-  ./src/layout/SettingsLayout.cpp
-  ./src/layout/MainLayout.cpp
+  ./src/app/layout/ClientLayout.cpp
+  ./src/app/layout/ServerLayout.cpp
+  ./src/app/layout/SettingsLayout.cpp
+  ./src/app/layout/MainLayout.cpp
 )
 
 add_executable(autom8_curses ${autom8_curses_SRCS})

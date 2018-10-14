@@ -59,8 +59,6 @@
 #include <f8n/debug/debug.h>
 #include <f8n/environment/Environment.h>
 
-#include <layout/MainLayout.h>
-
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
 static const int DEFAULT_WIDTH = 100;
