@@ -33,10 +33,6 @@ MainLayout::MainLayout(client_ptr client)
     this->Update();
 }
 
-void MainLayout::ResizeToViewport() {
-    this->MoveAndResize(0, 0, Screen::GetWidth(), Screen::GetHeight());
-}
-
 void MainLayout::OnLayout() {
     int cx = this->GetContentWidth();
     this->clientStatus->MoveAndResize(0, 0, (cx / 2) - 1, 1);
