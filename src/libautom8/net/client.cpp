@@ -67,6 +67,8 @@ void client::reconnect(const std::string& password) {
 
         password_ = password;
 
+        connection_.reset();
+
         connection_.started(new std::thread(
             boost::bind(&client::io_service_thread_proc, this)));
     }
@@ -149,7 +151,7 @@ void client::disconnect(reason disconnect_reason) {
 
     set_state(state_disconnecting, disconnect_reason);
 
-    connection_.reset();
+    connection_.close();
 
     set_state(state_disconnected, disconnect_reason);
 }

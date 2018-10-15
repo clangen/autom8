@@ -127,16 +127,18 @@ namespace autom8 {
             ~connection() { close(); }
 
             void close() {
-                std::thread([ /* deferred disconnect */
-                    io_service_ = std::move(this->io_service_),
-                    service_thread_ = std::move(this->service_thread_),
-                    socket_ = std::move(this->socket_),
-                    ssl_context_ = std::move(this->ssl_context_)]
-                {
-                    if (socket_) { socket_->lowest_layer().close(); }
-                    if (io_service_) { io_service_->stop(); }
-                    if (service_thread_) { service_thread_->join(); }
-                }).detach();
+                if (io_service_ || service_thread_ || socket_ || ssl_context_) {
+                    std::thread([ /* deferred disconnect */
+                        io_service_ = std::move(this->io_service_),
+                        service_thread_ = std::move(this->service_thread_),
+                        socket_ = std::move(this->socket_),
+                        ssl_context_ = std::move(this->ssl_context_)]
+                    {
+                        if (socket_) { socket_->lowest_layer().close(); }
+                        if (io_service_) { io_service_->stop(); }
+                        if (service_thread_) { service_thread_->join(); }
+                    }).detach();
+                }
             }
 
             void reset() {

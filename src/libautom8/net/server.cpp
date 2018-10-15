@@ -49,7 +49,6 @@ server::server(unsigned short port)
 }
 
 server::~server() {
-    disconnect_all();
 }
 
 void server::start_instance() {
