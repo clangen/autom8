@@ -34,7 +34,7 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
     std::transform(type.begin(), type.end(), type.begin(), tolower);
 
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
 
         // X10 isn't smart enough to restore brightness state when we
         // turn a lamp off, then back on. first, remember the current brightness...
@@ -53,7 +53,7 @@ void x10_lamp::on_controller_message(const std::vector<std::string>& status_valu
 }
 
 void x10_lamp::get_extended_json_attributes(nlohmann::json& target) {
-    boost::recursive_mutex::scoped_lock lock(state_mutex());
+    auto lock = state_lock();
     target["brightness"] = brightness_;
 }
 
@@ -62,7 +62,7 @@ void x10_lamp::set_brightness(int new_brightness) {
     bool update = false;
 
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
 
         if (status_ == device_status_off) {
             last_brightness_ = new_brightness;

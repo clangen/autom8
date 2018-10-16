@@ -31,19 +31,19 @@ device_type x10_security_sensor::type() {
 }
 
 void x10_security_sensor::get_extended_json_attributes(nlohmann::json& target) {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
     target["armed"] = is_armed_;
     target["tripped"] = is_tripped_;
 }
 
 void x10_security_sensor::arm() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex());
+    auto lock = state_lock();
     is_armed_ = true;
     on_status_changed();
 }
 
 void x10_security_sensor::disarm() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex());
+    auto lock = state_lock();
     is_armed_ = false;
     is_tripped_ = false;
     on_status_changed();
@@ -51,7 +51,7 @@ void x10_security_sensor::disarm() {
 
 void x10_security_sensor::reset()
 {
-    boost::recursive_mutex::scoped_lock lock(state_mutex());
+    auto lock = state_lock();
     if (is_tripped_) {
         is_tripped_ = false;
         on_status_changed();
@@ -60,7 +60,7 @@ void x10_security_sensor::reset()
 
 device_status x10_security_sensor::status()
 {
-    boost::recursive_mutex::scoped_lock lock(state_mutex());
+    auto lock = state_lock();
     return (is_tripped_ ? device_status_on : device_status_off);
 }
 
@@ -68,7 +68,7 @@ void x10_security_sensor::on_controller_message(const std::vector<std::string>& 
     bool changed = false;
 
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
 
         if (!is_armed_) {
             return;

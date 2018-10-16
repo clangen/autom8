@@ -40,7 +40,7 @@ public:
 
     /* device base */
     void get_extended_json_attributes(json& target) {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
 
         if (type_ == device_type_lamp) {
             target["brightness"] = brightness_;
@@ -53,7 +53,7 @@ public:
 
     /* simple device */
     virtual device_type type() {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
         return type_;
     }
 
@@ -61,7 +61,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
 
             if (status_ != device_status_on) {
                 status_ = device_status_on;
@@ -78,7 +78,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
 
             if (status_ != device_status_off) {
                 status_ = device_status_off;
@@ -93,7 +93,7 @@ public:
 
     /* lamp */
     virtual int brightness() {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
         return brightness_;
     }
 
@@ -101,7 +101,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
 
             if (brightness != brightness_) {
                 brightness_ = brightness;
@@ -119,7 +119,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
 
             if (!armed_ || status_ != device_status_on) {
                 armed_ = true;
@@ -137,7 +137,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
 
             if (armed_ || status_ == device_status_on) {
                 armed_ = false;
@@ -155,7 +155,7 @@ public:
         bool changed = false;
 
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
             if (tripped_) {
                 tripped_ = false;
                 changed = true;
@@ -168,12 +168,12 @@ public:
     }
 
     virtual bool is_armed() {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
         return armed_;
     }
 
     virtual bool is_tripped() {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
         return tripped_;
     }
 

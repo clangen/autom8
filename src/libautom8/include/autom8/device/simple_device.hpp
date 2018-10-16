@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <boost/thread.hpp>
+#include <mutex>
 #include <autom8/device/device_base.hpp>
 
 namespace autom8 {
@@ -39,7 +39,8 @@ namespace autom8 {
 
     protected:
         virtual void on_updated();
-        boost::recursive_mutex& state_mutex();
+        std::recursive_mutex& state_mutex();
+        std::unique_lock<std::recursive_mutex> state_lock();
 
     protected:
         std::string label_;
@@ -47,6 +48,6 @@ namespace autom8 {
         std::vector<std::string> groups_;
         device_status status_;
         database_id id_;
-        boost::recursive_mutex state_mutex_;
+        std::recursive_mutex state_mutex_;
     };
 }

@@ -28,7 +28,7 @@ simple_device::~simple_device() {
 }
 
 void simple_device::groups(std::vector<std::string>& target) {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
 
     std::vector<std::string>::iterator it = groups_.begin();
     for ( ; it != groups_.end(); it++) {
@@ -37,22 +37,22 @@ void simple_device::groups(std::vector<std::string>& target) {
 }
 
 device_status simple_device::status() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
     return status_;
 }
 
 std::string simple_device::address() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
     return address_;
 }
 
 std::string simple_device::label() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
     return label_;
 }
 
 database_id simple_device::id() {
-    boost::recursive_mutex::scoped_lock lock(state_mutex_);
+    auto lock = state_lock();
     return id_;
 }
 
@@ -64,7 +64,7 @@ void simple_device::update(
     const std::string& new_label)
 {
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex_);
+        auto lock = state_lock();
         address_ = new_address;
         label_ = new_label;
     }
@@ -78,7 +78,7 @@ void simple_device::update(
     const std::vector<std::string>& groups)
 {
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex_);
+        auto lock = state_lock();
         address_ = new_address;
         label_ = new_label;
     }
@@ -89,13 +89,17 @@ void simple_device::update(
 
 void simple_device::set_groups(const std::vector<std::string>& groups) {
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex_);
+        auto lock = state_lock();
         groups_.assign(groups.begin(), groups.end());
     }
 
     this->on_updated();
 }
 
-boost::recursive_mutex& simple_device::state_mutex() {
+std::recursive_mutex& simple_device::state_mutex() {
     return state_mutex_;
+}
+
+std::unique_lock<std::recursive_mutex> simple_device::state_lock() {
+    return std::unique_lock<std::recursive_mutex>(state_mutex_);
 }

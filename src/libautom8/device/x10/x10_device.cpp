@@ -40,7 +40,7 @@ void x10_device::set_device_status(device_status new_status) {
     std::string command_string;
 
     {
-        boost::recursive_mutex::scoped_lock lock(state_mutex());
+        auto lock = state_lock();
 
         command_string = (boost::format("%1% %2%")
             % address()
@@ -57,7 +57,7 @@ void x10_device::on_controller_message(const std::vector<std::string>& status_va
     // device status
     if ((type == "off") || (type == "on")) {
         {
-            boost::recursive_mutex::scoped_lock lock(state_mutex());
+            auto lock = state_lock();
             status_ = (type == "off") ? device_status_off : device_status_on;
         }
 
