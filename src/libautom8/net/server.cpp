@@ -6,6 +6,7 @@
 #include <autom8/message/common_messages.hpp>
 #include <f8n/debug/debug.h>
 #include <boost/format.hpp>
+#include <boost/bind.hpp>
 #include <base64/base64.h>
 #include <ostream>
 #include <functional>

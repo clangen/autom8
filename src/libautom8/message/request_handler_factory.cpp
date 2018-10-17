@@ -6,13 +6,13 @@ using namespace autom8;
 using session_ptr = session::session_ptr;
 using factory_ptr = request_handler_factory::ptr;
 
-static boost::mutex protect_instance_mutex_;
+static std::mutex instance_mutex_;
 
 request_handler_factory::request_handler_factory() {
 }
 
 factory_ptr request_handler_factory::instance() {
-    boost::mutex::scoped_lock lock(protect_instance_mutex_);
+    std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
 
     static factory_ptr instance;
 
@@ -24,7 +24,7 @@ factory_ptr request_handler_factory::instance() {
 }
 
 bool request_handler_factory::handle_request(session_ptr session, message_ptr request) {
-    boost::mutex::scoped_lock lock(protect_handler_list_mutex_);
+    std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
 
     typedef request_handler_list::iterator iterator;
 
@@ -43,6 +43,6 @@ bool request_handler_factory::handle_request(session_ptr session, message_ptr re
 }
 
 void request_handler_factory::register_handler(request_handler_ptr handler) {
-    boost::mutex::scoped_lock lock(protect_handler_list_mutex_);
+    std::unique_lock<decltype(state_mutex_)> lock(state_mutex_);
     request_handlers_.push_back(handler);
 }

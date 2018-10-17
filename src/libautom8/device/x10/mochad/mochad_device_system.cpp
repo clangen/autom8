@@ -1,7 +1,6 @@
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
 
-#include <boost/thread.hpp>
 #include <boost/algorithm/string_regex.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

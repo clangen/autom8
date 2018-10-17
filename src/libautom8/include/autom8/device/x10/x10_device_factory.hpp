@@ -1,7 +1,7 @@
 #pragma once
 
 #include <autom8/device/device_factory.hpp>
-#include <boost/thread.hpp>
+#include <mutex>
 #include <map>
 
 namespace autom8 {
@@ -29,6 +29,6 @@ namespace autom8 {
     private:
         x10_device_system* owner_;
         id_device_map id_device_map_;
-        boost::mutex id_device_map_mutex_;
+        std::mutex id_device_map_mutex_;
     };
 }

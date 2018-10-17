@@ -1,7 +1,7 @@
 #pragma once
 
 #include <autom8/message/request_handler.hpp>
-#include <boost/thread.hpp>
+#include <mutex>
 #include <memory>
 
 namespace autom8 {
@@ -22,7 +22,7 @@ namespace autom8 {
             void register_handler(request_handler_ptr);
 
         private:
-            boost::mutex protect_handler_list_mutex_;
+            std::mutex state_mutex_;
             request_handler_list request_handlers_;
     };
 }

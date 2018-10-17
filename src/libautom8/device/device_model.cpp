@@ -107,7 +107,7 @@ device_ptr device_model::add(
         % LABEL_COLUMN).str();
 
     {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
 
         autom8::db::statement stmt(connection_, insert_row);
         stmt.bind_int(1, type);
@@ -143,7 +143,7 @@ bool device_model::remove(database_id id) {
         % ID_COLUMN).str();
 
     {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
 
         autom8::db::statement stmt(connection_, delete_device);
         stmt.bind_int64(1, id);
@@ -191,7 +191,7 @@ bool device_model::update(
     bool result;
 
     {
-        boost::mutex::scoped_lock lock(connection_mutex_);
+        std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
 
         autom8::db::statement stmt(connection_, query);
         stmt.bind_int(1, type);
@@ -223,7 +223,7 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
         % LABEL_COLUMN
         % device_table_name_).str();
 
-    boost::mutex::scoped_lock lock(connection_mutex_);
+    std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
 
     /* device itself */
     autom8::db::statement stmt(connection_, query);

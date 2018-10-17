@@ -18,7 +18,7 @@ device_ptr x10_device_factory::create(
     const std::vector<std::string>& groups)
 {
     {
-        boost::mutex::scoped_lock lock(id_device_map_mutex_);
+        std::unique_lock<decltype(id_device_map_mutex_)> lock(id_device_map_mutex_);
 
         id_device_map::iterator it = id_device_map_.find(id);
         if (it != id_device_map_.end()) {
@@ -56,7 +56,7 @@ device_ptr x10_device_factory::create(
     }
 
     if (result) {
-        boost::mutex::scoped_lock lock(id_device_map_mutex_);
+        std::unique_lock<decltype(id_device_map_mutex_)> lock(id_device_map_mutex_);
         id_device_map_[id] = result;
     }
 
@@ -68,7 +68,7 @@ std::string x10_device_factory::name() const {
 }
 
 void x10_device_factory::device_removed(database_id id) {
-    boost::mutex::scoped_lock lock(id_device_map_mutex_);
+std::unique_lock<decltype(id_device_map_mutex_)> lock(id_device_map_mutex_);
 
     id_device_map::iterator it = id_device_map_.find(id);
     if (it != id_device_map_.end()) {

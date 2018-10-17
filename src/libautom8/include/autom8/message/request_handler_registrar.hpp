@@ -1,8 +1,6 @@
-#ifndef __C_AUTOM8_REQUEST_HANDLER_REGISTRAR_HPP__
-#define __C_AUTOM8_REQUEST_HANDLER_REGISTRAR_HPP__
+#pragma once
 
 #include <autom8/message/request_handler.hpp>
-#include <boost/thread.hpp>
 
 namespace autom8 {
     class request_handler_registrar{
@@ -13,5 +11,3 @@ namespace autom8 {
         static void register_all();
     };
 }
-
-#endif

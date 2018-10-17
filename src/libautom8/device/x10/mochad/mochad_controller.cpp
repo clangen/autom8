@@ -1,5 +1,6 @@
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
 #include <autom8/util/utility.hpp>
+#include <boost/bind.hpp>
 #include <f8n/debug/debug.h>
 
 #define TAG "mochad"

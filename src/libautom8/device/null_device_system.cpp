@@ -4,6 +4,7 @@
 #include <autom8/net/server.hpp>
 #include <autom8/message/common_messages.hpp>
 #include <json.hpp>
+#include <mutex>
 
 using namespace autom8;
 using namespace nlohmann;
@@ -185,7 +186,7 @@ private:
 
 typedef std::map<std::string, device_ptr> addr_map;
 addr_map addr_to_dev_;
-boost::mutex device_map_mutex_;
+std::mutex device_map_mutex_;
 
 null_device_system::null_device_system()
 : model_(device_factory_ptr(new null_device_factory()))
@@ -206,7 +207,7 @@ device_ptr null_device_system::null_device_factory::create(
     const std::string& label,
     const std::vector<std::string>& groups)
 {
-    boost::mutex::scoped_lock lock(device_map_mutex_);
+    std::unique_lock<decltype(device_map_mutex_)> lock(device_map_mutex_);
 
     if (addr_to_dev_.find(address) != addr_to_dev_.end()) {
         device_ptr existing = addr_to_dev_.find(address)->second;
@@ -231,7 +232,7 @@ std::string null_device_system::null_device_factory::name() const {
 }
 
 void null_device_system::on_device_removed(database_id id) {
-    boost::mutex::scoped_lock lock(device_map_mutex_);
+    std::unique_lock<decltype(device_map_mutex_)> lock(device_map_mutex_);
 
     addr_map::iterator it;
     bool found = false;

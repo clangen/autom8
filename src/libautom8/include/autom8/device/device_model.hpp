@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <boost/thread.hpp>
+#include <mutex>
 #include <autom8/device/device_factory.hpp>
 #include <sqlite/sqlite3.h>
 #include <sigslot/sigslot.h>
@@ -53,7 +53,7 @@ namespace autom8 {
         device_factory_ptr factory_;
         std::string device_table_name_, groups_table_name_;
         sqlite3* connection_;
-        boost::mutex connection_mutex_;
+        std::mutex connection_mutex_;
     };
 
     typedef std::shared_ptr<device_model> device_model_ptr;

@@ -3,7 +3,6 @@
 #include <string>
 #include <sqlite/sqlite3.h>
 #include <boost/lexical_cast.hpp>
-#include <boost/thread.hpp>
 
 namespace autom8 {
     class preferences {

@@ -14,8 +14,6 @@
 
 #include <f8n/debug/debug.h>
 
-#include <boost/date_time.hpp>
-
 #include <sqlite/sqlite3.h>
 
 #include <thread>
@@ -116,10 +114,10 @@ static void stop_rpc_queue() {
 
 /* logging */
 static log_func external_logger_ = 0;
-static boost::mutex external_logger_mutex_;
+static std::mutex external_logger_mutex_;
 
 int autom8_set_logger(log_func logger) {
-    boost::mutex::scoped_lock lock(external_logger_mutex_);
+    std::unique_lock<decltype(external_logger_mutex_)> lock(external_logger_mutex_);
     external_logger_ = logger;
     return AUTOM8_OK;
 }
