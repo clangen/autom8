@@ -56,7 +56,7 @@
 
 #include <app/layout/MainLayout.h>
 
-#include <f8n/debug/debug.h>
+#include <f8n/f8n.h>
 #include <f8n/environment/Environment.h>
 
 static const std::string APP_NAME = "autom8";
@@ -83,13 +83,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
-    f8n::env::Initialize(APP_NAME, 1);
-
-    f8n::debug::start({
+    f8n::Startup(APP_NAME, 1, {
         new f8n::debug::FileBackend(f8n::env::GetDataDirectory() + "log.txt")
     });
 
-    f8n::debug::info("main", "test!");
+    f8n::debug::info("main", "app starting");
 
     std::string password = "changeme";
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
@@ -130,8 +128,9 @@ int main(int argc, char* argv[]) {
     app.Run(std::make_shared<MainLayout>(client));
 
     autom8::server::stop();
+    client->disconnect();
 
-    f8n::debug::stop();
+    f8n::Shutdown();
 
     return 0;
 }
