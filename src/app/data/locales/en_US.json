@@ -1,0 +1,17 @@
+{
+    "schemaVersion": 1,
+    "strings": {
+        "app_title": "autom8",
+        "button_ok": "ok",
+        "button_yes": "yes",
+        "button_no": "no",
+        "button_save": "save",
+        "button_cancel": "cancel",
+        "button_close": "close",
+        "button_start": "start",
+        "button_retry": "retry",
+        "button_continue": "continue"
+    },
+    "dimensions": {
+    }
+}

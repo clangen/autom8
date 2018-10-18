@@ -66,10 +66,12 @@
       <AdditionalDependencies>comctl32.lib;cursespp.lib;3rdparty.lib;f8n.lib;crypto-43.lib;ssl-45.lib;tls-17.lib;libautom8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug\crypto-43.dll" "$(OutDir)"
-
+      <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
+xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug\crypto-43.dll" "$(OutDir)"
 xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug\ssl-45.dll" "$(OutDir)"
-
 xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug\tls-17.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -92,10 +94,12 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug
       <AdditionalDependencies>comctl32.lib;cursespp.lib;3rdparty.lib;f8n.lib;crypto-43.lib;ssl-45.lib;tls-17.lib;libautom8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\crypto-43.dll" "$(OutDir)"
-
+      <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
+xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\crypto-43.dll" "$(OutDir)"
 xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\ssl-45.dll" "$(OutDir)"
-
 xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\tls-17.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
