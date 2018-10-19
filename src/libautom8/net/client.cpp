@@ -213,9 +213,9 @@ void client::async_read_next_message() {
         return;
     }
 
-    message_ptr message(new message());
+    message_ptr m = std::make_shared<message>();
 
-    auto nextMessageCallback = [this, message]
+    auto nextMessageCallback = [this, m]
         (const boost::system::error_code& error, 
         std::size_t size)
     {
@@ -223,21 +223,21 @@ void client::async_read_next_message() {
             disconnect(client::read_failed);
         }
         else {
-            if (!message->parse_message(size)) {
+            if (!m->parse_message(size)) {
                 debug::error(TAG, "message parse failed");
             }
 
-            debug::info(TAG, "read message: " + message->name());
+            debug::info(TAG, "read message: " + m->name());
 
-            if (message->type() == message::message_type_request) {
+            if (m->type() == message::message_type_request) {
                 on_recv(request::create(
-                    "autom8://request/" + message->name(),
-                    message->body()));
+                    "autom8://request/" + m->name(),
+                    m->body()));
             }
-            else if (message->type() == message::message_type_response) {
+            else if (m->type() == message::message_type_response) {
                 response_ptr response = response::create(
-                    "autom8://response/" + message->name(),
-                    message->body(),
+                    "autom8://response/" + m->name(),
+                    m->body(),
                     response::requester_only);
 
                 if (state_ == state_authenticating) {
@@ -264,7 +264,7 @@ void client::async_read_next_message() {
 
     boost::asio::async_read_until(
         *socket,
-        message->read_buffer(),
+        m->read_buffer(),
         message_matcher(),
         nextMessageCallback);
 }
