@@ -68,30 +68,13 @@ namespace autom8 {
 
         void reconnect(const std::string& password);
 
-        void disconnect();
+        void disconnect(bool join = false);
         connection_state state();
 
         void send(response_ptr);
         void send(request_ptr);
 
     private:
-        void handle_connect(
-            const boost::system::error_code& error,
-            tcp::resolver::iterator endpoint_iterator);
-
-        void handle_handshake(
-            const boost::system::error_code& error);
-
-        void handle_next_read_message(
-            message_ptr next_read,
-            const boost::system::error_code& error,
-            std::size_t size);
-
-        void handle_post_send(
-            message_formatter_ptr formatter,
-            const boost::system::error_code& error,
-            std::size_t size);
-
         bool verify_certificate(
             bool preverified,
             boost::asio::ssl::verify_context& ctx);
@@ -105,17 +88,17 @@ namespace autom8 {
         void io_service_thread_proc();
 
         void send(message_formatter_ptr);
-        void disconnect(reason disconnect_reason);
+        void disconnect(reason disconnect_reason, bool join = false);
 
     private:
         struct connection {
             using ssl_socket = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
-            using ssl_socket_ptr = std::unique_ptr<ssl_socket> ;
+            using ssl_socket_ptr = std::shared_ptr<ssl_socket> ;
             using ssl_context =  boost::asio::ssl::context;
-            using ssl_context_ptr = std::unique_ptr<ssl_context>;
-            using io_service_ptr = std::unique_ptr <boost::asio::io_service>;
+            using ssl_context_ptr = std::shared_ptr<ssl_context>;
+            using io_service_ptr = std::shared_ptr <boost::asio::io_service>;
             using thread = std::thread;
-            using thread_ptr = std::unique_ptr<thread>;
+            using thread_ptr = std::shared_ptr<thread>;
 
             ssl_context_ptr ssl_context_;
             ssl_socket_ptr socket_;
@@ -124,11 +107,11 @@ namespace autom8 {
 
             connection() { reset(); }
 
-            ~connection() { close(); }
+            ~connection() { close(true); }
 
-            void close() {
+            void close(bool join) {
                 if (io_service_ || service_thread_ || socket_ || ssl_context_) {
-                    std::thread([ /* deferred disconnect */
+                    auto thread = std::thread([ /* deferred disconnect */
                         io_service_ = std::move(this->io_service_),
                         service_thread_ = std::move(this->service_thread_),
                         socket_ = std::move(this->socket_),
@@ -137,12 +120,21 @@ namespace autom8 {
                         if (socket_) { socket_->lowest_layer().close(); }
                         if (io_service_) { io_service_->stop(); }
                         if (service_thread_) { service_thread_->join(); }
-                    }).detach();
+                    });
+
+                    if (thread.joinable()) {
+                        if (join) {
+                            thread.join();
+                        }
+                        else {
+                            thread.detach();
+                        }
+                    }
                 }
             }
 
-            void reset() {
-                close();
+            void reset(bool join = false) {
+                close(join);
                 io_service_ = std::make_unique<boost::asio::io_service>();
                 ssl_context_ = std::make_unique<ssl_context>(boost::asio::ssl::context::sslv23);
                 ssl_context_->set_verify_mode(boost::asio::ssl::context::verify_peer);

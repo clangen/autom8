@@ -56,18 +56,16 @@ namespace autom8 {
         void on_session_disconnected(session_ptr);
         void schedule_ping();
         void boostrap_new_session(session_ptr session);
-        void handle_scheduled_ping(const error_code& error);
         void io_service_thread_proc();
 
         void start_accept();
-        void handle_accept(const boost::system::error_code&, session_ptr);
 
         boost::asio::io_service io_service_;
         boost::asio::ssl::context ssl_context_;
         tcp::endpoint endpoint_;
         tcp::acceptor acceptor_;
         session_list session_list_;
-        std::mutex state_mutex_;
+        std::recursive_mutex state_mutex_;
         volatile bool stopped_;
         thread_ptr io_service_thread_;
         timer_ptr ping_timer_;

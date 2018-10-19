@@ -107,24 +107,16 @@ void server::start_accept() {
     session_ptr sess(new session(io_service_, ssl_context_));
 
     acceptor_.async_accept(
-        sess->socket().lowest_layer(),
-        boost::bind(
-            &server::handle_accept,
-            this,
-            boost::asio::placeholders::error,
-            sess
-        )
-    );
-}
+        sess->socket().lowest_layer(), 
+        [this, sess](const boost::system::error_code& error) {
+            if (error) {
+                debug::info(TAG, "socket accept failed, connection error or server shutting down");
+                return;
+            }
 
-void server::handle_accept(const boost::system::error_code& error, session_ptr sess) {
-    if (error) {
-        debug::info(TAG, "socket accept failed, connection error or server shutting down");
-        return;
-    }
-
-    boostrap_new_session(sess);
-    start_accept();
+            this->boostrap_new_session(sess);
+            this->start_accept();
+        });
 }
 
 bool server::start(unsigned short port) {
@@ -225,14 +217,6 @@ void server::send(request_ptr request) {
     }
 }
 
-void server::handle_scheduled_ping(const error_code& error) {
-    ping_timer_ = timer_ptr();
-    if ((!error) && (!stopped_)) {
-        server::send(messages::requests::ping());
-        schedule_ping();
-    }
-}
-
 void server::schedule_ping() {
     if (ping_timer_) {
         ping_timer_->cancel();
@@ -241,11 +225,13 @@ void server::schedule_ping() {
     ping_timer_ = timer_ptr(new boost::asio::deadline_timer(io_service_));
     ping_timer_->expires_from_now(boost::posix_time::seconds(240));
 
-    ping_timer_->async_wait(
-        bind(
-            &server::handle_scheduled_ping,
-            this,
-            boost::asio::placeholders::error));
+    ping_timer_->async_wait([this](const error_code& error) {
+        ping_timer_ = timer_ptr();
+        if ((!error) && (!stopped_)) {
+            server::send(messages::requests::ping());
+            schedule_ping();
+        }
+    });
 }
 
 void server::on_session_disconnected(session_ptr session) {
@@ -271,7 +257,7 @@ void server::dispatch_request(session_ptr session, request_ptr request) {
         return;
     }
 
-    session->enqueue_write(message_formatter::create(request));
+    session->send(request);
 
     // suppress the pings, they just pollute the log file.
     std::string uri = request->uri();
@@ -288,12 +274,9 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
         return;
     }
 
-    message_formatter_ptr formatter =
-        message_formatter::create(response);
-
     switch (response->target()) {
     case response::requester_only:
-        session->enqueue_write(formatter);
+        session->send(response);
         break;
 
     case response::all_sessions:
@@ -306,7 +289,7 @@ void server::dispatch_response(session_ptr session, response_ptr response) {
                     continue;
                 }
 
-                (*it)->enqueue_write(formatter);
+                (*it)->send(response);
             }
         }
         break;

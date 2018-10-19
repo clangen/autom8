@@ -77,12 +77,6 @@ bool session::is_authenticated() const {
 }
 
 void session::enqueue_write(message_formatter_ptr formatter) {
-    /* we should never be asked to write before we auth. */
-    if (!is_authenticated_) {
-        debug::warning(TAG, "message received before authenticated. ignoring.");
-        return;
-    }
-
     boost::asio::async_write(
         socket_,
         boost::asio::buffer(formatter->to_string()),
@@ -91,6 +85,28 @@ void session::enqueue_write(message_formatter_ptr formatter) {
                 this->disconnect("message write failed");
             }
         });
+}
+
+void session::send(request_ptr request) {
+    /* we should never be asked to write before we auth. */
+    if (!is_authenticated_) {
+        if (request->uri() != "autom8://request/ping") {
+            disconnect("message received before authenticated.");
+            return;
+        }
+    }
+
+    enqueue_write(message_formatter::create(request));
+}
+
+void session::send(response_ptr response) {
+    /* we should never be asked to write before we auth. */
+    if (!is_authenticated_) {
+        disconnect("message received before authenticated");
+    }
+    else {
+        enqueue_write(message_formatter::create(response));
+    }
 }
 
 bool session::handle_authentication(session_ptr session, message_ptr message) {
@@ -180,12 +196,9 @@ void session::disconnect(const std::string& reason) {
         catch(...) {
             debug::warning(TAG, "failed to close() socket");
         }
-
-        /* cache a shared pointer to ensure we don't get cleaned up
-        before the thread has a chance to run */
-        auto shared = shared_from_this();
-        std::thread([shared] { shared->on_disconnected(); }).detach();
     }
+
+    this->on_disconnected();
 }
 
 void session::async_read_next_message() {
@@ -215,8 +228,5 @@ void session::async_read_next_message() {
     };
 
     boost::asio::async_read_until(
-        socket_,
-        m->read_buffer(),
-        message_matcher(),
-        callback);
+        socket_, m->read_buffer(), message_matcher(), callback);
 }

@@ -36,7 +36,8 @@ namespace autom8 {
         void start();
         void disconnect(const std::string& reason = "");
 
-        void enqueue_write(message_formatter_ptr formatter);
+        void send(request_ptr request);
+        void send(response_ptr response);
 
         ssl_socket& socket();
         std::string ip_address() const;
@@ -51,6 +52,7 @@ namespace autom8 {
         static bool handle_authentication(
             session_ptr session, message_ptr message);
 
+        void enqueue_write(message_formatter_ptr formatter);
         void on_disconnected();
         void async_read_next_message();
 

@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 
     app.SetKeyHandler([&](const std::string& kn) -> bool {
         if (kn == "d") {
-            client->disconnect();
+            client->disconnect(true);
             return true;
         }
         else if (kn == "c") {
@@ -130,6 +130,7 @@ int main(int argc, char* argv[]) {
     app.Run(std::make_shared<MainLayout>(client));
 
     autom8::server::stop();
+    client->disconnect(true);
 
     f8n::debug::stop();
 
