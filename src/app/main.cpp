@@ -53,6 +53,7 @@
 #include <autom8/util/preferences.hpp>
 
 #include <cursespp/App.h>
+#include <cursespp/AppLayout.h>
 
 #include <app/layout/MainLayout.h>
 
@@ -127,7 +128,11 @@ int main(int argc, char* argv[]) {
         return false;
     });
 
-    app.Run(std::make_shared<MainLayout>(client));
+    auto appLayout = std::make_shared<AppLayout>(app);
+    auto mainLayout = std::make_shared<MainLayout>(client);
+    appLayout->SetLayout(mainLayout);
+
+    app.Run(appLayout);
 
     autom8::server::stop();
     client->disconnect(true);

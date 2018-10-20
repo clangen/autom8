@@ -7,13 +7,14 @@
 #include <cursespp/Screen.h>
 #include <cursespp/TextLabel.h>
 #include <cursespp/LayoutBase.h>
-
+#include <cursespp/ITopLevelLayout.h>
 #include <f8n/runtime/IMessage.h>
 
 namespace autom8 { namespace app {
 
     class MainLayout:
         public cursespp::LayoutBase,
+        public cursespp::ITopLevelLayout,
         public sigslot::has_slots<>
     {
         public:
@@ -23,6 +24,12 @@ namespace autom8 { namespace app {
 
             virtual void ProcessMessage(
                 f8n::runtime::IMessage& message) override;
+
+            virtual void SetShortcutsWindow(
+                cursespp::ShortcutsWindow* w) override
+            {
+
+            }
 
         private:
             void Update();
