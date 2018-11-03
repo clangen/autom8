@@ -180,12 +180,12 @@ void session::disconnect(const std::string& reason) {
         catch(...) {
             debug::warning(TAG, "failed to close() socket");
         }
-
-        /* cache a shared pointer to ensure we don't get cleaned up
-        before the thread has a chance to run */
-        auto shared = shared_from_this();
-        std::thread([shared] { shared->on_disconnected(); }).detach();
     }
+
+    /* cache a shared pointer to ensure we don't get cleaned up
+    before the thread has a chance to run */
+    auto shared = shared_from_this();
+    std::thread([shared] { shared->on_disconnected(); }).detach();
 }
 
 void session::async_read_next_message() {
