@@ -51,6 +51,9 @@
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
 #include <autom8/util/preferences.hpp>
+#include <autom8/message/requests/get_device_list.hpp>
+#include <autom8/device/device_system.hpp>
+#include <autom8/device/null_device_system.hpp>
 
 #include <cursespp/App.h>
 
@@ -98,6 +101,12 @@ int main(int argc, char* argv[]) {
 
     autom8::utility::prefs().set("password", hashed);
 
+    using device_system_ptr = std::shared_ptr<autom8::device_system>;
+    device_system_ptr system = std::make_shared<autom8::null_device_system>();
+    std::vector<std::string> groups;
+    system->model().add(autom8::device_type_appliance, "a1", "dummy appliance 1", groups);
+    autom8::device_system::set_instance(system);
+
     autom8::server::start(7901);
 
     auto client = std::make_shared<autom8::client>();
@@ -123,6 +132,11 @@ int main(int argc, char* argv[]) {
         else if (kn == "r") {
             autom8::server::start(7901);
             return true;
+        }
+        else if (kn == "l") {
+            if (client->state() == autom8::client::state_connected) {
+                client->send(autom8::get_device_list::request());
+            }
         }
         return false;
     });

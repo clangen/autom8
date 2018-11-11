@@ -214,7 +214,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
             debug::error(TAG, "message parse failed");
         }
 
-        debug::info(TAG, "read message: " + message->name());
+        debug::info(TAG, "read message: " + message->name() + " " + message->body().dump());
 
         if (message->type() == message::message_type_request) {
             on_recv(request::create(

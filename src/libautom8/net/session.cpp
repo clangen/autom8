@@ -209,7 +209,7 @@ void session::async_read_next_message() {
                 this->disconnect("[E] [SESSION] failed to process request: " + m->name());
             }
         }
-        else if (!is_disconnected_) {
+        if (!is_disconnected_) {
             this->async_read_next_message();
         }
     };
