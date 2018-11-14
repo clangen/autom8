@@ -76,6 +76,7 @@ set (autom8_curses_SRCS
   ./src/libautom8/device/device_system.cpp
   ./src/libautom8/device/device_model.cpp
   ./src/app/main.cpp
+  ./src/app/adapter/DeviceListAdapter.cpp
   ./src/app/layout/ClientLayout.cpp
   ./src/app/layout/ServerLayout.cpp
   ./src/app/layout/SettingsLayout.cpp

@@ -7,8 +7,11 @@
 #include <cursespp/Screen.h>
 #include <cursespp/TextLabel.h>
 #include <cursespp/LayoutBase.h>
+#include <cursespp/ListWindow.h>
 
 #include <f8n/runtime/IMessage.h>
+
+#include <app/adapter/DeviceListAdapter.h>
 
 namespace autom8 { namespace app {
 
@@ -32,10 +35,11 @@ namespace autom8 { namespace app {
                 autom8::client::connection_state state,
                 autom8::client::reason reason);
 
+            std::shared_ptr<DeviceListAdapter> deviceListAdapter;
             autom8::client_ptr client;
-            std::shared_ptr<cursespp::TextLabel> label;
             std::shared_ptr<cursespp::TextLabel> clientStatus;
             std::shared_ptr<cursespp::TextLabel> serverStatus;
+            std::shared_ptr<cursespp::ListWindow> deviceList;
     };
 
 } }
