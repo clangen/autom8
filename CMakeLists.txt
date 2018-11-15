@@ -96,6 +96,12 @@ else (CMAKE_SYSTEM_NAME MATCHES "Linux")
   target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} curses panel f8n cursespp ssl crypto)
 endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
+file(GLOB themes "src/app/data/themes/*.json")
+file(COPY ${themes} DESTINATION __output/themes)
+
+file(GLOB locales "src/app/data/locales/*.json")
+file(COPY ${locales} DESTINATION __output/locales)
+
 # install(
 #   FILES lib/libautom8_curses.a
 #   DESTINATION lib/
