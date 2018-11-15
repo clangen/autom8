@@ -38,6 +38,7 @@ namespace autom8 { namespace app {
                 autom8::client::reason);
 
             void Requery();
+            void NotifyChanged();
 
             std::mutex dataMutex;
             nlohmann::json data;

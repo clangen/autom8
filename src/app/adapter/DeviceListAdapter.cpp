@@ -50,6 +50,10 @@ void DeviceListAdapter::Requery() {
     client->send(autom8::get_device_list::request());
 }
 
+void DeviceListAdapter::NotifyChanged() {
+    this->messageQueue.Post(Message::Create(this, MESSAGE_DEVICE_LIST_CHANGED));
+}
+
 const nlohmann::json DeviceListAdapter::At(const size_t index) {
     std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
 
@@ -87,9 +91,24 @@ void DeviceListAdapter::OnClientStateChanged(
 
 void DeviceListAdapter::OnClientResponse(autom8::response_ptr response) {
     if (response->uri() == "autom8://response/get_device_list") {
+        debug::info("DeviceListAdapter", "got device list response");
         std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
         this->data = response->body()->value("devices", nlohmann::json::array());
-        this->messageQueue.Post(Message::Create(this, MESSAGE_DEVICE_LIST_CHANGED));
-        debug::info("DeviceListAdapter", "got device list response");
+        this->NotifyChanged();
+    }
+    else if (response->uri() == "autom8://response/device_status_updated") {
+        debug::info("DeviceListAdapter", "got device updated response");
+        std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
+        auto body = response->body();
+        for (size_t i = 0; i < this->data.size(); i++) {
+            auto& device = this->data.at(i);
+            auto address = body->value("address", "");
+            if (device.value("address", "") == address) {
+                device_status updatedStatus = body->value("status", autom8::device_status_unknown);
+                device["status"] = updatedStatus;
+                this->NotifyChanged();
+                break;
+            }
+        }
     }
 }
