@@ -57,14 +57,14 @@ void MainLayout::Update() {
     using S = autom8::client::connection_state;
 
     std::string str = "disconnected";
-    auto color = Color::Default;
+    auto color = Color::TextDisabled;
     switch (client->state()) {
         case S::state_connecting:
             str = "connecting";
             break;
         case S::state_connected:
             str = std::string("connected to ") + client->hostname();
-            color = Color::Banner;
+            color = Color::TextActive;
             break;
         case S::state_disconnecting:
             str = "disconnecting";
@@ -77,10 +77,10 @@ void MainLayout::Update() {
     this->clientStatus->SetContentColor(Color(color));
 
     str = "stopped";
-    color = Color::Default;
+    color = Color::TextDisabled;
     if (autom8::server::is_running()) {
         str = "running";
-        color = Color::Footer;
+        color = Color::TextWarning;
     }
 
     this->serverStatus->SetText(std::string("server ") + str, cursespp::text::AlignCenter);

@@ -56,6 +56,7 @@
 #include <autom8/device/null_device_system.hpp>
 
 #include <cursespp/App.h>
+#include <cursespp/Colors.h>
 
 #include <app/layout/MainLayout.h>
 
@@ -67,7 +68,7 @@ static const int MAX_SIZE = 1000;
 static const int DEFAULT_WIDTH = 100;
 static const int MIN_WIDTH = 42;
 static const int DEFAULT_HEIGHT = 26;
-static const int MIN_HEIGHT = 12;
+static const int MIN_HEIGHT = 10;
 
 using namespace cursespp;
 using namespace autom8::app;
@@ -116,6 +117,9 @@ int main(int argc, char* argv[]) {
         App app(APP_NAME); /* must be before layout creation */
 
         app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+        app.SetColorMode(Colors::RGB);
+        app.SetColorBackgroundType(Colors::Inherit);
+        app.SetColorTheme(f8n::env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {
             if (kn == "d") {
