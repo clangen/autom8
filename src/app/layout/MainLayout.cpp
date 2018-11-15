@@ -116,7 +116,7 @@ void MainLayout::OnClientStateChanged(autom8::client::connection_state state, au
     this->Post(UPDATE_STATUS_MESSAGE);
 
     if (state == autom8::client::state_disconnected) {
-        if (reason != autom8::client::auth_failed) {
+        if (reason != autom8::client::auth_failed && reason != autom8::client::user) {
             debug::info("MainLayout", "scheduling reconnect...");
             this->Remove(SCHEDULE_RECONNECT);
             this->Post(SCHEDULE_RECONNECT, 0L, 0L, 5000);

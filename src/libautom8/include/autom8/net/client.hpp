@@ -42,7 +42,7 @@ namespace autom8 {
         enum reason {
             unknown = -1,
             none = 0,
-            ok = 1,
+            user = 1,
             connect_failed = 2,
             handshake_failed = 3,
             auth_failed = 4,

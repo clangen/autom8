@@ -126,7 +126,7 @@ bool client::verify_certificate(bool preverified, boost::asio::ssl::verify_conte
 }
 
 void client::disconnect() {
-    disconnect(client::ok);
+    disconnect(client::user);
 }
 
 void client::disconnect(reason disconnect_reason) {
