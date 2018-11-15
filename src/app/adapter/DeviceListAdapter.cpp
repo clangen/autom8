@@ -3,9 +3,11 @@
 #include <cursespp/SingleLineEntry.h>
 #include <cursespp/ScrollableWindow.h>
 #include <cursespp/Colors.h>
+#include <cursespp/Text.h>
 #include <autom8/message/requests/get_device_list.hpp>
 #include <f8n/debug/debug.h>
 #include <f8n/runtime/Message.h>
+#include <algorithm>
 
 using namespace cursespp;
 using namespace f8n;
@@ -61,14 +63,34 @@ const nlohmann::json DeviceListAdapter::At(const size_t index) {
         ? this->data.at(index) : nlohmann::json::object();
 }
 
+static std::string formatRow(size_t width, const nlohmann::json& device) {
+    static const int addressWidth = 3;
+    static const int statusWidth = 3;
+
+    const int labelWidth = std::max(0, (int) width - addressWidth - statusWidth - 6);
+    const autom8::device_status status = device.value("status", autom8::device_status_unknown);
+
+    const std::string addressStr = device.value("address", "??");
+    
+    std::string statusStr = "off";
+    if (status == autom8::device_status_on) {
+        statusStr = "on";
+    }
+
+    std::string label = device.value("label", "unknown device");
+    label = text::Align(label, text::AlignLeft, labelWidth);
+
+    return " " + addressStr + "  " +  label + "  " + statusStr + " ";
+}
+
 IScrollAdapter::EntryPtr DeviceListAdapter::GetEntry(ScrollableWindow* window, size_t index) {
-    std::string label = "unknown device";
+    std::string label;
 
     bool selected = index == window->GetScrollPosition().logicalIndex;
 
     {
         std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
-        label = this->data.at(index).value("label", label);
+        label = formatRow(window->GetContentWidth(), this->data.at(index));
     }
 
     auto entry = std::make_shared<SingleLineEntry>(label);
