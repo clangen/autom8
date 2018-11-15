@@ -1,5 +1,5 @@
 #include "MainLayout.h"
-
+#include <app/util/Device.h>
 #include <cursespp/Colors.h>
 
 using namespace autom8;
@@ -85,6 +85,18 @@ void MainLayout::Update() {
 
     this->serverStatus->SetText(std::string("server: ") + str, cursespp::text::AlignCenter);
     this->serverStatus->SetContentColor(Color(color));
+}
+
+bool MainLayout::KeyPress(const std::string& kn) {
+    if (kn == "KEY_ENTER") {
+        size_t index = this->deviceList->GetSelectedIndex();
+        if (index != ListWindow::NO_SELECTION) {
+            auto device = this->deviceListAdapter->At(index);
+            device::Toggle(this->client, device);
+        }
+        return true;
+    }
+    return false;
 }
 
 void MainLayout::OnServerStateChanged() {

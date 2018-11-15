@@ -28,8 +28,16 @@ namespace autom8 { namespace app {
             virtual cursespp::IScrollAdapter::EntryPtr GetEntry(
                 cursespp::ScrollableWindow* window, size_t index) override;
 
+            const nlohmann::json At(const size_t index);
+
         private:
             void OnClientResponse(autom8::response_ptr);
+
+            void OnClientStateChanged(
+                autom8::client::connection_state,
+                autom8::client::reason);
+
+            void Requery();
 
             std::mutex dataMutex;
             nlohmann::json data;

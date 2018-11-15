@@ -288,7 +288,7 @@ void client::send(response_ptr r) {
 }
 
 void client::send(request_ptr r) {
-    debug::info(TAG, "sending request: " + r->uri());
+    debug::info(TAG, "sending request: " + r->uri() + " " + r->body()->dump());
     send(message_formatter::create(r));
 }
 

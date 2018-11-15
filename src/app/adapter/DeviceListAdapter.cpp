@@ -3,6 +3,7 @@
 #include <cursespp/SingleLineEntry.h>
 #include <cursespp/ScrollableWindow.h>
 #include <cursespp/Colors.h>
+#include <autom8/message/requests/get_device_list.hpp>
 #include <f8n/debug/debug.h>
 #include <f8n/runtime/Message.h>
 
@@ -22,6 +23,12 @@ DeviceListAdapter::DeviceListAdapter(
 , messageQueue(messageQueue)
 , changedCallback(changedCallback) {
     client->recv_response.connect(this, &DeviceListAdapter::OnClientResponse);
+
+    client->state_changed.connect(this, &DeviceListAdapter::OnClientStateChanged);
+
+    if (client->state() == client::state_connected) {
+        this->Requery();
+    }
 }
 
 DeviceListAdapter::~DeviceListAdapter() {
@@ -37,6 +44,17 @@ void DeviceListAdapter::ProcessMessage(IMessage &message) {
 size_t DeviceListAdapter::GetEntryCount() {
     std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
     return this->data.size();
+}
+
+void DeviceListAdapter::Requery() {
+    client->send(autom8::get_device_list::request());
+}
+
+const nlohmann::json DeviceListAdapter::At(const size_t index) {
+    std::unique_lock<decltype(this->dataMutex)> lock(this->dataMutex);
+
+    return this->data.size() > index
+        ? this->data.at(index) : nlohmann::json::object();
 }
 
 IScrollAdapter::EntryPtr DeviceListAdapter::GetEntry(ScrollableWindow* window, size_t index) {
@@ -57,6 +75,14 @@ IScrollAdapter::EntryPtr DeviceListAdapter::GetEntry(ScrollableWindow* window, s
     entry->SetAttrs(color);
 
     return entry;
+}
+
+void DeviceListAdapter::OnClientStateChanged(
+    client::connection_state state, client::reason)
+{
+    if (state == client::state_connected) {
+        this->Requery();
+    }
 }
 
 void DeviceListAdapter::OnClientResponse(autom8::response_ptr response) {

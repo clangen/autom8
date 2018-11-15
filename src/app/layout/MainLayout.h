@@ -12,6 +12,7 @@
 #include <f8n/runtime/IMessage.h>
 
 #include <app/adapter/DeviceListAdapter.h>
+#include <app/util/Device.h>
 
 namespace autom8 { namespace app {
 
@@ -23,9 +24,8 @@ namespace autom8 { namespace app {
             MainLayout(autom8::client_ptr client);
 
             virtual void OnLayout() override;
-
-            virtual void ProcessMessage(
-                f8n::runtime::IMessage& message) override;
+            virtual void ProcessMessage(f8n::runtime::IMessage& message) override;
+            virtual bool KeyPress(const std::string& kn) override;
 
         private:
             void Update();
