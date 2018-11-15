@@ -68,7 +68,7 @@ namespace autom8 {
 
         std::string hostname() { return hostname_; }
 
-        void reconnect(const std::string& password);
+        void reconnect();
 
         void disconnect();
         connection_state state();

@@ -53,18 +53,17 @@ void client::connect(
 {
     hostname_ = hostname;
     port_ = port;
-    reconnect(password);
+    password_ = password;
+    reconnect();
 }
 
-void client::reconnect(const std::string& password) {
+void client::reconnect() {
     std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
     if (state_ != state_disconnected) {
         debug::warning(TAG, "connect() called but not disconnected");
         return;
     }
-
-    password_ = password;
 
     connection_.reset();
 
@@ -137,8 +136,6 @@ void client::disconnect(reason disconnect_reason) {
     {
         std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
-        password_.clear();
-
         if (state_ == state_disconnected ||
             state_ == state_disconnecting)
         {
@@ -189,16 +186,8 @@ void client::handle_handshake(const boost::system::error_code& error) {
         disconnect(client::handshake_failed);
     }
     else {
-        std::string pw;
-
-        {
-            std::unique_lock<std::recursive_mutex> lock(state_lock_);
-            pw = password_;
-            password_.clear();
-        }
-
         set_state(state_authenticating);
-        send(messages::requests::authenticate(pw));
+        send(messages::requests::authenticate(password_));
         async_read_next_message();
     }
 }
@@ -293,7 +282,7 @@ void client::send(request_ptr r) {
 void client::send(message_formatter_ptr f) {
     std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
-    if (state_ == state_connected || 
+    if (state_ == state_connected ||
         state_ == state_connecting ||
         state_ == state_authenticating)
     {

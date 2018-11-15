@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
                 return true;
             }
             else if (kn == "c") {
-                client->reconnect(hashed);
+                client->reconnect();
                 return true;
             }
             else if (kn == "s") {

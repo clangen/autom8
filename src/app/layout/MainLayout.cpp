@@ -1,13 +1,16 @@
 #include "MainLayout.h"
 #include <app/util/Device.h>
 #include <cursespp/Colors.h>
+#include <f8n/debug/debug.h>
 
 using namespace autom8;
 using namespace autom8::app;
 using namespace cursespp;
+using namespace f8n;
 using namespace f8n::runtime;
 
 static const int UPDATE_STATUS_MESSAGE = 1024;
+static const int SCHEDULE_RECONNECT = 1025;
 
 MainLayout::MainLayout(client_ptr client)
 : LayoutBase()
@@ -28,7 +31,7 @@ MainLayout::MainLayout(client_ptr client)
     this->AddWindow(serverStatus);
 
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
-    this->deviceList->SetFrameTitle("autom8 devices");
+    this->deviceList->SetFrameTitle("devices");
     this->AddWindow(this->deviceList);
     this->deviceList->SetFocusOrder(0);
 
@@ -50,6 +53,12 @@ void MainLayout::OnLayout() {
 void MainLayout::ProcessMessage(IMessage& message){
     if (message.Type() == UPDATE_STATUS_MESSAGE) {
         this->Update();
+    }
+    else if (message.Type() == SCHEDULE_RECONNECT) {
+        if (client->state() == autom8::client::state_disconnected) {
+            debug::info("MainLayout", "reconnecting...");
+            client->reconnect();
+        }
     }
 }
 
@@ -105,4 +114,12 @@ void MainLayout::OnServerStateChanged() {
 
 void MainLayout::OnClientStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
     this->Post(UPDATE_STATUS_MESSAGE);
+
+    if (state == autom8::client::state_disconnected) {
+        if (reason != autom8::client::auth_failed) {
+            debug::info("MainLayout", "scheduling reconnect...");
+            this->Remove(SCHEDULE_RECONNECT);
+            this->Post(SCHEDULE_RECONNECT, 0L, 0L, 5000);
+        }
+    }
 }
