@@ -5,7 +5,7 @@ using namespace nlohmann;
 
 typedef response::response_target response_target;
 
-static const json blank_body_;
+static const json blank_body_ = json::object();
 
 namespace autom8 {
     namespace messages {

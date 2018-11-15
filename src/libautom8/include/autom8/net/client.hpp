@@ -66,6 +66,8 @@ namespace autom8 {
             unsigned short port,
             const std::string& password);
 
+        std::string hostname() { return hostname_; }
+
         void reconnect(const std::string& password);
 
         void disconnect();

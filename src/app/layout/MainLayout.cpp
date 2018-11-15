@@ -28,7 +28,7 @@ MainLayout::MainLayout(client_ptr client)
     this->AddWindow(serverStatus);
 
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
-    this->deviceList->SetFrameTitle("devices");
+    this->deviceList->SetFrameTitle("autom8 devices");
     this->AddWindow(this->deviceList);
     this->deviceList->SetFocusOrder(0);
 
@@ -42,9 +42,9 @@ MainLayout::MainLayout(client_ptr client)
 void MainLayout::OnLayout() {
     int cx = this->GetContentWidth();
     int cy = this->GetContentHeight();
-    this->clientStatus->MoveAndResize(0, 0, (cx / 2) - 1, 1);
-    this->serverStatus->MoveAndResize(cx / 2, 0, cx - (cx / 2), 1);
-    this->deviceList->MoveAndResize(0, 1, cx, cy - 1);
+    this->clientStatus->MoveAndResize(0, 0, cx, 1);
+    this->serverStatus->MoveAndResize(0, cy - 1, cx, 1);
+    this->deviceList->MoveAndResize(0, 1, cx, cy - 2);
 }
 
 void MainLayout::ProcessMessage(IMessage& message){
@@ -56,15 +56,15 @@ void MainLayout::ProcessMessage(IMessage& message){
 void MainLayout::Update() {
     using S = autom8::client::connection_state;
 
-    auto str = "disconnected";
-    auto color = Color::Banner;
+    std::string str = "disconnected";
+    auto color = Color::Default;
     switch (client->state()) {
         case S::state_connecting:
             str = "connecting";
             break;
         case S::state_connected:
-            str = "connected";
-            color = Color::Footer;
+            str = std::string("connected to ") + client->hostname();
+            color = Color::Banner;
             break;
         case S::state_disconnecting:
             str = "disconnecting";
@@ -73,17 +73,17 @@ void MainLayout::Update() {
             break;
     }
 
-    this->clientStatus->SetText(std::string("client: ") + str, cursespp::text::AlignCenter);
+    this->clientStatus->SetText(str, cursespp::text::AlignCenter);
     this->clientStatus->SetContentColor(Color(color));
 
     str = "stopped";
-    color = Color::Banner;
+    color = Color::Default;
     if (autom8::server::is_running()) {
         str = "running";
         color = Color::Footer;
     }
 
-    this->serverStatus->SetText(std::string("server: ") + str, cursespp::text::AlignCenter);
+    this->serverStatus->SetText(std::string("server ") + str, cursespp::text::AlignCenter);
     this->serverStatus->SetContentColor(Color(color));
 }
 

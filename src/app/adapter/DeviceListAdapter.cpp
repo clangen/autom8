@@ -109,6 +109,10 @@ void DeviceListAdapter::OnClientStateChanged(
     if (state == client::state_connected) {
         this->Requery();
     }
+    else if (state == client::state_disconnected) {
+        this->data = nlohmann::json::object();
+        this->NotifyChanged();
+    }
 }
 
 void DeviceListAdapter::OnClientResponse(autom8::response_ptr response) {
