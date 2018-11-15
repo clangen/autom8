@@ -57,23 +57,21 @@ void client::connect(
 }
 
 void client::reconnect(const std::string& password) {
-    {
-        std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    std::unique_lock<std::recursive_mutex> lock(state_lock_);
 
-        if (state_ != state_disconnected) {
-            debug::warning(TAG, "connect() called but not disconnected");
-            return;
-        }
-
-        password_ = password;
-
-        connection_.reset();
-
-        connection_.started(new std::thread(
-            boost::bind(&client::io_service_thread_proc, this)));
+    if (state_ != state_disconnected) {
+        debug::warning(TAG, "connect() called but not disconnected");
+        return;
     }
 
+    password_ = password;
+
+    connection_.reset();
+
     set_state(state_connecting);
+
+    connection_.started(new std::thread(
+        boost::bind(&client::io_service_thread_proc, this)));
 }
 
 void client::io_service_thread_proc() {
@@ -293,15 +291,22 @@ void client::send(request_ptr r) {
 }
 
 void client::send(message_formatter_ptr f) {
-    boost::asio::async_write(
-        *connection_.socket_,
-        boost::asio::buffer(f->to_string()),
-        boost::bind(
-            &client::handle_post_send,
-            this,
-            f,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+
+    if (state_ == state_connected || 
+        state_ == state_connecting ||
+        state_ == state_authenticating)
+    {
+        boost::asio::async_write(
+            *connection_.socket_,
+            boost::asio::buffer(f->to_string()),
+            boost::bind(
+                &client::handle_post_send,
+                this,
+                f,
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred));
+    }
 }
 
 void client::on_recv(response_ptr response) {
