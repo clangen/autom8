@@ -23,7 +23,7 @@ public:
         device_system::instance()->model().all_devices(devices);
 
         auto body = std::make_shared<json>();
-        auto devices_node = (*body)["devices"] = json::array();
+        auto& devices_node = (*body)["devices"] = json::array();
 
         for (auto device : devices) {
             devices_node.push_back(device->to_json());
@@ -52,6 +52,10 @@ void get_device_list::operator()(session_ptr session, message_ptr request) {
 
 request_handler_ptr get_device_list::create() {
     return request_handler_ptr(new get_device_list());
+}
+
+request_ptr get_device_list::request() {
+    return request::create("autom8://request/get_device_list");
 }
 
 //////////////

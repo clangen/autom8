@@ -38,6 +38,12 @@ if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
   include_directories("/usr/local/opt/openssl/include")
 endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
+if (EXISTS "/etc/arch-release" OR EXISTS "/etc/manjaro-release" OR NO_NCURSESW)
+  add_definitions (-DNO_NCURSESW)
+elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+  add_definitions (-DNO_NCURSESW)
+endif()
+
 set (autom8_curses_SRCS
   ./src/libautom8/net/client.cpp
   ./src/libautom8/net/session.cpp
@@ -70,10 +76,12 @@ set (autom8_curses_SRCS
   ./src/libautom8/device/device_system.cpp
   ./src/libautom8/device/device_model.cpp
   ./src/app/main.cpp
+  ./src/app/adapter/DeviceListAdapter.cpp
   ./src/app/layout/ClientLayout.cpp
   ./src/app/layout/ServerLayout.cpp
   ./src/app/layout/SettingsLayout.cpp
   ./src/app/layout/MainLayout.cpp
+  ./src/app/util/Device.cpp
 )
 
 add_executable(autom8_curses ${autom8_curses_SRCS})

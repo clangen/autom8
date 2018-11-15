@@ -51,6 +51,9 @@
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
 #include <autom8/util/preferences.hpp>
+#include <autom8/message/requests/get_device_list.hpp>
+#include <autom8/device/device_system.hpp>
+#include <autom8/device/null_device_system.hpp>
 
 #include <cursespp/App.h>
 
@@ -96,36 +99,51 @@ int main(int argc, char* argv[]) {
 
     autom8::utility::prefs().set("password", hashed);
 
-    autom8::server::start(7901);
+    {
+        using device_system_ptr = std::shared_ptr<autom8::device_system>;
+        device_system_ptr system = std::make_shared<autom8::null_device_system>();
+        std::vector<std::string> groups;
+        system->model().add(autom8::device_type_appliance, "a1", "dummy appliance 1", groups);
+        autom8::device_system::set_instance(system);
 
-    auto client = std::make_shared<autom8::client>();
-    client->connect(host, port, hashed);
+        autom8::server::start(7901);
 
-    App app(APP_NAME); /* must be before layout creation */
+        auto client = std::make_shared<autom8::client>();
+        client->connect(host, port, hashed);
 
-    app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+        App app(APP_NAME); /* must be before layout creation */
 
-    app.SetKeyHandler([&](const std::string& kn) -> bool {
-        if (kn == "d") {
-            client->disconnect();
-            return true;
-        }
-        else if (kn == "c") {
-            client->reconnect(hashed);
-            return true;
-        }
-        else if (kn == "s") {
-            autom8::server::stop();
-            return true;
-        }
-        else if (kn == "r") {
-            autom8::server::start(7901);
-            return true;
-        }
-        return false;
-    });
+        app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
 
-    app.Run(std::make_shared<MainLayout>(client));
+        app.SetKeyHandler([&](const std::string& kn) -> bool {
+            if (kn == "d") {
+                client->disconnect();
+                return true;
+            }
+            else if (kn == "c") {
+                client->reconnect(hashed);
+                return true;
+            }
+            else if (kn == "s") {
+                autom8::server::stop();
+                return true;
+            }
+            else if (kn == "r") {
+                autom8::server::start(7901);
+                return true;
+            }
+            else if (kn == "l") {
+                if (client->state() == autom8::client::state_connected) {
+                    client->send(autom8::get_device_list::request());
+                }
+            }
+            return false;
+        });
+
+        app.Run(std::make_shared<MainLayout>(client));
+    }
+
+    autom8::device_system::clear_instance(); /* ugh. fix this. */
 
     autom8::server::stop();
     client->disconnect();

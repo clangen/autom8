@@ -10,7 +10,7 @@ namespace autom8 {
 
     class request {
     public:
-        static request_ptr create(const std::string& uri, const nlohmann::json& body);
+        static request_ptr create(const std::string& uri, const nlohmann::json& body = nlohmann::json::object());
         virtual std::string uri() = 0;
         virtual const std::shared_ptr<nlohmann::json> body() = 0;
     };
