@@ -71,6 +71,7 @@ static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 10;
 
 using namespace cursespp;
+using namespace f8n;
 using namespace autom8::app;
 
 using client_ptr = std::shared_ptr<autom8::client>;
@@ -87,13 +88,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
-    f8n::env::Initialize(APP_NAME, 1);
+    env::Initialize(APP_NAME, 1);
 
-    f8n::debug::Start({
-        new f8n::debug::FileBackend(f8n::env::GetDataDirectory() + "log.txt")
+    debug::Start({
+        new debug::FileBackend(env::GetDataDirectory() + "log.txt")
     });
 
-    f8n::debug::info("main", f8n::debug::format("app starting %d", 10));
+    debug::info("main", debug::format("app starting %d", 10));
 
     std::string password = "changeme";
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
@@ -119,7 +120,7 @@ int main(int argc, char* argv[]) {
         app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
         app.SetColorMode(Colors::RGB);
         app.SetColorBackgroundType(Colors::Inherit);
-        app.SetColorTheme(f8n::env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
+        app.SetColorTheme(env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {
             if (kn == "d") {
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
 
     autom8::device_system::clear_instance(); /* ugh. fix this. */
     autom8::server::stop();
-    f8n::debug::Stop();
+    debug::Stop();
 
     return 0;
 }
