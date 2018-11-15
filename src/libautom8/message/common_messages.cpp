@@ -5,13 +5,11 @@ using namespace nlohmann;
 
 typedef response::response_target response_target;
 
-static const json blank_body_ = json::object();
-
 namespace autom8 {
     namespace messages {
         namespace requests {
             request_ptr ping() {
-                return request::create("autom8://request/ping", blank_body_);
+                return request::create("autom8://request/ping");
             }
 
             request_ptr authenticate(const std::string& pw) {
@@ -22,17 +20,17 @@ namespace autom8 {
             }
 
             request_ptr get_device_list() {
-                return request::create("autom8://request/get_device_list", blank_body_);
+                return request::create("autom8://request/get_device_list");
             }
         } // requests
 
         namespace responses {
             response_ptr authenticated() {
-                return response::create("autom8://response/authenticated", blank_body_);
+                return response::create("autom8://response/authenticated");
             }
 
             response_ptr authenticate_failed() {
-                return response::create("autom8://response/authenticate_failed", blank_body_);
+                return response::create("autom8://response/authenticate_failed");
             }
 
             response_ptr device_status_updated(device_ptr d) {
@@ -57,7 +55,7 @@ namespace autom8 {
             }
 
             response_ptr pong() {
-                return response::create("autom8://response/pong", blank_body_);
+                return response::create("autom8://response/pong");
             }
         } // responses
     } // messages

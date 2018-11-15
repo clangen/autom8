@@ -18,7 +18,7 @@ namespace autom8 {
 
         static response_ptr create(
             const std::string& uri,
-            const nlohmann::json& body,
+            const nlohmann::json& body = nlohmann::json::object(),
             response_target target = requester_only);
 
         virtual std::string uri() = 0;

@@ -65,7 +65,7 @@
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
 static const int DEFAULT_WIDTH = 100;
-static const int MIN_WIDTH = 54;
+static const int MIN_WIDTH = 42;
 static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 12;
 
@@ -86,7 +86,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
-    f8n::Startup(APP_NAME, 1, {
+    f8n::env::Initialize(APP_NAME, 1);
+
+    f8n::debug::start({
         new f8n::debug::FileBackend(f8n::env::GetDataDirectory() + "log.txt")
     });
 
@@ -132,7 +134,7 @@ int main(int argc, char* argv[]) {
                 autom8::server::start(7901);
                 return true;
             }
-            else if (kn == "l") {
+            else if (kn == "R") {
                 if (client->state() == autom8::client::state_connected) {
                     client->send(autom8::get_device_list::request());
                 }
@@ -146,10 +148,8 @@ int main(int argc, char* argv[]) {
     }
 
     autom8::device_system::clear_instance(); /* ugh. fix this. */
-
     autom8::server::stop();
-
-    f8n::Shutdown();
+    f8n::debug::stop();
 
     return 0;
 }

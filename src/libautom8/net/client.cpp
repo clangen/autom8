@@ -208,7 +208,7 @@ void client::handle_next_read_message(message_ptr message, const boost::system::
         disconnect(client::read_failed);
     }
     else {
-        if ( ! message->parse_message(size)) {
+        if (!message->parse_message(size)) {
             debug::error(TAG, "message parse failed");
         }
 
@@ -281,7 +281,7 @@ client::connection_state client::state() {
 }
 
 void client::send(response_ptr r) {
-    debug::info(TAG, "sending response: " + r->uri());
+    debug::info(TAG, "sending response: " + r->uri() + " " + r->body()->dump());
     send(message_formatter::create(r));
 }
 
@@ -310,13 +310,10 @@ void client::send(message_formatter_ptr f) {
 }
 
 void client::on_recv(response_ptr response) {
-    debug::info(TAG, "on_recv(response): " + response->uri());
     recv_response(response); /* notify observers */
 }
 
 void client::on_recv(request_ptr request) {
-    debug::info(TAG, "on_recv(request): " + request->uri());
-
     if (request->uri() == ping_->uri()) {
         send(pong_);
     }

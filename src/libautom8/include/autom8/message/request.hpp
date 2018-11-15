@@ -14,6 +14,4 @@ namespace autom8 {
         virtual std::string uri() = 0;
         virtual const std::shared_ptr<nlohmann::json> body() = 0;
     };
-
-
 }
