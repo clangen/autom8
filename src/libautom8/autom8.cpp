@@ -143,7 +143,7 @@ int autom8_init(int rpc_mode) {
         start_rpc_queue();
     }
 
-    debug::start({ new debug::ConsoleBackend() });
+    debug::Start({ new debug::ConsoleBackend() });
 
     /* select the last selected system, or null by default */
     std::string system = "null";
@@ -161,7 +161,7 @@ int autom8_deinit() {
     }
 
     server::stop();
-    debug::stop();
+    debug::Stop();
 
     external_logger_ = 0;
     initialized_ = false;
