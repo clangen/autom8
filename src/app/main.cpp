@@ -141,12 +141,13 @@ int main(int argc, char* argv[]) {
         });
 
         app.Run(std::make_shared<MainLayout>(client));
+
+        client->disconnect();
     }
 
     autom8::device_system::clear_instance(); /* ugh. fix this. */
 
     autom8::server::stop();
-    client->disconnect();
 
     f8n::Shutdown();
 

@@ -104,17 +104,21 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="adapter\DeviceListAdapter.cpp" />
     <ClCompile Include="layout\ClientLayout.cpp" />
     <ClCompile Include="layout\MainLayout.cpp" />
     <ClCompile Include="layout\ServerLayout.cpp" />
     <ClCompile Include="layout\SettingsLayout.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="util\Device.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="adapter\DeviceListAdapter.h" />
     <ClInclude Include="layout\ClientLayout.h" />
     <ClInclude Include="layout\MainLayout.h" />
     <ClInclude Include="layout\ServerLayout.h" />
     <ClInclude Include="layout\SettingsLayout.h" />
+    <ClInclude Include="util\Device.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,6 +8,12 @@
     <Filter Include="src\layout">
       <UniqueIdentifier>{5f80be78-3aa4-4946-a459-2814606bd318}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\adapter">
+      <UniqueIdentifier>{fa849b81-e456-4fbe-9cb5-76e5c9963262}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util">
+      <UniqueIdentifier>{4b0f5e3a-8729-4116-8f24-15eb1a8c8d0d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,6 +31,12 @@
     <ClCompile Include="layout\ClientLayout.cpp">
       <Filter>src\layout</Filter>
     </ClCompile>
+    <ClCompile Include="adapter\DeviceListAdapter.cpp">
+      <Filter>src\adapter</Filter>
+    </ClCompile>
+    <ClCompile Include="util\Device.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="layout\MainLayout.h">
@@ -38,6 +50,12 @@
     </ClInclude>
     <ClInclude Include="layout\SettingsLayout.h">
       <Filter>src\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="adapter\DeviceListAdapter.h">
+      <Filter>src\adapter</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Device.h">
+      <Filter>src\util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
