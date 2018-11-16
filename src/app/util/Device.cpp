@@ -10,25 +10,23 @@ namespace autom8 { namespace app { namespace device {
             autom8::device_type type = device.value("type", autom8::device_type_unknown);
             if (type == autom8::device_type_lamp || autom8::device_type_appliance) {
                 autom8::device_status status = device.value("status", autom8::device_status_unknown);
-                if (status != autom8::device_status_unknown) {
-                    autom8::device_status updated = (status == autom8::device_status_off)
-                        ? autom8::device_status_on : autom8::device_status_off;
+                autom8::device_status updated = (status == autom8::device_status_on)
+                    ? autom8::device_status_off : autom8::device_status_on;
 
-                    nlohmann::json body = {
-                        { "command", {
-                            { "name", "set_status" },
-                            { "address", address },
-                            { "type", (int) autom8::powerline_command },
-                            { "parameters", {
-                                { "status", (int) updated }
-                            }}
+                nlohmann::json body = {
+                    { "command", {
+                        { "name", "set_status" },
+                        { "address", address },
+                        { "type", (int) autom8::powerline_command },
+                        { "parameters", {
+                            { "status", (int) updated }
                         }}
-                    };
+                    }}
+                };
 
-                    client->send(request::create(
-                        "autom8://request/send_device_command", body
-                    ));
-                }
+                client->send(request::create(
+                    "autom8://request/send_device_command", body
+                ));
             }
         }
         return false;

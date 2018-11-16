@@ -192,63 +192,25 @@ void client::handle_handshake(const boost::system::error_code& error) {
     }
 }
 
-void client::handle_next_read_message(message_ptr message, const boost::system::error_code& error, std::size_t size) {
-    if (error) {
-        disconnect(client::read_failed);
-    }
-    else {
-        if (!message->parse_message(size)) {
-            debug::error(TAG, "message parse failed");
+void client::schedule_ping() {
+    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    if (state_ == state_connected) {
+        if (connection_.ping_timer_) {
+            connection_.ping_timer_->cancel();
         }
 
-        if (message->name() != "ping" && message->name() != "pong") {
-            debug::info(TAG, "read message: " + message->name() + " " + message->body().dump());
-        }
+        connection_.ping_timer_ = connection::timer_ptr(
+            new boost::asio::deadline_timer(*connection_.io_service_));
 
-        if (message->type() == message::message_type_request) {
-            on_recv(request::create(
-                "autom8://request/" + message->name(),
-                message->body()));
-        }
-        else if (message->type() == message::message_type_response) {
-            /*
-             * convert the raw message to a response
-             */
-            response_ptr response = response::create(
-                "autom8://response/" + message->name(),
-                message->body(),
-                response::requester_only);
+        connection_.ping_timer_->expires_from_now(boost::posix_time::seconds(5));
 
-            /*
-             * if we're not authenticated, the first response we should receive
-             * should be an authentication success. if it's not, then something
-             * fishy is going on... bail.
-             */
-            if (state_ == state_authenticating) {
-                if (authenticate_->uri() == response->uri()) {
-                    set_state(state_connected);
+        connection_.ping_timer_->async_wait(
+            [this](const boost::system::error_code& error) {
+                if (!error) {
+                    this->send(ping_);
+                    this->schedule_ping();
                 }
-                else {
-                    set_state(state_disconnected, client::auth_failed);
-                    return;
-                }
-            }
-            else {
-                on_recv(response);
-            }
-        }
-        else {
-            disconnect(client::bad_message);
-            return;
-        }
-
-        async_read_next_message();
-    }
-}
-
-void client::handle_post_send(message_formatter_ptr formatter, const boost::system::error_code& error, std::size_t size) {
-    if (error) {
-        disconnect(client::write_failed);
+            });
     }
 }
 
@@ -259,12 +221,60 @@ void client::async_read_next_message() {
         *connection_.socket_,
         m->read_buffer(),
         message_matcher(),
-        boost::bind(
-            &client::handle_next_read_message,
-            this,
-            m,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+        [this, message = m](const boost::system::error_code& error, std::size_t size) {
+            if (error || !size) {
+                disconnect(client::read_failed);
+            }
+            else {
+                if (!message->parse_message(size)) {
+                    debug::error(TAG, "message parse failed");
+                }
+
+                if (message->name() != "ping" && message->name() != "pong") {
+                    debug::info(TAG, "read message: " + message->name() + " " + message->body().dump());
+                }
+
+                if (message->type() == message::message_type_request) {
+                    on_recv(request::create(
+                        "autom8://request/" + message->name(),
+                        message->body()));
+                }
+                else if (message->type() == message::message_type_response) {
+                    /*
+                     * convert the raw message to a response
+                     */
+                    response_ptr response = response::create(
+                        "autom8://response/" + message->name(),
+                        message->body(),
+                        response::requester_only);
+
+                    /*
+                     * if we're not authenticated, the first response we should receive
+                     * should be an authentication success. if it's not, then something
+                     * fishy is going on... bail.
+                     */
+                    if (state_ == state_authenticating) {
+                        if (authenticate_->uri() == response->uri()) {
+                            set_state(state_connected);
+                            schedule_ping();
+                        }
+                        else {
+                            set_state(state_disconnected, client::auth_failed);
+                            return;
+                        }
+                    }
+                    else {
+                        on_recv(response);
+                    }
+                }
+                else {
+                    disconnect(client::bad_message);
+                    return;
+                }
+
+                async_read_next_message();
+            }
+        });
 }
 
 client::connection_state client::state() {
@@ -297,12 +307,11 @@ void client::send(message_formatter_ptr f) {
         boost::asio::async_write(
             *connection_.socket_,
             boost::asio::buffer(f->to_string()),
-            boost::bind(
-                &client::handle_post_send,
-                this,
-                f,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred));
+            [this](const boost::system::error_code& error, std::size_t size) {
+                if (error || size == 0) {
+                    this->disconnect(client::write_failed);
+                }
+            });
     }
 }
 

@@ -84,16 +84,6 @@ namespace autom8 {
         void handle_handshake(
             const boost::system::error_code& error);
 
-        void handle_next_read_message(
-            message_ptr next_read,
-            const boost::system::error_code& error,
-            std::size_t size);
-
-        void handle_post_send(
-            message_formatter_ptr formatter,
-            const boost::system::error_code& error,
-            std::size_t size);
-
         bool verify_certificate(
             bool preverified,
             boost::asio::ssl::verify_context& ctx);
@@ -105,6 +95,7 @@ namespace autom8 {
         void on_recv(response_ptr);
         void on_recv(request_ptr);
         void io_service_thread_proc();
+        void schedule_ping();
 
         void send(message_formatter_ptr);
         void disconnect(reason disconnect_reason);
@@ -118,11 +109,13 @@ namespace autom8 {
             using io_service_ptr = std::unique_ptr <boost::asio::io_service>;
             using thread = std::thread;
             using thread_ptr = std::unique_ptr<thread>;
+            using timer_ptr = std::unique_ptr<boost::asio::deadline_timer>;
 
             ssl_context_ptr ssl_context_;
             ssl_socket_ptr socket_;
             io_service_ptr io_service_;
             thread_ptr service_thread_;
+            timer_ptr ping_timer_;
 
             connection() { reset(); }
 
@@ -134,8 +127,10 @@ namespace autom8 {
                         io_service_ = std::move(this->io_service_),
                         service_thread_ = std::move(this->service_thread_),
                         socket_ = std::move(this->socket_),
-                        ssl_context_ = std::move(this->ssl_context_)]
+                        ssl_context_ = std::move(this->ssl_context_),
+                        ping_timer_ = std::move(this->ping_timer_)]
                     {
+                        if (ping_timer_) { ping_timer_->cancel(); }
                         if (socket_) { socket_->lowest_layer().close(); }
                         if (io_service_) { io_service_->stop(); }
                         if (service_thread_) { service_thread_->join(); }
