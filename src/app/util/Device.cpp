@@ -8,7 +8,7 @@ namespace autom8 { namespace app { namespace device {
         std::string address = device.value("address", "");
         if (address.size()) {
             autom8::device_type type = device.value("type", autom8::device_type_unknown);
-            if (type == autom8::device_type_lamp || autom8::device_type_appliance) {
+            if (type == autom8::device_type_lamp || type == autom8::device_type_appliance) {
                 autom8::device_status status = device.value("status", autom8::device_status_unknown);
                 autom8::device_status updated = (status == autom8::device_status_on)
                     ? autom8::device_status_off : autom8::device_status_on;

@@ -96,9 +96,9 @@ int main(int argc, char* argv[]) {
 
     debug::info("main", debug::format("app starting %d", 10));
 
-    std::string password = "135155";
+    std::string password = "changeme";
     std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
-    std::string host = "ricochet.ydns.eu";
+    std::string host = "localhost";
     unsigned short port = 7901;
 
     autom8::utility::prefs().set("password", hashed);
