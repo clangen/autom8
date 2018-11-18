@@ -1,6 +1,7 @@
 #include <autom8/util/utility.hpp>
 #include <boost/filesystem.hpp>
 #include <openssl/sha.h>
+#include <sstream>
 
 #if defined(WIN32)
 #include <windows.h>
@@ -64,11 +65,6 @@ namespace autom8 {
 #endif
             create_directory(settings_dir);
             return settings_dir;
-        }
-
-        static preferences prefs_("autom8");
-        preferences& prefs() {
-            return prefs_;
         }
 
         std::string sha256(const char* data, unsigned int len) {

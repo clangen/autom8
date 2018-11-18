@@ -138,9 +138,6 @@
     <ClInclude Include="include\autom8\net\client.hpp">
       <Filter>src\net</Filter>
     </ClInclude>
-    <ClInclude Include="include\autom8\util\preferences.hpp">
-      <Filter>src\util</Filter>
-    </ClInclude>
     <ClInclude Include="include\autom8\util\signal_handler.hpp">
       <Filter>src\util</Filter>
     </ClInclude>
@@ -231,9 +228,6 @@
       <Filter>src\util</Filter>
     </ClCompile>
     <ClCompile Include="util\utility.cpp">
-      <Filter>src\util</Filter>
-    </ClCompile>
-    <ClCompile Include="util\preferences.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
     <ClCompile Include="autom8.cpp">

@@ -50,7 +50,6 @@
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/util/utility.hpp>
-#include <autom8/util/preferences.hpp>
 #include <autom8/message/requests/get_device_list.hpp>
 #include <autom8/device/device_system.hpp>
 #include <autom8/device/null_device_system.hpp>
@@ -62,6 +61,7 @@
 
 #include <f8n/f8n.h>
 #include <f8n/environment/Environment.h>
+#include <f8n/preferences/Preferences.h>
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
@@ -72,6 +72,7 @@ static const int MIN_HEIGHT = 10;
 
 using namespace cursespp;
 using namespace f8n;
+using namespace f8n::prefs;
 using namespace autom8::app;
 
 using client_ptr = std::shared_ptr<autom8::client>;
@@ -96,12 +97,15 @@ int main(int argc, char* argv[]) {
 
     debug::info("main", debug::format("app starting %d", 10));
 
-    std::string password = "changeme";
-    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
-    std::string host = "localhost";
-    unsigned short port = 7901;
+    auto prefs = Preferences::ForComponent("settings");
 
-    autom8::utility::prefs().set("password", hashed);
+    std::string password = prefs->Get("client.password", "changeme");
+    std::string host = prefs->Get("client.hostname", "localhost");
+    int port = prefs->Get("client.port", 7901);
+    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
+
+    prefs->Set("server.port", 7901);
+    prefs->Set("server.password", hashed);
 
     {
         using device_system_ptr = std::shared_ptr<autom8::device_system>;
@@ -110,7 +114,7 @@ int main(int argc, char* argv[]) {
         system->model().add(autom8::device_type_appliance, "a1", "dummy appliance 1", groups);
         autom8::device_system::set_instance(system);
 
-        autom8::server::start(7901);
+        autom8::server::start(prefs->Get("server.port", 7901));
 
         auto client = std::make_shared<autom8::client>();
         client->connect(host, port, hashed);

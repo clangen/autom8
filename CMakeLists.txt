@@ -49,7 +49,6 @@ set (autom8_curses_SRCS
   ./src/libautom8/net/client.cpp
   ./src/libautom8/net/session.cpp
   ./src/libautom8/net/server.cpp
-  ./src/libautom8/util/preferences.cpp
   ./src/libautom8/util/ssl_certificate.cpp
   ./src/libautom8/util/utility.cpp
   ./src/libautom8/autom8.cpp

@@ -4,6 +4,7 @@
 #include <autom8/util/utility.hpp>
 
 #include <f8n/debug/debug.h>
+#include <f8n/preferences/Preferences.h>
 
 #include <openssl/pem.h>
 #include <openssl/conf.h>
@@ -23,6 +24,7 @@ static const std::string TAG = "ssl_certificate";
 
 using namespace autom8;
 using namespace f8n::utf;
+using namespace f8n::prefs;
 using debug = f8n::debug;
 
 #include <utf8/utf8.h>
@@ -77,8 +79,8 @@ namespace autom8 {
         }
 
         std::string fingerprint() {
-            std::string result;
-            utility::prefs().get("fingerprint", result);
+            auto prefs = Preferences::ForComponent("settings");
+            std::string result = prefs->Get("server.fingerprint", "");
 
             if ( ! result.size()) {
                 return "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00";
@@ -120,7 +122,8 @@ namespace autom8 {
                 std::string md5 = rsa_md5((BIGNUM *) rsa->n);
 #endif
 
-                utility::prefs().set("fingerprint", md5);
+                auto prefs = Preferences::ForComponent("settings");
+                prefs->Set("server.fingerprint", md5);
 
                 X509_set_version(x509, 2);
                 ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);

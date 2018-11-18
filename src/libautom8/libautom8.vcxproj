@@ -137,7 +137,6 @@
     <ClInclude Include="include\autom8\net\client.hpp" />
     <ClInclude Include="include\autom8\net\server.hpp" />
     <ClInclude Include="include\autom8\net\session.hpp" />
-    <ClInclude Include="include\autom8\util\preferences.hpp" />
     <ClInclude Include="include\autom8\util\signal_handler.hpp" />
     <ClInclude Include="include\autom8\util\ssl_certificate.hpp" />
     <ClInclude Include="include\autom8\util\utility.hpp" />
@@ -170,7 +169,6 @@
     <ClCompile Include="net\client.cpp" />
     <ClCompile Include="net\server.cpp" />
     <ClCompile Include="net\session.cpp" />
-    <ClCompile Include="util\preferences.cpp" />
     <ClCompile Include="util\ssl_certificate.cpp" />
     <ClCompile Include="util\utility.cpp" />
   </ItemGroup>

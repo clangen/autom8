@@ -2,6 +2,7 @@
 #include <autom8/util/utility.hpp>
 #include <boost/bind.hpp>
 #include <f8n/debug/debug.h>
+#include <f8n/preferences/Preferences.h>
 
 #define TAG "mochad"
 #undef LOG_CONNECTION
@@ -11,6 +12,7 @@ static std::string default_mochad_host_ = "127.0.0.1";
 static std::string default_mochad_port_ = "1099";
 
 using namespace autom8;
+using namespace f8n::prefs;
 using debug = f8n::debug;
 using boost::asio::ip::tcp;
 
@@ -261,10 +263,9 @@ void mochad_controller::start_connecting() {
     std::cerr << "connecting now..." << std::endl;
 #endif
 
-    std::string host = default_mochad_host_;
-    std::string port = default_mochad_port_;
-    utility::prefs().get("mochad.host", host);
-    utility::prefs().get("mochad.port", port);
+    auto prefs = Preferences::ForComponent("settings");
+    std::string host = prefs->Get("mochad.host", default_mochad_host_);
+    std::string port = prefs->Get("mochad.port", default_mochad_port_);
 
     debug::info(TAG, "connecting to " + host + ":" + port);
 

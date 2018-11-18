@@ -13,6 +13,7 @@
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
 
 #include <f8n/debug/debug.h>
+#include <f8n/preferences/Preferences.h>
 
 #include <sqlite/sqlite3.h>
 
@@ -26,6 +27,7 @@
 
 using namespace autom8;
 using namespace nlohmann;
+using namespace f8n::prefs;
 using debug = f8n::debug;
 
 using json_ptr = std::shared_ptr<json>;
@@ -112,6 +114,10 @@ static void stop_rpc_queue() {
     debug::info(RPC_TAG, "deinitialized");
 }
 
+static std::shared_ptr<Preferences> prefs() {
+    return Preferences::ForComponent("settings");
+}
+
 /* logging */
 static log_func external_logger_ = 0;
 static std::mutex external_logger_mutex_;
@@ -147,7 +153,7 @@ int autom8_init(int rpc_mode) {
 
     /* select the last selected system, or null by default */
     std::string system = "null";
-    utility::prefs().get("system.selected", system);
+    prefs()->Get("system.selected", system);
     system_select(system);
 
     initialized_ = true;
@@ -253,7 +259,8 @@ int server_set_preference(json& options) {
         return AUTOM8_INVALID_ARGUMENT;
     }
 
-    return (utility::prefs().set(key, value) ? AUTOM8_OK : AUTOM8_UNKNOWN);
+    prefs()->Set(key, value);
+    return AUTOM8_OK;
 }
 
 json_ptr server_get_preference(json& options) {
@@ -267,7 +274,7 @@ json_ptr server_get_preference(json& options) {
     }
     else {
         std::string value = "__INVALID__";
-        utility::prefs().get(key, value);
+        prefs()->Get(key, value);
 
         if (value == "__INVALID__") {
             (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
@@ -287,11 +294,10 @@ json_ptr server_get_preference(json& options) {
 json_ptr server_status() {
     json_ptr result(new json());
 
-    std::string system = "null", fingerprint = "unknown", port = "7901", webClientPort = "7902";
-    utility::prefs().get("system.selected", system);
-    utility::prefs().get("fingerprint", fingerprint);
-    utility::prefs().get("port", port);
-    utility::prefs().get("webClientPort", webClientPort);
+    std::string system = prefs()->Get("system.selected", "null");
+    std::string fingerprint = prefs()->Get("server.fingerprint", "unknown");
+    int port = prefs()->Get("server.port", 7901);
+    int webClientPort = prefs()->Get("server.webClientPort", 7902);
 
     std::string description;
     if (device_system::instance()) {
@@ -314,8 +320,7 @@ int server_start() {
         return -999; /* can't stop server is fatal */
     }
 
-    int port = DEFAULT_PORT;
-    utility::prefs().get("port", port);
+    int port = prefs()->Get("server.port", DEFAULT_PORT);
 
     server::start(port);
 
@@ -348,8 +353,7 @@ static json_ptr system_list() {
 static json_ptr system_selected() {
     json_ptr result(new json());
 
-    std::string system = "null";
-    utility::prefs().get("system.selected", system);
+    std::string system = prefs()->Get("system.selected", "null");
     (*result)["system_id"] = system;
 
     return result;
@@ -381,7 +385,7 @@ static int system_select(const std::string& system) {
         return AUTOM8_INVALID_SYSTEM;
     }
 
-    utility::prefs().set("system.selected", system);
+    prefs()->Set("system.selected", system);
     return AUTOM8_OK;
 }
 

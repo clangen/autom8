@@ -6,11 +6,13 @@
 #include <autom8/util/utility.hpp>
 #include <autom8/message/message_matcher.hpp>
 #include <f8n/debug/debug.h>
+#include <f8n/preferences/Preferences.h>
 #include <boost/format.hpp>
 #include <atomic>
 
 using namespace autom8;
 using namespace nlohmann;
+using namespace f8n::prefs;
 using debug = f8n::debug;
 
 static std::atomic<int> instance_count_ { 0 };
@@ -96,8 +98,8 @@ void session::enqueue_write(message_formatter_ptr formatter) {
 bool session::handle_authentication(session_ptr session, message_ptr message) {
     if ((message->type() == message::message_type_request)) {
         if (message->name() == "authenticate") {
-            std::string stored_password;
-            utility::prefs().get("password", stored_password);
+            auto prefs = Preferences::ForComponent("settings");
+            std::string stored_password = prefs->Get("server.password", "");
 
             auto document = message->body();
             std::string received_password = document["password"];
