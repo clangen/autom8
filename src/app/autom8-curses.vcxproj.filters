@@ -37,6 +37,9 @@
     <ClCompile Include="util\Device.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
+    <ClCompile Include="util\Message.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="layout\MainLayout.h">
@@ -55,6 +58,9 @@
       <Filter>src\adapter</Filter>
     </ClInclude>
     <ClInclude Include="util\Device.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Message.h">
       <Filter>src\util</Filter>
     </ClInclude>
   </ItemGroup>

@@ -65,7 +65,7 @@
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
-static const int DEFAULT_WIDTH = 100;
+static const int DEFAULT_WIDTH = 54;
 static const int MIN_WIDTH = 42;
 static const int DEFAULT_HEIGHT = 26;
 static const int MIN_HEIGHT = 10;
@@ -79,7 +79,7 @@ using client_ptr = std::shared_ptr<autom8::client>;
 #ifdef WIN32
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
     PDC_set_resize_limits(MIN_HEIGHT, MAX_SIZE, MIN_WIDTH, MAX_SIZE);
-    resize_term(DEFAULT_HEIGHT, DEFAULT_WIDTH); /* must be before app init */
+    PDC_resize_screen(DEFAULT_HEIGHT, DEFAULT_WIDTH);
 
     if (App::Running(APP_NAME)) {
         return 0;

@@ -111,6 +111,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClCompile Include="layout\SettingsLayout.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="util\Device.cpp" />
+    <ClCompile Include="util\Message.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adapter\DeviceListAdapter.h" />
@@ -119,6 +120,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClInclude Include="layout\ServerLayout.h" />
     <ClInclude Include="layout\SettingsLayout.h" />
     <ClInclude Include="util\Device.h" />
+    <ClInclude Include="util\Message.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
