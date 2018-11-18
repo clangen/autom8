@@ -63,5 +63,18 @@
     <ClInclude Include="util\Message.h">
       <Filter>src\util</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="autom8.rc">
+      <Filter>src</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>src</Filter>
+    </Image>
   </ItemGroup>
 </Project>

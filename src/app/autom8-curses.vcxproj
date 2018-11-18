@@ -56,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;NOMINMAX;UNICODE;_UNICODE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;WINVER=0x0601;NOMINMAX;UNICODE;_UNICODE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..;$(SolutionDir)..\boost_1_68_0\;$(ProjectDir)..\cursespp\src\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;$(ProjectDir)..\libautom8\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -84,7 +84,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\debug
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..;$(SolutionDir)..\boost_1_68_0\;$(ProjectDir)..\cursespp\src\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;$(ProjectDir)..\libautom8\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;NOMINMAX;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;WINVER=0x0601;NOMINMAX;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -119,8 +119,15 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClInclude Include="layout\MainLayout.h" />
     <ClInclude Include="layout\ServerLayout.h" />
     <ClInclude Include="layout\SettingsLayout.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="util\Device.h" />
     <ClInclude Include="util\Message.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="autom8.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

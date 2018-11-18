@@ -33,16 +33,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #ifdef WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#ifndef WINVER
-#define WINVER 0x0502
-#define _WIN32_WINNT 0x0502
-#endif
 #include <windows.h>
 #endif
 
@@ -62,6 +52,10 @@
 #include <f8n/f8n.h>
 #include <f8n/environment/Environment.h>
 #include <f8n/preferences/Preferences.h>
+
+#ifdef WIN32
+#include "resource.h"
+#endif
 
 static const std::string APP_NAME = "autom8";
 static const int MAX_SIZE = 1000;
@@ -125,6 +119,11 @@ int main(int argc, char* argv[]) {
         app.SetColorMode(Colors::RGB);
         app.SetColorBackgroundType(Colors::Inherit);
         app.SetColorTheme(env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
+
+#ifdef WIN32
+        app.SetIcon(IDI_ICON1);
+        app.SetSingleInstanceId("autom8");
+#endif
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {
             if (kn == "M-d") {
