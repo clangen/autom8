@@ -5,6 +5,7 @@
 
 #include <f8n/debug/debug.h>
 #include <f8n/preferences/Preferences.h>
+#include <f8n/environment/Environment.h>
 
 #include <openssl/pem.h>
 #include <openssl/conf.h>
@@ -46,7 +47,7 @@ namespace autom8 {
         }
 
         std::string filename() {
-            return utility::settings_directory() + "autom8_ssl.pem";
+            return f8n::env::GetDataDirectory() + "autom8_ssl.pem";
         }
 
         std::string rsa_md5(const BIGNUM* pubkey_bignum) {

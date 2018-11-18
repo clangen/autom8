@@ -3,6 +3,7 @@
 #include <autom8/db/db.hpp>
 
 #include <f8n/debug/debug.h>
+#include <f8n/environment/Environment.h>
 
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
@@ -31,7 +32,7 @@ device_model::device_model(device_factory_ptr factory)
     groups_table_name_ = factory_->name() + GROUPS_TABLE_SUFFIX;
 
     // connect to the db.
-    std::string filename = utility::settings_directory() + "devices.db";
+    std::string filename = f8n::env::GetDataDirectory() + "devices.db";
     if (sqlite3_open_v2(filename.c_str(), &connection_, OPEN_FLAGS, 0) != SQLITE_OK) {
         debug::error(TAG, "unable to open devices database!");
         throw std::exception();
