@@ -7,6 +7,7 @@
 #include <autom8/message/requests/get_device_list.hpp>
 #include <f8n/debug/debug.h>
 #include <f8n/runtime/Message.h>
+#include <app/util/Message.h>
 #include <algorithm>
 
 using namespace cursespp;
@@ -15,7 +16,7 @@ using namespace f8n::runtime;
 using namespace autom8;
 using namespace autom8::app;
 
-static const int MESSAGE_DEVICE_LIST_CHANGED = 1024;
+static const int MESSAGE_DEVICE_LIST_CHANGED = app::message::CreateType();
 
 DeviceListAdapter::DeviceListAdapter(
     autom8::client_ptr client,

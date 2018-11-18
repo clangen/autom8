@@ -3,6 +3,7 @@
 #include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
 #include <app/util/Device.h>
+#include <app/util/Message.h>
 
 using namespace autom8;
 using namespace autom8::app;
@@ -10,8 +11,8 @@ using namespace cursespp;
 using namespace f8n;
 using namespace f8n::runtime;
 
-static const int UPDATE_STATUS_MESSAGE = 1024;
-static const int SCHEDULE_RECONNECT = 1025;
+static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
+static const int SCHEDULE_RECONNECT = app::message::CreateType();
 
 ClientLayout::ClientLayout(client_ptr client)
 : LayoutBase()

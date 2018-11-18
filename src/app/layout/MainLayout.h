@@ -17,6 +17,10 @@ namespace autom8 { namespace app {
                 cursespp::App& app,
                 autom8::client_ptr client);
 
+            virtual ~MainLayout();
+
+            virtual void ProcessMessage(f8n::runtime::IMessage& message) override;
+
         private:
             std::shared_ptr<autom8::app::ClientLayout> clientLayout;
     };
