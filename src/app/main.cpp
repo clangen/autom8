@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
         app.SetColorTheme(env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {
-            if (kn == "d") {
+            if (kn == "M-d") {
                 client->disconnect();
                 return true;
             }
@@ -131,12 +131,13 @@ int main(int argc, char* argv[]) {
                 client->reconnect();
                 return true;
             }
-            else if (kn == "s") {
-                autom8::server::stop();
-                return true;
-            }
-            else if (kn == "r") {
-                autom8::server::start(7901);
+            else if (kn == "M-s") {
+                if (autom8::server::is_running()) {
+                    autom8::server::stop();
+                }
+                else {
+                    autom8::server::start(7901);
+                }
                 return true;
             }
             else if (kn == "R") {

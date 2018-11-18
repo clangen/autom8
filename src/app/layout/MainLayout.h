@@ -8,6 +8,7 @@
 #include <f8n/runtime/IMessage.h>
 
 #include <app/layout/ClientLayout.h>
+#include <app/layout/SettingsLayout.h>
 
 namespace autom8 { namespace app {
 
@@ -23,6 +24,7 @@ namespace autom8 { namespace app {
 
         private:
             std::shared_ptr<autom8::app::ClientLayout> clientLayout;
+            std::shared_ptr<autom8::app::SettingsLayout> settingsLayout;
     };
 
 } }

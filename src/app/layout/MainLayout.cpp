@@ -14,6 +14,7 @@ static const int REGISTER_FOR_BROADCASTS = app::message::CreateType();
 MainLayout::MainLayout(App& app, client_ptr client)
 : AppLayout(app) {
     this->clientLayout = std::make_shared<ClientLayout>(client);
+    this->settingsLayout = std::make_shared<SettingsLayout>();
     this->SetLayout(this->clientLayout);
     this->Post(REGISTER_FOR_BROADCASTS);
 }
@@ -23,8 +24,16 @@ MainLayout::~MainLayout() {
 }
 
 void MainLayout::ProcessMessage(f8n::runtime::IMessage& message) {
-    AppLayout::ProcessMessage(message);
     if (message.Type() == REGISTER_FOR_BROADCASTS) {
         MessageQueue().RegisterForBroadcasts(shared_from_this());
+    }
+    else if (message.Type() == message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT) {
+        this->SetLayout(this->settingsLayout);
+    }
+    else if (message.Type() == message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT) {
+        this->SetLayout(this->clientLayout);
+    }
+    else {
+        AppLayout::ProcessMessage(message);
     }
 }

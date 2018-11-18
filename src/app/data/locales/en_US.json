@@ -10,7 +10,11 @@
         "button_close": "close",
         "button_start": "start",
         "button_retry": "retry",
-        "button_continue": "continue"
+        "button_continue": "continue",
+
+        "shortcuts_quit": "quit",
+        "shortcuts_devices": "devices",
+        "shortcuts_settings": "settings"
     },
     "dimensions": {
     }

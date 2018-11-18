@@ -1,7 +1,9 @@
 #include "ClientLayout.h"
+#include <cursespp/App.h>
 #include <cursespp/Colors.h>
 #include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
+#include <f8n/i18n/Locale.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
 
@@ -44,8 +46,25 @@ ClientLayout::ClientLayout(client_ptr client)
     this->Update();
 }
 
-void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* w) {
+void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
     debug::info("ClientLayout", "SetShortcutsWindow()");
+
+    if (shortcuts) {
+        shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
+        shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));
+        shortcuts->AddShortcut("^D", _TSTR("shortcuts_quit"));
+
+        shortcuts->SetChangedCallback([this](std::string key) {
+            if (key == "^D") {
+                App::Instance().Quit();
+            }
+            else {
+                this->KeyPress(key);
+            }
+        });
+
+        shortcuts->SetActive("d");
+    }
 }
 
 void ClientLayout::OnLayout() {
@@ -53,8 +72,8 @@ void ClientLayout::OnLayout() {
     int cx = this->GetContentWidth();
     int cy = this->GetContentHeight();
     this->clientStatus->MoveAndResize(0, 0, cx, 1);
-    this->serverStatus->MoveAndResize(0, cy - 1, cx, 1);
-    this->deviceList->MoveAndResize(0, 1, cx, cy - 2);
+    this->serverStatus->MoveAndResize(0, 1, cx, 1);
+    this->deviceList->MoveAndResize(0, 2, cx, cy - 2);
 }
 
 void ClientLayout::ProcessMessage(IMessage& message){
@@ -80,7 +99,7 @@ void ClientLayout::Update() {
             break;
         case S::state_connected:
             str = std::string("connected to ") + client->hostname();
-            color = Color::TextActive;
+            color = Color::Banner;
             break;
         case S::state_disconnecting:
             str = "disconnecting";
@@ -96,10 +115,10 @@ void ClientLayout::Update() {
     color = Color::TextDisabled;
     if (autom8::server::is_running()) {
         str = "running";
-        color = Color::TextWarning;
+        color = Color::ListItemHeader;
     }
 
-    this->serverStatus->SetText(std::string("server ") + str, cursespp::text::AlignCenter);
+    this->serverStatus->SetText(std::string("local server ") + str, cursespp::text::AlignCenter);
     this->serverStatus->SetContentColor(Color(color));
 }
 
@@ -112,7 +131,11 @@ bool ClientLayout::KeyPress(const std::string& kn) {
         }
         return true;
     }
-    return false;
+    else if (kn == "s") {
+        Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
+        return true;
+    }
+    return LayoutBase::KeyPress(kn);
 }
 
 void ClientLayout::OnServerStateChanged() {
