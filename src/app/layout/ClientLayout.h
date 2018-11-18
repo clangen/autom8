@@ -15,10 +15,10 @@
 
 namespace autom8 { namespace app {
 
-    class ClientLayout: 
+    class ClientLayout:
         public cursespp::LayoutBase,
         public cursespp::ITopLevelLayout,
-        public sigslot::has_slots<> 
+        public sigslot::has_slots<>
     {
         public:
             ClientLayout(autom8::client_ptr client);
@@ -30,6 +30,9 @@ namespace autom8 { namespace app {
 
         private:
             void Update();
+
+            void OnDeviceRowActivated(cursespp::ListWindow* w, size_t index);
+
             void OnServerStateChanged();
 
             void OnClientStateChanged(

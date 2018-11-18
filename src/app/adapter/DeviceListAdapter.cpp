@@ -72,7 +72,7 @@ static std::string formatRow(size_t width, const nlohmann::json& device) {
     const autom8::device_status status = device.value("status", autom8::device_status_unknown);
 
     const std::string addressStr = device.value("address", "??");
-    
+
     std::string statusStr = "off";
     if (status == autom8::device_status_on) {
         statusStr = "on";

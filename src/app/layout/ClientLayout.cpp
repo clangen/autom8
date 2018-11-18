@@ -36,6 +36,7 @@ ClientLayout::ClientLayout(client_ptr client)
 
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
     this->deviceList->SetFrameTitle("devices");
+    this->deviceList->EntryActivated.connect(this, &ClientLayout::OnDeviceRowActivated);
     this->AddWindow(this->deviceList);
     this->deviceList->SetFocusOrder(0);
 
@@ -122,16 +123,13 @@ void ClientLayout::Update() {
     this->serverStatus->SetContentColor(Color(color));
 }
 
+void ClientLayout::OnDeviceRowActivated(ListWindow* listWindow, size_t index) {
+    auto device = this->deviceListAdapter->At(index);
+    device::Toggle(this->client, device);
+}
+
 bool ClientLayout::KeyPress(const std::string& kn) {
-    if (kn == "KEY_ENTER") {
-        size_t index = this->deviceList->GetSelectedIndex();
-        if (index != ListWindow::NO_SELECTION) {
-            auto device = this->deviceListAdapter->At(index);
-            device::Toggle(this->client, device);
-        }
-        return true;
-    }
-    else if (kn == "s") {
+    if (kn == "s") {
         Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
         return true;
     }
