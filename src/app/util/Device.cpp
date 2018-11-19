@@ -27,6 +27,8 @@ namespace autom8 { namespace app { namespace device {
                 client->send(request::create(
                     "autom8://request/send_device_command", body
                 ));
+
+                return true;
             }
         }
         return false;

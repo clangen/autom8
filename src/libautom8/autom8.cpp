@@ -152,8 +152,7 @@ int autom8_init(int rpc_mode) {
     debug::Start({ new debug::ConsoleBackend() });
 
     /* select the last selected system, or null by default */
-    std::string system = "null";
-    prefs()->Get("system.selected", system);
+    std::string system = prefs()->Get("system.selected", "null");
     system_select(system);
 
     initialized_ = true;
@@ -273,8 +272,7 @@ json_ptr server_get_preference(json& options) {
         (*result)["message"] = "key not specified";
     }
     else {
-        std::string value = "__INVALID__";
-        prefs()->Get(key, value);
+        std::string value = prefs()->Get(key, "__INVALID__");
 
         if (value == "__INVALID__") {
             (*result)["status"] = AUTOM8_INVALID_ARGUMENT;
@@ -295,7 +293,7 @@ json_ptr server_status() {
     json_ptr result(new json());
 
     std::string system = prefs()->Get("system.selected", "null");
-    std::string fingerprint = prefs()->Get("server.fingerprint", "unknown");
+    std::string fingerprint = prefs()->Get("server.fingerprint", "");
     int port = prefs()->Get("server.port", 7901);
     int webClientPort = prefs()->Get("server.webClientPort", 7902);
 
