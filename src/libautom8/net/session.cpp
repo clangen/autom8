@@ -99,7 +99,9 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
     if ((message->type() == message::message_type_request)) {
         if (message->name() == "authenticate") {
             auto prefs = Preferences::ForComponent("settings");
-            std::string stored_password = prefs->Get("server.password", "");
+
+            std::string stored_password =
+                utility::sha256(prefs->Get("server.password", ""));
 
             auto document = message->body();
             std::string received_password = document["password"];

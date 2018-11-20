@@ -83,6 +83,7 @@ set (autom8_curses_SRCS
   ./src/app/layout/MainLayout.cpp
   ./src/app/util/Device.cpp
   ./src/app/util/Message.cpp
+  ./src/app/util/Settings.cpp
 )
 
 add_executable(autom8_curses ${autom8_curses_SRCS})

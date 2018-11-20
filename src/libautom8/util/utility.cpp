@@ -22,5 +22,9 @@ namespace autom8 {
 
             return md5s_stream.str();
         }
+
+        std::string sha256(const std::string& data) {
+            return sha256(data.c_str(), data.size());
+        }
     }
 }

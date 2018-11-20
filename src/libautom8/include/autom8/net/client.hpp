@@ -70,7 +70,7 @@ namespace autom8 {
 
         void reconnect();
 
-        void disconnect();
+        void disconnect(bool join = false);
         connection_state state();
 
         void send(response_ptr);
@@ -98,7 +98,7 @@ namespace autom8 {
         void schedule_ping();
 
         void send(message_formatter_ptr);
-        void disconnect(reason disconnect_reason);
+        void disconnect(reason disconnect_reason, bool join = false);
 
     private:
         struct connection {
@@ -121,9 +121,9 @@ namespace autom8 {
 
             ~connection() { close(); }
 
-            void close() {
+            void close(bool join = false) {
                 if (io_service_ || service_thread_ || socket_ || ssl_context_) {
-                    std::thread([ /* deferred disconnect */
+                    auto thread = std::thread([ /* deferred disconnect */
                         io_service_ = std::move(this->io_service_),
                         service_thread_ = std::move(this->service_thread_),
                         socket_ = std::move(this->socket_),
@@ -134,7 +134,16 @@ namespace autom8 {
                         if (socket_) { socket_->lowest_layer().close(); }
                         if (io_service_) { io_service_->stop(); }
                         if (service_thread_) { service_thread_->join(); }
-                    }).detach();
+                    });
+
+                    if (thread.joinable()) {
+                        if (join) {
+                            thread.join();
+                        }
+                        else {
+                            thread.detach();
+                        }
+                    }
                 }
             }
 

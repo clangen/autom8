@@ -4,7 +4,7 @@
 #include <autom8/message/message_formatter.hpp>
 #include <autom8/message/message_matcher.hpp>
 #include <autom8/message/common_messages.hpp>
-
+#include <autom8/util/utility.hpp>
 #include <f8n/debug/debug.h>
 
 #include <ostream>
@@ -53,12 +53,12 @@ void client::connect(
 {
     hostname_ = hostname;
     port_ = port;
-    password_ = password;
+    password_ = utility::sha256(password);
     reconnect();
 }
 
 void client::reconnect() {
-    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    std::unique_lock<decltype(state_lock_)> lock(state_lock_);
 
     if (state_ != state_disconnected) {
         debug::warning(TAG, "connect() called but not disconnected");
@@ -125,16 +125,16 @@ bool client::verify_certificate(bool preverified, boost::asio::ssl::verify_conte
     return true;
 }
 
-void client::disconnect() {
-    disconnect(client::user);
+void client::disconnect(bool join) {
+    disconnect(client::user, join);
 }
 
-void client::disconnect(reason disconnect_reason) {
+void client::disconnect(reason disconnect_reason, bool join) {
     debug::info(TAG, "attempting do disconnect: " + std::to_string(disconnect_reason));
 
     /* return early if disconnected/ing */
     {
-        std::unique_lock<std::recursive_mutex> lock(state_lock_);
+        std::unique_lock<decltype(state_lock_)> lock(state_lock_);
 
         if (state_ == state_disconnected ||
             state_ == state_disconnecting)
@@ -146,13 +146,13 @@ void client::disconnect(reason disconnect_reason) {
 
     set_state(state_disconnecting, disconnect_reason);
 
-    connection_.close();
+    connection_.close(join);
 
     set_state(state_disconnected, disconnect_reason);
 }
 
 void client::set_state(connection_state state, reason reason) {
-    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    std::unique_lock<decltype(state_lock_)> lock(state_lock_);
     if (state != state_) {
         state_ = state;
         reason_ = reason;
@@ -193,7 +193,7 @@ void client::handle_handshake(const boost::system::error_code& error) {
 }
 
 void client::schedule_ping() {
-    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    std::unique_lock<decltype(state_lock_)> lock(state_lock_);
     if (state_ == state_connected) {
         if (connection_.ping_timer_) {
             connection_.ping_timer_->cancel();
@@ -298,7 +298,7 @@ void client::send(request_ptr r) {
 }
 
 void client::send(message_formatter_ptr f) {
-    std::unique_lock<std::recursive_mutex> lock(state_lock_);
+    std::unique_lock<decltype(state_lock_)> lock(state_lock_);
 
     if (state_ == state_connected ||
         state_ == state_connecting ||

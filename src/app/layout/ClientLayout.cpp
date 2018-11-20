@@ -9,6 +9,7 @@
 #include <f8n/preferences/Preferences.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
+#include <app/util/Settings.h>
 
 using namespace autom8;
 using namespace autom8::app;
@@ -20,17 +21,6 @@ using namespace f8n::sdk;
 
 static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
 static const int SCHEDULE_RECONNECT = app::message::CreateType();
-
-static std::shared_ptr<ISchema> createSchema() {
-    auto result = std::make_shared<TSchema<>>();
-    result->AddString("client.password");
-    result->AddString("client.hostname");
-    result->AddInt("client.port");
-    result->AddString("system.selected", "null");
-    result->AddString("mochad.hostname", "localhost");
-    result->AddInt("mochad.port", 1099);
-    return result;
-}
 
 ClientLayout::ClientLayout(client_ptr client)
 : LayoutBase()
@@ -150,10 +140,19 @@ bool ClientLayout::KeyPress(const std::string& kn) {
     if (kn == "s") {
         PluginOverlay::Show(
             "settings",
-            Preferences::ForComponent("settings"),
-            createSchema(),
-            [this]() {
-                debug::i("ClientLayout", "settings saved");
+            settings::Prefs(),
+            settings::Schema(),
+            [this](bool changed) {
+                if (changed) {
+                    debug::i("ClientLayout", "settings saved, reconnecting...");
+                    auto prefs = settings::Prefs();
+                    prefs->Save();
+                    std::string password = prefs->GetString(settings::CLIENT_PASSWORD);
+                    std::string host = prefs->GetString(settings::CLIENT_HOSTNAME);
+                    int port = prefs->GetInt(settings::CLIENT_PORT);
+                    client->disconnect(true);
+                    client->connect(host, port, password);
+                }
             });
 
         if (shortcuts) {
@@ -169,11 +168,11 @@ void ClientLayout::OnServerStateChanged() {
     this->Post(UPDATE_STATUS_MESSAGE);
 }
 
-void ClientLayout::OnClientStateChanged(autom8::client::connection_state state, autom8::client::reason reason) {
+void ClientLayout::OnClientStateChanged(client::connection_state state, client::reason reason) {
     this->Post(UPDATE_STATUS_MESSAGE);
 
     if (state == autom8::client::state_disconnected) {
-        if (reason != autom8::client::auth_failed && reason != autom8::client::user) {
+        if (reason != client::auth_failed && reason != client::user) {
             debug::info("ClientLayout", "scheduling reconnect...");
             this->Remove(SCHEDULE_RECONNECT);
             this->Post(SCHEDULE_RECONNECT, 0L, 0L, 5000);

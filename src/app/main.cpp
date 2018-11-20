@@ -48,6 +48,7 @@
 #include <cursespp/Colors.h>
 
 #include <app/layout/MainLayout.h>
+#include <app/util/Settings.h>
 
 #include <f8n/f8n.h>
 #include <f8n/environment/Environment.h>
@@ -91,15 +92,12 @@ int main(int argc, char* argv[]) {
 
     debug::info("main", debug::format("app starting %d", 10));
 
-    auto prefs = Preferences::ForComponent("settings");
+    settings::InitializeDefaults();
+    auto prefs = settings::Prefs();
 
-    std::string password = prefs->Get("client.password", "changeme");
-    std::string host = prefs->Get("client.hostname", "localhost");
-    int port = prefs->Get("client.port", 7901);
-    std::string hashed = autom8::utility::sha256(password.c_str(), password.size());
-
-    prefs->Set("server.port", 7901);
-    prefs->Set("server.password", hashed);
+    std::string password = prefs->GetString(settings::CLIENT_PASSWORD);
+    std::string host = prefs->GetString(settings::CLIENT_HOSTNAME);
+    int port = prefs->GetInt(settings::CLIENT_PORT);
 
     {
         using device_system_ptr = std::shared_ptr<autom8::device_system>;
@@ -108,10 +106,10 @@ int main(int argc, char* argv[]) {
         system->model().add(autom8::device_type_appliance, "a1", "dummy appliance 1", groups);
         autom8::device_system::set_instance(system);
 
-        autom8::server::start(prefs->Get("server.port", 7901));
+        autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
 
         auto client = std::make_shared<autom8::client>();
-        client->connect(host, port, hashed);
+        client->connect(host, port, password);
 
         App app(APP_NAME); /* must be before layout creation */
 
