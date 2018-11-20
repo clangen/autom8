@@ -264,7 +264,7 @@ void mochad_controller::start_connecting() {
 #endif
 
     auto prefs = Preferences::ForComponent("settings");
-    std::string host = prefs->Get("mochad.host", default_mochad_host_);
+    std::string host = prefs->Get("mochad.hostname", default_mochad_host_);
     std::string port = prefs->Get("mochad.port", default_mochad_port_);
 
     debug::info(TAG, "connecting to " + host + ":" + port);

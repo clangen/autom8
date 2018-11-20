@@ -44,6 +44,7 @@ namespace autom8 { namespace app {
             std::shared_ptr<cursespp::TextLabel> clientStatus;
             std::shared_ptr<cursespp::TextLabel> serverStatus;
             std::shared_ptr<cursespp::ListWindow> deviceList;
+            cursespp::ShortcutsWindow* shortcuts;
     };
 
 } }

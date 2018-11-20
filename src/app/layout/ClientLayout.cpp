@@ -1,9 +1,12 @@
 #include "ClientLayout.h"
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
+#include <cursespp/PluginOverlay.h>
 #include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
+#include <f8n/sdk/ISchema.h>
+#include <f8n/preferences/Preferences.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
 
@@ -11,10 +14,23 @@ using namespace autom8;
 using namespace autom8::app;
 using namespace cursespp;
 using namespace f8n;
+using namespace f8n::prefs;
 using namespace f8n::runtime;
+using namespace f8n::sdk;
 
 static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
 static const int SCHEDULE_RECONNECT = app::message::CreateType();
+
+static std::shared_ptr<ISchema> createSchema() {
+    auto result = std::make_shared<TSchema<>>();
+    result->AddString("client.password");
+    result->AddString("client.hostname");
+    result->AddInt("client.port");
+    result->AddString("system.selected", "null");
+    result->AddString("mochad.hostname", "localhost");
+    result->AddInt("mochad.port", 1099);
+    return result;
+}
 
 ClientLayout::ClientLayout(client_ptr client)
 : LayoutBase()
@@ -49,6 +65,8 @@ ClientLayout::ClientLayout(client_ptr client)
 
 void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
     debug::info("ClientLayout", "SetShortcutsWindow()");
+
+    this->shortcuts = shortcuts;
 
     if (shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
@@ -130,7 +148,18 @@ void ClientLayout::OnDeviceRowActivated(ListWindow* listWindow, size_t index) {
 
 bool ClientLayout::KeyPress(const std::string& kn) {
     if (kn == "s") {
-        Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
+        PluginOverlay::Show(
+            "settings",
+            Preferences::ForComponent("settings"),
+            createSchema(),
+            [this]() {
+                debug::i("ClientLayout", "settings saved");
+            });
+
+        if (shortcuts) {
+            shortcuts->SetActive("d");
+        }
+        // Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
         return true;
     }
     return LayoutBase::KeyPress(kn);
