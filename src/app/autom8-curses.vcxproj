@@ -112,6 +112,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClCompile Include="main.cpp" />
     <ClCompile Include="util\Device.cpp" />
     <ClCompile Include="util\Message.cpp" />
+    <ClCompile Include="util\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="adapter\DeviceListAdapter.h" />
@@ -122,6 +123,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClInclude Include="resource.h" />
     <ClInclude Include="util\Device.h" />
     <ClInclude Include="util\Message.h" />
+    <ClInclude Include="util\Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="autom8.rc" />

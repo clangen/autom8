@@ -147,11 +147,11 @@ bool ClientLayout::KeyPress(const std::string& kn) {
                     debug::i("ClientLayout", "settings saved, reconnecting...");
                     auto prefs = settings::Prefs();
                     prefs->Save();
-                    std::string password = prefs->GetString(settings::CLIENT_PASSWORD);
-                    std::string host = prefs->GetString(settings::CLIENT_HOSTNAME);
-                    int port = prefs->GetInt(settings::CLIENT_PORT);
-                    client->disconnect(true);
-                    client->connect(host, port, password);
+                    this->client->disconnect(true);
+                    this->client->connect(
+                        prefs->GetString(settings::CLIENT_HOSTNAME),
+                        prefs->GetInt(settings::CLIENT_PORT),
+                        prefs->GetString(settings::CLIENT_PASSWORD));
                 }
             });
 
