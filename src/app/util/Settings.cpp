@@ -33,7 +33,7 @@ namespace autom8 { namespace app { namespace settings {
         result->AddInt(CLIENT_PORT);
         result->AddString(SERVER_PASSWORD);
         result->AddInt(SERVER_PORT);
-        result->AddString(SYSTEM_SELECTED);
+        result->AddEnum(SYSTEM_SELECTED, { "null", "mochad" }, "null");
         return result;
     }
 
