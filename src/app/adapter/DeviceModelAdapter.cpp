@@ -82,6 +82,8 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
         case autom8::device_type_security_sensor:
             typeStr = _TSTR("device_type_sensor");
             break;
+        default:
+            break;
     }
 
     std::string label = text::Align(device->label(), text::AlignRight, labelWidth);
