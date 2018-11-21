@@ -9,15 +9,17 @@
 
 #include <f8n/runtime/IMessage.h>
 
+#include <app/adapter/DeviceModelAdapter.h>
+
 namespace autom8 { namespace app {
 
-    class SettingsLayout: 
+    class SettingsLayout:
         public cursespp::LayoutBase,
         public cursespp::ITopLevelLayout,
-        public sigslot::has_slots<> 
+        public sigslot::has_slots<>
     {
         public:
-            SettingsLayout();
+            SettingsLayout(autom8::client_ptr client);
 
             virtual void OnLayout() override;
             virtual void ProcessMessage(f8n::runtime::IMessage& message) override;
@@ -25,6 +27,12 @@ namespace autom8 { namespace app {
             virtual void SetShortcutsWindow(cursespp::ShortcutsWindow* w) override;
 
         private:
+            void OnAboutConfigActivated(cursespp::TextLabel* label);
+
+            autom8::client_ptr client;
+            std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
+            std::shared_ptr<cursespp::TextLabel> aboutConfig;
+            std::shared_ptr<cursespp::ListWindow> deviceModelList;
     };
 
 } }

@@ -390,8 +390,7 @@ static int system_select(const std::string& system) {
 static json_ptr system_list_devices() {
     device_system& ds = *device_system::instance();
     device_model& model = ds.model();
-    device_list devices;
-    model.all_devices(devices);
+    device_list devices = model.all_devices();
 
     auto list = json::array();
     for (size_t i = 0; i < devices.size(); i++) {

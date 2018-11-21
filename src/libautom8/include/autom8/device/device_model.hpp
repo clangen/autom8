@@ -33,7 +33,7 @@ namespace autom8 {
             const std::string& label,
             const std::vector<std::string>& groups);
 
-        virtual int all_devices(device_list& target);
+        virtual device_list all_devices();
         virtual device_ptr find_by_address(const std::string& address);
 
     protected:

@@ -1,7 +1,6 @@
 #include "ClientLayout.h"
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
-#include <cursespp/PluginOverlay.h>
 #include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
@@ -9,7 +8,6 @@
 #include <f8n/preferences/Preferences.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
-#include <app/util/Settings.h>
 
 using namespace autom8;
 using namespace autom8::app;
@@ -138,27 +136,7 @@ void ClientLayout::OnDeviceRowActivated(ListWindow* listWindow, size_t index) {
 
 bool ClientLayout::KeyPress(const std::string& kn) {
     if (kn == "s") {
-        PluginOverlay::Show(
-            "settings",
-            settings::Prefs(),
-            settings::Schema(),
-            [this](bool changed) {
-                if (changed) {
-                    debug::i("ClientLayout", "settings saved, reconnecting...");
-                    auto prefs = settings::Prefs();
-                    prefs->Save();
-                    this->client->disconnect(true);
-                    this->client->connect(
-                        prefs->GetString(settings::CLIENT_HOSTNAME),
-                        prefs->GetInt(settings::CLIENT_PORT),
-                        prefs->GetString(settings::CLIENT_PASSWORD));
-                }
-            });
-
-        if (shortcuts) {
-            shortcuts->SetActive("d");
-        }
-        // Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
+        Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
         return true;
     }
     return LayoutBase::KeyPress(kn);

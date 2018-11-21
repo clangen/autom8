@@ -15,8 +15,8 @@ bool get_security_alert_count::can_handle(session_ptr session, message_ptr reque
 }
 
 void get_security_alert_count::operator()(session_ptr session, message_ptr request) {
-    device_list devices;
-    if (device_system::instance()->model().all_devices(devices)) {
+    device_list devices = device_system::instance()->model().all_devices();
+    if (devices.size()) {
         int count = 0;
 
         // TODO: add device_model::find_by_type() or something.

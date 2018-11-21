@@ -77,10 +77,12 @@ set (autom8_curses_SRCS
   ./src/libautom8/device/device_model.cpp
   ./src/app/main.cpp
   ./src/app/adapter/DeviceListAdapter.cpp
+  ./src/app/adapter/DeviceModelAdapter.cpp
   ./src/app/layout/ClientLayout.cpp
   ./src/app/layout/ServerLayout.cpp
   ./src/app/layout/SettingsLayout.cpp
   ./src/app/layout/MainLayout.cpp
+  ./src/app/overlay/DeviceEditOverlay.cpp
   ./src/app/util/Device.cpp
   ./src/app/util/Message.cpp
   ./src/app/util/Settings.cpp

@@ -14,7 +14,7 @@ static const int REGISTER_FOR_BROADCASTS = app::message::CreateType();
 MainLayout::MainLayout(App& app, client_ptr client)
 : AppLayout(app) {
     this->clientLayout = std::make_shared<ClientLayout>(client);
-    this->settingsLayout = std::make_shared<SettingsLayout>();
+    this->settingsLayout = std::make_shared<SettingsLayout>(client);
     this->SetLayout(this->clientLayout);
     this->Post(REGISTER_FOR_BROADCASTS);
 }

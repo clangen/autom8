@@ -19,8 +19,7 @@ public:
     }
 
     virtual std::shared_ptr<json> body() {
-        device_list devices;
-        device_system::instance()->model().all_devices(devices);
+        device_list devices = device_system::instance()->model().all_devices();
 
         auto body = std::make_shared<json>();
         auto& devices_node = (*body)["devices"] = json::array();

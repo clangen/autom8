@@ -12,6 +12,18 @@
         "button_retry": "retry",
         "button_continue": "continue",
 
+        "device_status_off": "off",
+        "device_status_on": "on",
+        "device_status_unknown": "??",
+
+        "device_type_appliance": "appliance",
+        "device_type_lamp": "lamp",
+        "device_type_sensor": "sensor",
+        "device_type_generic": "generic",
+
+        "settings_about_config": "> about:config",
+        "settings_device_system_list": "connected devices",
+
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",
         "shortcuts_settings": "settings"

@@ -245,7 +245,7 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
     return device;
 }
 
-int device_model::all_devices(device_list& list) {
+device_list device_model::all_devices() {
     std::string query = (boost::format(
         " SELECT %1%, %2%, %3%, %4%"
         " FROM %5%"
@@ -258,7 +258,7 @@ int device_model::all_devices(device_list& list) {
 
     autom8::db::statement stmt(connection_, query);
 
-    int count = 0;
+    device_list list;
     while (stmt.next()) {
         database_id id = (database_id) stmt.get_int64(0);
         device_type type = (device_type) stmt.get_int(1);
@@ -269,10 +269,9 @@ int device_model::all_devices(device_list& list) {
         get_groups(id, groups);
 
         list.push_back(factory_->create(id, type, address, label, groups));
-        ++count;
     }
 
-    return count;
+    return list;
 }
 
 bool device_model::remove_groups(database_id id) {
