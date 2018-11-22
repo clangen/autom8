@@ -106,7 +106,6 @@ static void showDeviceTypeOverlay(
         { device_type_lamp, _TSTR("device_type_lamp") },
         { device_type_appliance, _TSTR("device_type_appliance") },
         { device_type_security_sensor, _TSTR("device_type_sensor") },
-        { device_type_unknown, _TSTR("device_type_generic") }
     };
 
     size_t selectedIndex = 0;

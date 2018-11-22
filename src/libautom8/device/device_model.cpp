@@ -265,7 +265,13 @@ device_list device_model::all_devices() const {
         std::vector<std::string> groups;
         get_groups(id, groups);
 
-        list.push_back(factory_->create(id, type, address, label, groups));
+        auto created = factory_->create(id, type, address, label, groups);
+        if (created) {
+            list.push_back(created);
+        }
+        else {
+            debug::w("device_model", "failed to create device");
+        }
     }
 
     return list;
