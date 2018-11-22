@@ -71,7 +71,7 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
         "device_type_generic"
     });
 
-    const int labelWidth = std::max(0, (int) width - addressWidth - typeWidth - 2);
+    const int labelWidth = std::max(0, (int) width - addressWidth - typeWidth - 6);
 
     const std::string addressStr = device->address();
 
