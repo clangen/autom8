@@ -14,7 +14,7 @@ json device_base::to_json() {
     result["status"] = this->status();
     result["groups"] = this->groups();
 
-    json attributes;
+    json attributes = json::object();
     this->get_extended_json_attributes(attributes);
     result["attributes"] = attributes;
 
