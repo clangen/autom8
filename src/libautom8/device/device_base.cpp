@@ -12,10 +12,7 @@ json device_base::to_json() {
     result["type"] = this->type();
     result["label"] = this->label();
     result["status"] = this->status();
-
-    std::vector<std::string> groups;
-    this->groups(groups);
-    result["groups"] = groups;
+    result["groups"] = this->groups();
 
     json attributes;
     this->get_extended_json_attributes(attributes);

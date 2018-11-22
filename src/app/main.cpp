@@ -51,6 +51,8 @@
 #include <app/util/Settings.h>
 
 #include <f8n/f8n.h>
+#include <f8n/utf/str.h>
+
 #include <f8n/environment/Environment.h>
 #include <f8n/preferences/Preferences.h>
 
@@ -90,7 +92,7 @@ int main(int argc, char* argv[]) {
         new debug::FileBackend(env::GetDataDirectory() + "log.txt")
     });
 
-    debug::info("main", debug::format("app starting %d", 10));
+    debug::info("main", str::format("app starting %d", 10));
 
     settings::InitializeDefaults();
     auto prefs = settings::Prefs();
@@ -102,8 +104,6 @@ int main(int argc, char* argv[]) {
     {
         using device_system_ptr = std::shared_ptr<autom8::device_system>;
         device_system_ptr system = std::make_shared<autom8::null_device_system>();
-        std::vector<std::string> groups;
-        system->model().add(autom8::device_type_appliance, "a1", "dummy appliance 1", groups);
         autom8::device_system::set_instance(system);
 
         autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
                 client->reconnect();
                 return true;
             }
-            else if (kn == "M-s") {
+            else if (kn == "M-x") {
                 if (autom8::server::is_running()) {
                     autom8::server::stop();
                 }

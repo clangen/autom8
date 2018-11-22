@@ -33,7 +33,7 @@ namespace autom8 {
             const std::string& label,
             const std::vector<std::string>& groups);
 
-        virtual device_list all_devices();
+        virtual device_list all_devices() const;
         virtual device_ptr find_by_address(const std::string& address);
 
     protected:
@@ -46,7 +46,7 @@ namespace autom8 {
         virtual void on_device_updated(database_id id);
 
         bool remove_groups(database_id id);
-        void get_groups(database_id id, std::vector<std::string>& groups);
+        void get_groups(database_id id, std::vector<std::string>& groups) const;
         bool set_groups(database_id id, const std::vector<std::string>& groups);
 
     private:

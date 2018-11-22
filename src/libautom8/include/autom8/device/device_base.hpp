@@ -29,7 +29,7 @@ namespace autom8 {
         virtual void turn_off() = 0;
         virtual device_status status() = 0;
         virtual std::string address() = 0;
-        virtual void groups(std::vector<std::string>& target) = 0;
+        virtual std::vector<std::string> groups() = 0;
         virtual std::string label() = 0;
         virtual device_type type() = 0;
         virtual database_id id() = 0;

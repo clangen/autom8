@@ -22,6 +22,8 @@ namespace autom8 { namespace app {
 
             const autom8::device_ptr At(const size_t index);
 
+            void Requery();
+
         private:
             autom8::device_system_ptr system;
             autom8::device_list devices;

@@ -27,11 +27,14 @@ namespace autom8 { namespace app {
             virtual void SetShortcutsWindow(cursespp::ShortcutsWindow* w) override;
 
         private:
+            void OnDeviceRowActivated(cursespp::ListWindow* window, size_t index);
             void OnAboutConfigActivated(cursespp::TextLabel* label);
+            void OnAddDeviceActivated(cursespp::TextLabel* label);
 
             autom8::client_ptr client;
             std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
             std::shared_ptr<cursespp::TextLabel> aboutConfig;
+            std::shared_ptr<cursespp::TextLabel> addDevice;
             std::shared_ptr<cursespp::ListWindow> deviceModelList;
     };
 

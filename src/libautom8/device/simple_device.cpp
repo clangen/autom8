@@ -27,13 +27,14 @@ simple_device::simple_device(
 simple_device::~simple_device() {
 }
 
-void simple_device::groups(std::vector<std::string>& target) {
+std::vector<std::string> simple_device::groups() {
+    std::vector<std::string> target;
     auto lock = state_lock();
-
     std::vector<std::string>::iterator it = groups_.begin();
     for ( ; it != groups_.end(); it++) {
         target.push_back(*it);
     }
+    return target;
 }
 
 device_status simple_device::status() {

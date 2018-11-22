@@ -20,7 +20,7 @@ namespace autom8 {
         virtual std::string address();
         virtual std::string label();
         virtual database_id id();
-        virtual void groups(std::vector<std::string>& target);
+        virtual std::vector<std::string> groups();
 
         virtual device_type type() = 0;
         virtual void turn_on() = 0;

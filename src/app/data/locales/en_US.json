@@ -21,8 +21,22 @@
         "device_type_sensor": "sensor",
         "device_type_generic": "generic",
 
+        "device_edit_overlay_title": "edit device",
+        "device_add_overlay_title": "add device",
+        "device_field_address": "address: ",
+        "device_field_label": "label: ",
+        "device_field_groups": "groups: ",
+        "device_field_type": "> type: %s",
+
+        "device_edit_invalid_input_overlay_title": "",
+        "device_edit_invalid_input_overlay_message": "",
+
         "settings_about_config": "> about:config",
+        "settings_add_device": "> add device...",
         "settings_device_system_list": "connected devices",
+
+        "settings_delete_device_overlay_title": "confirm delete",
+        "settings_delete_device_overlay_message": "are you sure you want to delete device '%s'?",
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",

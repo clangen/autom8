@@ -42,11 +42,15 @@ static int maxAddress(const device_list& devices) {
 
 DeviceModelAdapter::DeviceModelAdapter(device_system_ptr system)
 : system(system) {
-    this->devices = system->model().all_devices();
+    this->Requery();
 }
 
 DeviceModelAdapter::~DeviceModelAdapter() {
 
+}
+
+void DeviceModelAdapter::Requery() {
+    this->devices = system->model().all_devices();
 }
 
 size_t DeviceModelAdapter::GetEntryCount() {

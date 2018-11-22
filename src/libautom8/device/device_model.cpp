@@ -161,15 +161,12 @@ bool device_model::remove(database_id id) {
 }
 
 bool device_model::update(device_ptr device) {
-    std::vector<std::string> groups;
-    device->groups(groups);
-
     return this->update(
         device->id(),
         device->type(),
         device->address(),
         device->label(),
-        groups);
+        device->groups());
 }
 
 bool device_model::update(
@@ -245,7 +242,7 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
     return device;
 }
 
-device_list device_model::all_devices() {
+device_list device_model::all_devices() const {
     std::string query = (boost::format(
         " SELECT %1%, %2%, %3%, %4%"
         " FROM %5%"
@@ -314,7 +311,7 @@ bool device_model::set_groups(database_id id, const std::vector<std::string>& gr
     return ok;
 }
 
-void device_model::get_groups(database_id id, std::vector<std::string>& groups) {
+void device_model::get_groups(database_id id, std::vector<std::string>& groups) const {
     std::string query = (boost::format(
         " SELECT %1%"
         " FROM %2%"

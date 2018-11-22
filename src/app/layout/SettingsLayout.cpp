@@ -7,35 +7,66 @@
 #include <autom8/device/device_system.hpp>
 #include <app/util/Message.h>
 #include <app/util/Settings.h>
+#include <app/overlay/DeviceEditOverlay.h>
 
 using namespace cursespp;
 using namespace autom8::app;
 using namespace f8n;
 
+static bool isDeleteKey(const std::string& kn) {
+#ifdef __APPLE__
+    return kn == "KEY_BACKSPACE";
+#else
+    return kn == "KEY_DC";
+#endif
+}
+
 SettingsLayout::SettingsLayout(autom8::client_ptr client)
 : LayoutBase()
 , client(client) {
+    int order = 0;
+
     this->aboutConfig = std::make_shared<TextLabel>();
     this->aboutConfig->SetText(_TSTR("settings_about_config"));
-    this->aboutConfig->SetFocusOrder(0);
+    this->aboutConfig->SetFocusOrder(order++);
     this->aboutConfig->Activated.connect(this, &SettingsLayout::OnAboutConfigActivated);
     this->AddWindow(aboutConfig);
 
+    this->addDevice = std::make_shared<TextLabel>();
+    this->addDevice->SetText(_TSTR("settings_add_device"));
+    this->addDevice->SetFocusOrder(order++);
+    this->addDevice->Activated.connect(this, &SettingsLayout::OnAddDeviceActivated);
+    this->AddWindow(addDevice);
+
     this->deviceModelAdapter = std::make_shared<DeviceModelAdapter>(device_system::instance());
     this->deviceModelList = std::make_shared<ListWindow>(this->deviceModelAdapter);
+    this->deviceModelList->EntryActivated.connect(this, &SettingsLayout::OnDeviceRowActivated);
     this->deviceModelList->SetFrameTitle(_TSTR("settings_device_system_list"));
-    this->deviceModelList->SetFocusOrder(1);
+    this->deviceModelList->SetFocusOrder(order++);
     this->AddWindow(this->deviceModelList);
+
+    this->SetFocus(this->deviceModelList);
 }
 
 void SettingsLayout::OnLayout() {
-    auto cx = this->GetContentWidth();
-    this->aboutConfig->MoveAndResize(1, 1, cx - 2, 1);
-    this->deviceModelList->MoveAndResize(1, 3, cx - 2, 8);
+    auto cx = this->GetContentWidth() - 2;
+    auto cy = this->GetContentHeight();
+    int x = 1;
+    int y = 1;
+    this->aboutConfig->MoveAndResize(x, y++, cx, 1);
+    this->addDevice->MoveAndResize(x, y++, cx, 1);
+    y++;
+    this->deviceModelList->MoveAndResize(x, y, cx, cy - y);
 }
 
 void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 
+}
+
+void SettingsLayout::OnDeviceRowActivated(cursespp::ListWindow* window, size_t index) {
+    DeviceEditOverlay::Edit(
+        device_system::instance(),
+        this->deviceModelAdapter->At(index));
 }
 
 bool SettingsLayout::KeyPress(const std::string& kn) {
@@ -43,9 +74,21 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
         Broadcast(message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT);
         return true;
     }
-    else {
-        return LayoutBase::KeyPress(kn);
+    else if (this->GetFocus() == this->deviceModelList && isDeleteKey(kn)) {
+        auto index = this->deviceModelList->GetSelectedIndex();
+        if (index != ListWindow::NO_SELECTION) {
+            DeviceEditOverlay::Delete(
+                device_system::instance(),
+                this->deviceModelAdapter->At(index),
+                [this]() {
+                    this->deviceModelAdapter->Requery();
+                    this->deviceModelList->OnAdapterChanged();
+                });
+        }
+        return true;
     }
+
+    return LayoutBase::KeyPress(kn);
 }
 
 void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
@@ -67,6 +110,9 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
         });
 }
 
+void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {
+    DeviceEditOverlay::Create(device_system::instance());
+}
 
 void SettingsLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
     debug::info("SettingsLayout", "SetShortcutsWindow()");
