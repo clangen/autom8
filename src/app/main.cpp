@@ -43,6 +43,7 @@
 #include <autom8/message/requests/get_device_list.hpp>
 #include <autom8/device/device_system.hpp>
 #include <autom8/device/null_device_system.hpp>
+#include <autom8/device/x10/mochad/mochad_device_system.hpp>
 
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
@@ -104,6 +105,9 @@ int main(int argc, char* argv[]) {
     {
         using device_system_ptr = std::shared_ptr<autom8::device_system>;
         device_system_ptr system = std::make_shared<autom8::null_device_system>();
+        if (prefs->GetString(settings::SYSTEM_SELECTED) == "mochad") {
+            system = std::make_shared<autom8::mochad_device_system>();
+        }
         autom8::device_system::set_instance(system);
 
         autom8::server::start(prefs->GetInt(settings::SERVER_PORT));

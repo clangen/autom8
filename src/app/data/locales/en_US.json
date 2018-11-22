@@ -32,8 +32,8 @@
         "device_edit_invalid_input_overlay_message": "",
 
         "settings_about_config": "> about:config",
-        "settings_add_device": "> add device...",
-        "settings_device_system_list": "connected devices",
+        "settings_add_device": "> add device to '%s'...",
+        "settings_device_system_list": "devices connected to '%s'",
 
         "settings_delete_device_overlay_title": "confirm delete",
         "settings_delete_device_overlay_message": "are you sure you want to delete device '%s'?",
@@ -42,6 +42,8 @@
         "settings_edit_device_address_exists_title": "address already in use",
         "settings_edit_device_address_exists_message": "the specified address is already being used by another device.",
         "settings_edit_device_select_type_title": "select device type",
+
+        "settings_device_controller": "> device controller: %s",
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",

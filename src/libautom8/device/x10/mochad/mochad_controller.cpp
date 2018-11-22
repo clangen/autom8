@@ -115,10 +115,6 @@ void mochad_controller::schedule_reconnect() {
     std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (!connected_ && !reconnecting_) {
-#ifdef LOG_CONNECTION
-        std::cerr << "scheduling reconnect..." << std::endl;
-#endif
-
         debug::info(TAG, "scheduling reconnect in 10 seconds");
         reconnect_timer_.expires_from_now(boost::posix_time::seconds(10));
 
@@ -192,20 +188,13 @@ void mochad_controller::handle_connect(
     }
 
     if (!error) {
-#ifdef LOG_CONNECTION
-        std::cerr << "connected..." << std::endl;
-#endif
-
         debug::info(TAG, "connected to socket");
         send_ping();
         start_next_write();
         read_next_message();
     }
     else {
-#ifdef LOG_CONNECTION
-        std::cerr << "connection failed..." << std::endl;
-#endif
-
+        debug::error(TAG, "connected to socket");
         schedule_reconnect();
     }
 }
@@ -215,9 +204,7 @@ void mochad_controller::handle_resolve(
     tcp::resolver::iterator endpoint_iterator)
 {
     if (!error) {
-#ifdef LOG_CONNECTION
-        std::cerr << "resolved..." << std::endl;
-#endif
+        debug::info(TAG, "resolved host");
 
         socket_ = new tcp::socket(io_service_);
 

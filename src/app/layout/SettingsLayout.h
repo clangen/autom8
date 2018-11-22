@@ -30,12 +30,14 @@ namespace autom8 { namespace app {
             void OnDeviceRowActivated(cursespp::ListWindow* window, size_t index);
             void OnAboutConfigActivated(cursespp::TextLabel* label);
             void OnAddDeviceActivated(cursespp::TextLabel* label);
+            void OnDeviceControllerActivated(cursespp::TextLabel* label);
 
-            void RefreshDeviceList();
+            void Reload();
 
             autom8::client_ptr client;
             std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
             std::shared_ptr<cursespp::TextLabel> aboutConfig;
+            std::shared_ptr<cursespp::TextLabel> deviceController;
             std::shared_ptr<cursespp::TextLabel> addDevice;
             std::shared_ptr<cursespp::ListWindow> deviceModelList;
     };

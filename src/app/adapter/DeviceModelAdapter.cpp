@@ -40,16 +40,16 @@ static int maxAddress(const device_list& devices) {
     return max;
 }
 
-DeviceModelAdapter::DeviceModelAdapter(device_system_ptr system)
-: system(system) {
-    this->Requery();
+DeviceModelAdapter::DeviceModelAdapter(device_system_ptr system) {
+    this->Requery(system);
 }
 
 DeviceModelAdapter::~DeviceModelAdapter() {
 
 }
 
-void DeviceModelAdapter::Requery() {
+void DeviceModelAdapter::Requery(autom8::device_system_ptr system) {
+    this->system = system;
     this->devices = system->model().all_devices();
 }
 

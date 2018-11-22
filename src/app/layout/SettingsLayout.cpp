@@ -1,6 +1,7 @@
 #include "SettingsLayout.h"
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
+#include <f8n/utf/str.h>
 #include <cursespp/App.h>
 #include <cursespp/Screen.h>
 #include <cursespp/PluginOverlay.h>
@@ -32,8 +33,12 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     this->aboutConfig->Activated.connect(this, &SettingsLayout::OnAboutConfigActivated);
     this->AddWindow(aboutConfig);
 
+    this->deviceController = std::make_shared<TextLabel>();
+    this->deviceController->SetFocusOrder(order++);
+    this->deviceController->Activated.connect(this, &SettingsLayout::OnDeviceControllerActivated);
+    this->AddWindow(deviceController);
+
     this->addDevice = std::make_shared<TextLabel>();
-    this->addDevice->SetText(_TSTR("settings_add_device"));
     this->addDevice->SetFocusOrder(order++);
     this->addDevice->Activated.connect(this, &SettingsLayout::OnAddDeviceActivated);
     this->AddWindow(addDevice);
@@ -41,30 +46,41 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     this->deviceModelAdapter = std::make_shared<DeviceModelAdapter>(device_system::instance());
     this->deviceModelList = std::make_shared<ListWindow>(this->deviceModelAdapter);
     this->deviceModelList->EntryActivated.connect(this, &SettingsLayout::OnDeviceRowActivated);
-    this->deviceModelList->SetFrameTitle(_TSTR("settings_device_system_list"));
     this->deviceModelList->SetFocusOrder(order++);
     this->AddWindow(this->deviceModelList);
 
-    this->SetFocus(this->deviceModelList);
+    this->Reload();
 }
 
 void SettingsLayout::OnLayout() {
-    auto cx = this->GetContentWidth();
+    auto cx = this->GetContentWidth() - 1;
     auto cy = this->GetContentHeight();
-    int x = 0;
+    int x = 1;
     int y = 0;
     this->aboutConfig->MoveAndResize(x, y++, cx, 1);
-    y++;
+    this->deviceController->MoveAndResize(x, y++, cx, 1);
+    ++y;
     this->addDevice->MoveAndResize(x, y++, cx, 1);
-    this->deviceModelList->MoveAndResize(x, y, cx, cy - y);
+    this->deviceModelList->MoveAndResize(0, y, cx + 1, cy - y);
 }
 
 void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 
 }
 
-void SettingsLayout::RefreshDeviceList() {
-    this->deviceModelAdapter->Requery();
+void SettingsLayout::Reload() {
+    auto controller = settings::Prefs()->GetString(settings::SYSTEM_SELECTED);
+
+    this->deviceController->SetText(str::format(
+        _TSTR("settings_device_controller"), controller.c_str()));
+
+    this->addDevice->SetText(str::format(
+        _TSTR("settings_add_device"), controller.c_str()));
+
+    this->deviceModelList->SetFrameTitle(str::format(
+        _TSTR("settings_device_system_list"), controller.c_str()));
+
+    this->deviceModelAdapter->Requery(device_system::instance());
     this->deviceModelList->OnAdapterChanged();
 }
 
@@ -72,7 +88,7 @@ void SettingsLayout::OnDeviceRowActivated(cursespp::ListWindow* window, size_t i
     DeviceEditOverlay::Edit(
         device_system::instance(),
         this->deviceModelAdapter->At(index),
-        [this]() { this->RefreshDeviceList(); });
+        [this]() { this->Reload(); });
 }
 
 bool SettingsLayout::KeyPress(const std::string& kn) {
@@ -86,7 +102,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
             DeviceEditOverlay::Delete(
                 device_system::instance(),
                 this->deviceModelAdapter->At(index),
-                [this]() { this->RefreshDeviceList(); });
+                [this]() { this->Reload(); });
         }
         return true;
     }
@@ -102,6 +118,7 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
         [this](bool changed) {
             if (changed) {
                 debug::i("ClientLayout", "settings saved, reconnecting...");
+                this->Reload();
                 auto prefs = settings::Prefs();
                 prefs->Save();
                 this->client->disconnect(true);
@@ -113,10 +130,14 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
         });
 }
 
+void SettingsLayout::OnDeviceControllerActivated(cursespp::TextLabel* label) {
+
+}
+
 void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {
     DeviceEditOverlay::Create(
         device_system::instance(),
-        [this]() { this->RefreshDeviceList(); });
+        [this]() { this->Reload(); });
 }
 
 void SettingsLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
