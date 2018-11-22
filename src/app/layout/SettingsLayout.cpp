@@ -49,13 +49,13 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
 }
 
 void SettingsLayout::OnLayout() {
-    auto cx = this->GetContentWidth() - 2;
+    auto cx = this->GetContentWidth();
     auto cy = this->GetContentHeight();
-    int x = 1;
-    int y = 1;
+    int x = 0;
+    int y = 0;
     this->aboutConfig->MoveAndResize(x, y++, cx, 1);
-    this->addDevice->MoveAndResize(x, y++, cx, 1);
     y++;
+    this->addDevice->MoveAndResize(x, y++, cx, 1);
     this->deviceModelList->MoveAndResize(x, y, cx, cy - y);
 }
 
@@ -63,10 +63,16 @@ void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 
 }
 
+void SettingsLayout::RefreshDeviceList() {
+    this->deviceModelAdapter->Requery();
+    this->deviceModelList->OnAdapterChanged();
+}
+
 void SettingsLayout::OnDeviceRowActivated(cursespp::ListWindow* window, size_t index) {
     DeviceEditOverlay::Edit(
         device_system::instance(),
-        this->deviceModelAdapter->At(index));
+        this->deviceModelAdapter->At(index),
+        [this]() { this->RefreshDeviceList(); });
 }
 
 bool SettingsLayout::KeyPress(const std::string& kn) {
@@ -80,10 +86,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
             DeviceEditOverlay::Delete(
                 device_system::instance(),
                 this->deviceModelAdapter->At(index),
-                [this]() {
-                    this->deviceModelAdapter->Requery();
-                    this->deviceModelList->OnAdapterChanged();
-                });
+                [this]() { this->RefreshDeviceList(); });
         }
         return true;
     }
@@ -111,7 +114,9 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
 }
 
 void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {
-    DeviceEditOverlay::Create(device_system::instance());
+    DeviceEditOverlay::Create(
+        device_system::instance(),
+        [this]() { this->RefreshDeviceList(); });
 }
 
 void SettingsLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {

@@ -71,7 +71,7 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
         "device_type_generic"
     });
 
-    const int labelWidth = std::max(0, (int) width - addressWidth - typeWidth - 6);
+    const int labelWidth = std::max(0, (int) width - addressWidth - typeWidth - 2);
 
     const std::string addressStr = device->address();
 
@@ -90,9 +90,9 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
             break;
     }
 
-    std::string label = text::Align(device->label(), text::AlignRight, labelWidth);
+    std::string label = text::Align(device->label(), text::AlignLeft, labelWidth);
 
-    return " " + addressStr + "  " +  typeStr + "  " + label + " ";
+    return " " + addressStr + "  " +  label + "  " + typeStr + " ";
 }
 
 IScrollAdapter::EntryPtr DeviceModelAdapter::GetEntry(ScrollableWindow* window, size_t index) {

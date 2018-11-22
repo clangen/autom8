@@ -12,11 +12,14 @@ namespace autom8 { namespace app {
 #endif
 {
         public:
-            static void Create(autom8::device_system_ptr system);
+            static void Create(
+                autom8::device_system_ptr system,
+                std::function<void()> callback);
 
             static void Edit(
                 autom8::device_system_ptr system,
-                autom8::device_ptr device);
+                autom8::device_ptr device,
+                std::function<void()> callback);
 
             static void Delete(
                 autom8::device_system_ptr system,
@@ -25,7 +28,8 @@ namespace autom8 { namespace app {
 
             DeviceEditOverlay(
                 autom8::device_system_ptr system,
-                autom8::device_ptr device = autom8::device_ptr());
+                autom8::device_ptr device = autom8::device_ptr(),
+                std::function<void()> callback = std::function<void()>());
 
             virtual void Layout() override;
             virtual bool KeyPress(const std::string& key) override;
@@ -35,12 +39,14 @@ namespace autom8 { namespace app {
             using Input = std::shared_ptr<cursespp::TextInput>;
             using Shortcuts = std::shared_ptr<cursespp::ShortcutsWindow>;
 
+            void OnDeviceTypeActivated(cursespp::TextLabel*);
             void LayoutLabelAndInput(Label label, Input input, int y, int inputWidth = -1);
             void UpdateOrAddDevice();
 
             autom8::device_ptr device;
             autom8::device_system_ptr system;
 
+            std::function<void()> callback;
             autom8::device_type deviceType;
             Label titleLabel;
             Label addressLabel, labelLabel, groupsLabel, typeLabel;

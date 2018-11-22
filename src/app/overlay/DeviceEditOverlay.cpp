@@ -2,7 +2,10 @@
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
 #include <cursespp/DialogOverlay.h>
+#include <cursespp/ListOverlay.h>
 #include <cursespp/Screen.h>
+#include <cursespp/SimpleScrollAdapter.h>
+#include <f8n/debug/debug.h>
 #include <f8n/utf/str.h>
 #include <f8n/utf/conv.h>
 #include <f8n/i18n/Locale.h>
@@ -31,12 +34,6 @@ static std::string groupsToString(device_ptr device) {
     return result;
 }
 
-static std::vector<std::string> stringToGroups(const std::string& str) {
-    std::vector<std::string> result;
-    // TODO
-    return result;
-}
-
 static std::string typeToString(device_type type) {
     std::string localizedType = _TSTR("device_type_generic");
     switch (type) {
@@ -48,6 +45,8 @@ static std::string typeToString(device_type type) {
             break;
         case device_type_security_sensor:
             localizedType = _TSTR("device_type_sensor");
+            break;
+        default:
             break;
     }
     return str::format(_TSTR("device_field_type"), localizedType.c_str());
@@ -74,27 +73,84 @@ static void showInvalidInputsDialog() {
     std::shared_ptr<DialogOverlay> dialog(new DialogOverlay());
 
     (*dialog)
-        .SetTitle(_TSTR("settings_server_invalid_settings_title"))
-        .SetMessage(_TSTR("settings_server_invalid_settings_message"))
+        .SetTitle(_TSTR("settings_edit_device_invalid_settings_title"))
+        .SetMessage(_TSTR("settings_edit_device_invalid_settings_message"))
         .AddButton("KEY_ENTER", "ENTER", _TSTR("button_ok"));
 
     App::Overlays().Push(dialog);
 }
 
 static void showDeviceWithAddressExistsDialog() {
-    // TODO
+    std::shared_ptr<DialogOverlay> dialog(new DialogOverlay());
+
+    (*dialog)
+        .SetTitle(_TSTR("settings_edit_device_address_exists_title"))
+        .SetMessage(_TSTR("settings_edit_device_address_exists_message"))
+        .AddButton("KEY_ENTER", "ENTER", _TSTR("button_ok"));
+
+    App::Overlays().Push(dialog);
 }
 
-static void showDeviceTypeOverlay(std::function<void(device_type)> callback) {
-    // TODO
+static void showDeviceTypeOverlay(
+    device_type deviceType, std::function<void(device_type)> callback)
+{
+    using Adapter = cursespp::SimpleScrollAdapter;
+    using ListOverlay = cursespp::ListOverlay;
+
+    struct Entry {
+        device_type type;
+        std::string label;
+    };
+
+    std::vector<Entry> indexToType = {
+        { device_type_lamp, _TSTR("device_type_lamp") },
+        { device_type_appliance, _TSTR("device_type_appliance") },
+        { device_type_security_sensor, _TSTR("device_type_sensor") },
+        { device_type_unknown, _TSTR("device_type_generic") }
+    };
+
+    size_t selectedIndex = 0;
+    std::shared_ptr<Adapter> adapter(new Adapter());
+    for (size_t i = 0; i < indexToType.size(); i++) {
+        auto& e = indexToType[i];
+        adapter->AddEntry(e.label);
+        if (e.type == deviceType) {
+            selectedIndex = i;
+        }
+    }
+    adapter->SetSelectable(true);
+
+    std::shared_ptr<ListOverlay> dialog(new ListOverlay());
+
+    dialog->SetAdapter(adapter)
+        .SetTitle(_TSTR("settings_edit_device_select_type_title"))
+        .SetSelectedIndex(selectedIndex)
+        .SetWidthPercent(80)
+        .SetItemSelectedCallback(
+            [callback,indexToType](ListOverlay* overlay, IScrollAdapterPtr adapter, size_t index) {
+                if (callback) {
+                    callback(indexToType[index].type);
+                }
+            });
+
+    cursespp::App::Overlays().Push(dialog);
 }
 
-void DeviceEditOverlay::Create(device_system_ptr system) {
-    App::Overlays().Push(std::make_shared<DeviceEditOverlay>(system, device_ptr()));
+void DeviceEditOverlay::Create(
+    device_system_ptr system,
+    std::function<void()> callback)
+{
+    App::Overlays().Push(
+        std::make_shared<DeviceEditOverlay>(system, device_ptr(), callback));
 }
 
-void DeviceEditOverlay::Edit(device_system_ptr system, device_ptr device) {
-    App::Overlays().Push(std::make_shared<DeviceEditOverlay>(system, device));
+void DeviceEditOverlay::Edit(
+    device_system_ptr system,
+    device_ptr device,
+    std::function<void()> callback)
+{
+    App::Overlays().Push(
+        std::make_shared<DeviceEditOverlay>(system, device, callback));
 }
 
 void DeviceEditOverlay::Delete(
@@ -123,10 +179,14 @@ void DeviceEditOverlay::Delete(
     App::Overlays().Push(dialog);
 }
 
-DeviceEditOverlay::DeviceEditOverlay(device_system_ptr system, device_ptr device)
+DeviceEditOverlay::DeviceEditOverlay(
+    device_system_ptr system,
+    device_ptr device,
+    std::function<void()> callback)
 : OverlayBase()
 , system(system)
-, device(device) {
+, device(device)
+, callback(callback) {
     int order = 0;
 
     this->deviceType = device ? device->type() : device_type_appliance;
@@ -167,6 +227,7 @@ DeviceEditOverlay::DeviceEditOverlay(device_system_ptr system, device_ptr device
     /* type */
     this->typeLabel = std::make_shared<TextLabel>(typeToString(this->deviceType));
     this->typeLabel->SetFocusOrder(order++);
+    this->typeLabel->Activated.connect(this, &DeviceEditOverlay::OnDeviceTypeActivated);
     this->AddWindow(this->typeLabel);
 
     /* shortcuts */
@@ -234,10 +295,10 @@ void DeviceEditOverlay::Layout() {
 
 void DeviceEditOverlay::UpdateOrAddDevice() {
     std::locale locale;
-    auto address = std::tolower(this->addressInput->GetText(), locale);
+    auto address = str::lower(this->addressInput->GetText());
     auto label = this->labelInput->GetText();
     auto type = this->deviceType;
-    std::vector<std::string> groups = stringToGroups(this->groupsInput->GetText());
+    std::vector<std::string> groups = str::split(this->groupsInput->GetText(), ",");
 
     if (!address.size() || !label.size()) {
         showInvalidInputsDialog();
@@ -249,6 +310,11 @@ void DeviceEditOverlay::UpdateOrAddDevice() {
         else {
             this->system->model().update(
                 device->id(), type, address, label, groups);
+
+            this->Dismiss();
+            if (this->callback) {
+                this->callback();
+            }
         }
     }
     else {
@@ -257,6 +323,10 @@ void DeviceEditOverlay::UpdateOrAddDevice() {
         }
         else {
             this->system->model().add(type, address, label, groups);
+            this->Dismiss();
+            if (this->callback) {
+                this->callback();
+            }
         }
     }
 }
@@ -271,4 +341,11 @@ bool DeviceEditOverlay::KeyPress(const std::string& key) {
         return true;
     }
     return OverlayBase::KeyPress(key);
+}
+
+void DeviceEditOverlay::OnDeviceTypeActivated(cursespp::TextLabel* label) {
+    showDeviceTypeOverlay(this->deviceType, [this](device_type type) {
+        this->deviceType = type;
+        this->typeLabel->SetText(typeToString(type));
+    });
 }

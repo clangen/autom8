@@ -31,6 +31,8 @@ namespace autom8 { namespace app {
             void OnAboutConfigActivated(cursespp::TextLabel* label);
             void OnAddDeviceActivated(cursespp::TextLabel* label);
 
+            void RefreshDeviceList();
+
             autom8::client_ptr client;
             std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
             std::shared_ptr<cursespp::TextLabel> aboutConfig;

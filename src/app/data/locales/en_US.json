@@ -37,6 +37,11 @@
 
         "settings_delete_device_overlay_title": "confirm delete",
         "settings_delete_device_overlay_message": "are you sure you want to delete device '%s'?",
+        "settings_edit_device_invalid_settings_title": "invalid settings",
+        "settings_edit_device_invalid_settings_message": "please make sure you have specified a valid address, label, and type for this device.",
+        "settings_edit_device_address_exists_title": "address already in use",
+        "settings_edit_device_address_exists_message": "the specified address is already being used by another device.",
+        "settings_edit_device_select_type_title": "select device type",
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",
