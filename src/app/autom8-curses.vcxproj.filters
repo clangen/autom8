@@ -14,6 +14,9 @@
     <Filter Include="src\util">
       <UniqueIdentifier>{4b0f5e3a-8729-4116-8f24-15eb1a8c8d0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\overlay">
+      <UniqueIdentifier>{bcf6f24b-64c4-4d4b-95fa-b09c72c56150}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,6 +46,12 @@
     <ClCompile Include="util\Settings.cpp">
       <Filter>src\util</Filter>
     </ClCompile>
+    <ClCompile Include="overlay\DeviceEditOverlay.cpp">
+      <Filter>src\overlay</Filter>
+    </ClCompile>
+    <ClCompile Include="adapter\DeviceModelAdapter.cpp">
+      <Filter>src\adapter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="layout\MainLayout.h">
@@ -71,6 +80,12 @@
     </ClInclude>
     <ClInclude Include="util\Settings.h">
       <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="overlay\DeviceEditOverlay.h">
+      <Filter>src\overlay</Filter>
+    </ClInclude>
+    <ClInclude Include="adapter\DeviceModelAdapter.h">
+      <Filter>src\adapter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
