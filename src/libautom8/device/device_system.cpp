@@ -4,6 +4,9 @@
 #include <autom8/device/device_system.hpp>
 #include <autom8/device/null_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
+#ifdef WIN32
+#include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
+#endif
 
 #include <mutex>
 
@@ -45,7 +48,9 @@ device_system_ptr device_system::set_instance(const std::string& type) {
             instance_ = std::make_shared<mochad_device_system>();
         }
 #ifdef WIN32
-        // TODO!
+        else if (type == TYPE_CM15A) {
+            instance_ = std::make_shared<cm15a_device_system>();
+        }
 #endif
         else {
             debug::e("device_system", str::format("invalid device system '%s' specified", type.c_str()));
