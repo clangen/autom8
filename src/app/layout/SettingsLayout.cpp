@@ -3,8 +3,8 @@
 #include <f8n/i18n/Locale.h>
 #include <f8n/utf/str.h>
 #include <cursespp/App.h>
+#include <cursespp/SchemaOverlay.h>
 #include <cursespp/Screen.h>
-#include <cursespp/PluginOverlay.h>
 #include <autom8/device/device_system.hpp>
 #include <app/util/Message.h>
 #include <app/util/Settings.h>
@@ -111,7 +111,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
 }
 
 void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
-    PluginOverlay::Show(
+    SchemaOverlay::Show(
         "settings",
         settings::Prefs(),
         settings::Schema(),

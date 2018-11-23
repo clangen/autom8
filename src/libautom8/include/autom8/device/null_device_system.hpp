@@ -14,7 +14,6 @@ namespace autom8 {
         void on_device_removed(database_id id);
         void on_device_updated(database_id id);
 
-
     private:
         class null_device_factory: public device_factory {
         public:
