@@ -14,7 +14,9 @@ namespace autom8 {
         virtual device_model& model() = 0;
 
         static device_system_ptr instance();
-        static device_system_ptr set_instance(device_system_ptr new_instance);
+        static device_system_ptr set_instance(const std::string& type);
+        static std::vector<std::string> types();
+        static std::string default_type();
         static void clear_instance();
 
     protected:

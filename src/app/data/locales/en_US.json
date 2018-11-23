@@ -32,7 +32,7 @@
         "device_edit_invalid_input_overlay_message": "",
 
         "settings_about_config": "> about:config",
-        "settings_add_device": "> add device to '%s'...",
+        "settings_add_device": "> add device to '%s'",
         "settings_device_system_list": "devices connected to '%s'",
 
         "settings_delete_device_overlay_title": "confirm delete",
@@ -47,7 +47,11 @@
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",
-        "shortcuts_settings": "settings"
+        "shortcuts_settings": "settings",
+
+        "validator_dialog_title": "validation error",
+        "validator_dialog_number_parse_bounded_error": "please enter a number between {{minimum}} and {{maximum}} to continue.",
+        "validator_dialog_number_parse_error": "please enter a number to continue."
     },
     "dimensions": {
     }

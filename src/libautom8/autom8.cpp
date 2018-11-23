@@ -152,7 +152,7 @@ int autom8_init(int rpc_mode) {
     debug::Start({ new debug::ConsoleBackend() });
 
     /* select the last selected system, or null by default */
-    std::string system = prefs()->Get("system.selected", "null");
+    std::string system = prefs()->Get("system.controller", "null");
     system_select(system);
 
     initialized_ = true;
@@ -292,7 +292,7 @@ json_ptr server_get_preference(json& options) {
 json_ptr server_status() {
     json_ptr result(new json());
 
-    std::string system = prefs()->Get("system.selected", "null");
+    std::string system = prefs()->Get("system.controller", "null");
     std::string fingerprint = prefs()->Get("server.fingerprint", "");
     int port = prefs()->Get("server.port", 7901);
     int webClientPort = prefs()->Get("server.webClientPort", 7902);
@@ -351,7 +351,7 @@ static json_ptr system_list() {
 static json_ptr system_selected() {
     json_ptr result(new json());
 
-    std::string system = prefs()->Get("system.selected", "null");
+    std::string system = prefs()->Get("system.controller", "null");
     (*result)["system_id"] = system;
 
     return result;
@@ -363,27 +363,21 @@ static int system_select(json& options) {
 
 static int system_select(const std::string& system) {
     if (system == "null" || system == "null/mock") {
-        device_system::set_instance(
-            device_system_ptr(new null_device_system())
-        );
+        device_system::set_instance("null");
     }
     else if (system == "mochad") {
-        device_system::set_instance(
-            device_system_ptr(new mochad_device_system())
-        );
+        device_system::set_instance("mochad");
     }
 #ifdef WIN32
     else if (system == "cm15a") {
-        device_system::set_instance(
-            device_system_ptr(new cm15a_device_system())
-        );
+        device_system::set_instance("cm15a");
     }
 #endif
     else {
         return AUTOM8_INVALID_SYSTEM;
     }
 
-    prefs()->Set("system.selected", system);
+    prefs()->Set("system.controller", system);
     return AUTOM8_OK;
 }
 

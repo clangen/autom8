@@ -1,5 +1,7 @@
 #include "Settings.h"
+#include <autom8/device/device_system.hpp>
 
+using namespace autom8;
 using namespace f8n::sdk;
 using namespace f8n::prefs;
 
@@ -10,7 +12,7 @@ namespace autom8 { namespace app { namespace settings {
     const std::string CLIENT_PORT = "client.port";
     const std::string SERVER_PASSWORD = "server.password";
     const std::string SERVER_PORT = "server.port";
-    const std::string SYSTEM_SELECTED = "system.selected";
+    const std::string SYSTEM_CONTROLLER = "system.controller";
     const std::string MOCHAD_HOSTNAME = "mochad.hostname";
     const std::string MOCHAD_PORT = "mochad.port";
 
@@ -24,7 +26,7 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(CLIENT_PORT, 7901);
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
-            prefs->SetDefault(SYSTEM_SELECTED, "null");
+            prefs->SetDefault(SYSTEM_CONTROLLER, device_system::default_type());
             prefs->SetDefault(MOCHAD_HOSTNAME, "localhost");
             prefs->SetDefault(MOCHAD_PORT, 1099);
         }
@@ -37,7 +39,10 @@ namespace autom8 { namespace app { namespace settings {
         result->AddInt(CLIENT_PORT);
         result->AddString(SERVER_PASSWORD);
         result->AddInt(SERVER_PORT);
-        result->AddEnum(SYSTEM_SELECTED, { "null", "mochad" }, "null");
+        result->AddEnum(
+            SYSTEM_CONTROLLER,
+            device_system::types(),
+            device_system::default_type());
         result->AddString(MOCHAD_HOSTNAME);
         result->AddInt(MOCHAD_PORT);
         return result;

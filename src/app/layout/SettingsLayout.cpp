@@ -13,6 +13,7 @@
 using namespace cursespp;
 using namespace autom8::app;
 using namespace f8n;
+using namespace f8n::sdk;
 
 static bool isDeleteKey(const std::string& kn) {
 #ifdef __APPLE__
@@ -24,7 +25,8 @@ static bool isDeleteKey(const std::string& kn) {
 
 SettingsLayout::SettingsLayout(autom8::client_ptr client)
 : LayoutBase()
-, client(client) {
+, client(client)
+, schema(settings::Schema()) {
     int order = 0;
 
     this->aboutConfig = std::make_shared<TextLabel>();
@@ -59,7 +61,6 @@ void SettingsLayout::OnLayout() {
     int y = 0;
     this->aboutConfig->MoveAndResize(x, y++, cx, 1);
     this->deviceController->MoveAndResize(x, y++, cx, 1);
-    ++y;
     this->addDevice->MoveAndResize(x, y++, cx, 1);
     this->deviceModelList->MoveAndResize(0, y, cx + 1, cy - y);
 }
@@ -69,7 +70,7 @@ void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 }
 
 void SettingsLayout::Reload() {
-    auto controller = settings::Prefs()->GetString(settings::SYSTEM_SELECTED);
+    auto controller = settings::Prefs()->GetString(settings::SYSTEM_CONTROLLER);
 
     this->deviceController->SetText(str::format(
         _TSTR("settings_device_controller"), controller.c_str()));
@@ -114,7 +115,7 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
     SchemaOverlay::Show(
         "settings",
         settings::Prefs(),
-        settings::Schema(),
+        this->schema,
         [this](bool changed) {
             if (changed) {
                 debug::i("ClientLayout", "settings saved, reconnecting...");
@@ -131,7 +132,19 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
 }
 
 void SettingsLayout::OnDeviceControllerActivated(cursespp::TextLabel* label) {
+    auto prefs = settings::Prefs();
+    auto selected = prefs->GetString(settings::SYSTEM_CONTROLLER);
 
+    auto entry = reinterpret_cast<const ISchema::EnumEntry*>(
+        this->schema->FindByName(settings::SYSTEM_CONTROLLER.c_str()));
+
+    SchemaOverlay::ShowEnumOverlay(
+        entry, prefs, [this, selected](std::string newValue) {
+            if (selected != newValue) {
+                device_system::set_instance(newValue);
+                this->Reload();
+            }
+        });
 }
 
 void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {

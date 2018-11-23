@@ -8,6 +8,7 @@
 #include <cursespp/ITopLevelLayout.h>
 
 #include <f8n/runtime/IMessage.h>
+#include <f8n/sdk/ISchema.h>
 
 #include <app/adapter/DeviceModelAdapter.h>
 
@@ -35,6 +36,7 @@ namespace autom8 { namespace app {
             void Reload();
 
             autom8::client_ptr client;
+            std::shared_ptr<f8n::sdk::ISchema> schema;
             std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
             std::shared_ptr<cursespp::TextLabel> aboutConfig;
             std::shared_ptr<cursespp::TextLabel> deviceController;
