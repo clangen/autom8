@@ -1,3 +1,5 @@
+#include <f8n/preferences/Preferences.h>
+
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
 
@@ -18,6 +20,11 @@
 #define MOCHAD_MESSAGE_REGEX "^\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (Tx|Rx) (PL|RFSEC) (HouseUnit: |House: )(.+)$"
 #define LOWER(x) std::transform(x.begin(), x.end(), x.begin(), ::tolower)
 
+const std::string MOCHAD_HOSTNAME = "mochad.hostname";
+const std::string MOCHAD_PORT = "mochad.port";
+
+using namespace f8n;
+using namespace f8n::prefs;
 using namespace autom8;
 
 mochad_device_system::mochad_device_system() {
@@ -110,6 +117,21 @@ void mochad_device_system::on_message_received(std::string message) {
 
 device_model& mochad_device_system::model() {
     return *model_.get();
+}
+
+schema_ptr mochad_device_system::schema() {
+    auto prefs = Preferences::ForComponent("settings");
+    prefs->SetDefault(MOCHAD_HOSTNAME, mochad_controller::default_hostname());
+    prefs->SetDefault(MOCHAD_PORT, mochad_controller::default_port());
+
+    auto schema = std::make_shared<f8n::sdk::TSchema<>>();
+    schema->AddString(MOCHAD_HOSTNAME);
+    schema->AddInt(MOCHAD_PORT);
+    return schema;
+}
+
+void mochad_device_system::on_settings_changed() {
+    controller_.restart();
 }
 
 void mochad_device_system::requery_device_status(const std::string& address) {

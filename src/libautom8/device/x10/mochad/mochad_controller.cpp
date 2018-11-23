@@ -2,16 +2,15 @@
 #include <autom8/util/utility.hpp>
 #include <boost/bind.hpp>
 #include <f8n/debug/debug.h>
+#include <f8n/utf/str.h>
 #include <f8n/preferences/Preferences.h>
 
 #define TAG "mochad"
 #undef LOG_CONNECTION
 #undef LOG_SEND
 
-static std::string default_mochad_host_ = "127.0.0.1";
-static std::string default_mochad_port_ = "1099";
-
 using namespace autom8;
+using namespace f8n;
 using namespace f8n::prefs;
 using debug = f8n::debug;
 using boost::asio::ip::tcp;
@@ -36,6 +35,8 @@ mochad_controller::~mochad_controller() {
 
 bool mochad_controller::init() {
     if (!initialized_) {
+        debug::info(TAG, "starting up");
+
         io_thread_.reset(
             new std::thread(boost::bind(
                 &mochad_controller::io_thread_proc,
@@ -51,12 +52,20 @@ bool mochad_controller::init() {
 
 void mochad_controller::deinit() {
     if (initialized_) {
+        debug::info(TAG, "shutting down");
+        reconnect_timer_.cancel();
+        ping_timer_.cancel();
         io_service_.stop();
         disconnect();
         io_thread_->join();
         io_service_.reset();
         initialized_ = false;
     }
+}
+
+void mochad_controller::restart() {
+    deinit();
+    init();
 }
 
 void mochad_controller::disconnect() {
@@ -133,9 +142,7 @@ void mochad_controller::handle_write(const boost::system::error_code& error) {
     }
 
     if (error) {
-#ifdef LOG_CONNECTION
-        std::cerr << "socket write failed!\n";
-#endif
+        debug::error(TAG, "socket write failed");
 
         {
             std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
@@ -183,8 +190,14 @@ void mochad_controller::handle_connect(
 {
     {
         std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
-        if (error) { connected_ = false; } else { connected_ = true; }
-        reconnecting_ = false;
+        if (error) {
+            connected_ = false;
+        }
+        else {
+            connected_ = true;
+            reconnecting_ = false;
+            reconnect_timer_.cancel();
+        }
     }
 
     if (!error) {
@@ -194,7 +207,7 @@ void mochad_controller::handle_connect(
         read_next_message();
     }
     else {
-        debug::error(TAG, "connected to socket");
+        debug::error(TAG, "host resolved, but connect failed");
         schedule_reconnect();
     }
 }
@@ -236,27 +249,20 @@ void mochad_controller::start_connecting() {
         std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
         if (connected_) {
-#ifdef LOG_CONNECTION
-            std::cerr << "already connected, done..." << std::endl;
-#endif
-
+            debug::warning(TAG, "already connected. bailing");
+            reconnecting_ = false;
+            reconnect_timer_.cancel();
             return;
         }
-
-        reconnecting_ = false;
     }
 
-#ifdef LOG_CONNECTION
-    std::cerr << "connecting now..." << std::endl;
-#endif
-
     auto prefs = Preferences::ForComponent("settings");
-    std::string host = prefs->Get("mochad.hostname", default_mochad_host_);
-    std::string port = prefs->Get("mochad.port", default_mochad_port_);
+    std::string host = prefs->Get("mochad.hostname", default_hostname());
+    int port = prefs->Get("mochad.port", default_port());
 
-    debug::info(TAG, "connecting to " + host + ":" + port);
+    debug::info(TAG, str::format("connecting to %s:%d", host.c_str(), port));
 
-    tcp::resolver::query query(host, port);
+    tcp::resolver::query query(host, std::to_string(port));
 
     resolver_.async_resolve(
         query,
@@ -270,6 +276,8 @@ void mochad_controller::start_connecting() {
 }
 
 void mochad_controller::io_thread_proc() {
+    debug::info(TAG, "i/o thread started");
+
     start_connecting();
 
     /* the io_service will close itself if it thinks there is no
@@ -279,6 +287,8 @@ void mochad_controller::io_thread_proc() {
     io_service_.run();
 
     disconnect();
+
+    debug::info(TAG, "i/o thread finished");
 }
 
 void mochad_controller::start_next_write() {

@@ -9,6 +9,8 @@ namespace autom8 {
         null_device_system();
         virtual std::string description() { return "null/mock"; }
         virtual device_model& model() { return model_; }
+        virtual schema_ptr schema() { return schema_ptr(); }
+        virtual void on_settings_changed() { }
 
     private:
         void on_device_removed(database_id id);

@@ -18,6 +18,8 @@ namespace autom8 {
 
         virtual std::string description() { return "cm15a (usb)"; }
         virtual device_model& model();
+        virtual schema_ptr schema() { return schema_ptr(); }
+        virtual void on_settings_changed() { }
         virtual bool send_device_message(command_type message_type, const char* message_params);
         virtual std::string controller_type() const { return "cm15a"; }
         virtual void requery_device_status(const std::string& address);

@@ -13,8 +13,6 @@ namespace autom8 { namespace app { namespace settings {
     const std::string SERVER_PASSWORD = "server.password";
     const std::string SERVER_PORT = "server.port";
     const std::string SYSTEM_CONTROLLER = "system.controller";
-    const std::string MOCHAD_HOSTNAME = "mochad.hostname";
-    const std::string MOCHAD_PORT = "mochad.port";
 
     void InitializeDefaults() {
         static bool initialized = false;
@@ -27,8 +25,6 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
             prefs->SetDefault(SYSTEM_CONTROLLER, device_system::default_type());
-            prefs->SetDefault(MOCHAD_HOSTNAME, "localhost");
-            prefs->SetDefault(MOCHAD_PORT, 1099);
         }
     }
 
@@ -43,8 +39,6 @@ namespace autom8 { namespace app { namespace settings {
             SYSTEM_CONTROLLER,
             device_system::types(),
             device_system::default_type());
-        result->AddString(MOCHAD_HOSTNAME);
-        result->AddInt(MOCHAD_PORT);
         return result;
     }
 

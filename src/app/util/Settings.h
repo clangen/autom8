@@ -16,7 +16,5 @@ namespace autom8 { namespace app { namespace settings {
     extern const std::string SERVER_PASSWORD;
     extern const std::string SERVER_PORT;
     extern const std::string SYSTEM_CONTROLLER;
-    extern const std::string MOCHAD_HOSTNAME;
-    extern const std::string MOCHAD_PORT;
 
 } } }

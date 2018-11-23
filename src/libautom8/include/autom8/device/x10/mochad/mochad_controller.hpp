@@ -18,6 +18,10 @@ namespace autom8 {
 
         bool send(std::string msg);
         bool requery(const std::string& device_address);
+        void restart();
+
+        static std::string default_hostname() { return "localhost"; }
+        static int default_port() { return 1099; }
 
     private:
         bool init();

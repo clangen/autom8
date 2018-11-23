@@ -30,7 +30,7 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     int order = 0;
 
     this->aboutConfig = std::make_shared<TextLabel>();
-    this->aboutConfig->SetText(_TSTR("settings_about_config"));
+    this->aboutConfig->SetText("> " + _TSTR("settings_about_config"));
     this->aboutConfig->SetFocusOrder(order++);
     this->aboutConfig->Activated.connect(this, &SettingsLayout::OnAboutConfigActivated);
     this->AddWindow(aboutConfig);
@@ -39,6 +39,11 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     this->deviceController->SetFocusOrder(order++);
     this->deviceController->Activated.connect(this, &SettingsLayout::OnDeviceControllerActivated);
     this->AddWindow(deviceController);
+
+    this->configureController = std::make_shared<TextLabel>();
+    this->configureController->SetFocusOrder(order++);
+    this->configureController->Activated.connect(this, &SettingsLayout::OnConfigureControllerActivated);
+    this->AddWindow(configureController);
 
     this->addDevice = std::make_shared<TextLabel>();
     this->addDevice->SetFocusOrder(order++);
@@ -61,6 +66,7 @@ void SettingsLayout::OnLayout() {
     int y = 0;
     this->aboutConfig->MoveAndResize(x, y++, cx, 1);
     this->deviceController->MoveAndResize(x, y++, cx, 1);
+    this->configureController->MoveAndResize(x, y++, cx, 1);
     this->addDevice->MoveAndResize(x, y++, cx, 1);
     this->deviceModelList->MoveAndResize(0, y, cx + 1, cy - y);
 }
@@ -72,13 +78,16 @@ void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 void SettingsLayout::Reload() {
     auto controller = settings::Prefs()->GetString(settings::SYSTEM_CONTROLLER);
 
-    this->deviceController->SetText(str::format(
+    this->deviceController->SetText("> " + str::format(
         _TSTR("settings_device_controller"), controller.c_str()));
 
-    this->addDevice->SetText(str::format(
+    this->configureController->SetText("> " + str::format(
+        _TSTR("settings_configure_device_controller"), controller.c_str()));
+
+    this->addDevice->SetText("> " + str::format(
         _TSTR("settings_add_device"), controller.c_str()));
 
-    this->deviceModelList->SetFrameTitle(str::format(
+    this->deviceModelList->SetFrameTitle("> " + str::format(
         _TSTR("settings_device_system_list"), controller.c_str()));
 
     this->deviceModelAdapter->Requery(device_system::instance());
@@ -113,7 +122,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
 
 void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
     SchemaOverlay::Show(
-        "settings",
+        _TSTR("settings_about_config"),
         settings::Prefs(),
         this->schema,
         [this](bool changed) {
@@ -145,6 +154,23 @@ void SettingsLayout::OnDeviceControllerActivated(cursespp::TextLabel* label) {
                 this->Reload();
             }
         });
+}
+
+void SettingsLayout::OnConfigureControllerActivated(cursespp::TextLabel* label) {
+    auto system = device_system::instance();
+    auto schema = system->schema();
+    if (schema && schema->Count()> 0) {
+        auto prefs = settings::Prefs();
+        std::string title = str::format(
+            _TSTR("settings_configure_device_controller"),
+            prefs->GetString(settings::SYSTEM_CONTROLLER).c_str());
+
+        SchemaOverlay::Show(title, prefs, schema, [system](bool changed) {
+            if (changed) {
+                system->on_settings_changed();
+            }
+        });
+    }
 }
 
 void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {
