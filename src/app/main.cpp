@@ -88,9 +88,7 @@ int main(int argc, char* argv[]) {
 
     env::Initialize(APP_NAME, 1);
 
-    debug::Start({
-        new debug::FileBackend(env::GetDataDirectory() + "log.txt")
-    });
+    debug::Start();
 
     debug::info("main", str::format("app starting %d", 10));
 
