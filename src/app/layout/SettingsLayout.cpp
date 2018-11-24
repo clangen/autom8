@@ -76,7 +76,7 @@ void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 }
 
 void SettingsLayout::Reload() {
-    auto controller = settings::Prefs()->GetString(settings::SYSTEM_CONTROLLER);
+    auto controller = settings::Prefs()->GetString(settings::SERVER_CONTROLLER);
 
     this->deviceController->SetText("> " + str::format(
         _TSTR("settings_device_controller"), controller.c_str()));
@@ -142,10 +142,10 @@ void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
 
 void SettingsLayout::OnDeviceControllerActivated(cursespp::TextLabel* label) {
     auto prefs = settings::Prefs();
-    auto selected = prefs->GetString(settings::SYSTEM_CONTROLLER);
+    auto selected = prefs->GetString(settings::SERVER_CONTROLLER);
 
     auto entry = reinterpret_cast<const ISchema::EnumEntry*>(
-        this->schema->FindByName(settings::SYSTEM_CONTROLLER.c_str()));
+        this->schema->FindByName(settings::SERVER_CONTROLLER.c_str()));
 
     SchemaOverlay::ShowEnumOverlay(
         entry, prefs, [this, selected](std::string newValue) {
@@ -163,7 +163,7 @@ void SettingsLayout::OnConfigureControllerActivated(cursespp::TextLabel* label) 
         auto prefs = settings::Prefs();
         std::string title = str::format(
             _TSTR("settings_configure_device_controller"),
-            prefs->GetString(settings::SYSTEM_CONTROLLER).c_str());
+            prefs->GetString(settings::SERVER_CONTROLLER).c_str());
 
         SchemaOverlay::Show(title, prefs, schema, [system](bool changed) {
             if (changed) {

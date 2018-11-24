@@ -12,7 +12,7 @@ namespace autom8 { namespace app { namespace settings {
     const std::string CLIENT_PORT = "client.port";
     const std::string SERVER_PASSWORD = "server.password";
     const std::string SERVER_PORT = "server.port";
-    const std::string SYSTEM_CONTROLLER = "system.controller";
+    const std::string SERVER_CONTROLLER = "server.controller";
 
     void InitializeDefaults() {
         static bool initialized = false;
@@ -24,19 +24,31 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(CLIENT_PORT, 7901);
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
-            prefs->SetDefault(SYSTEM_CONTROLLER, device_system::default_type());
+            prefs->SetDefault(SERVER_CONTROLLER, device_system::default_type());
         }
     }
 
     std::shared_ptr<ISchema> Schema() {
         auto result = std::make_shared<TSchema<>>();
+        result->Add(ClientSchema().get());
+        result->Add(ServerSchema().get());
+        return result;
+    }
+
+    std::shared_ptr<ISchema> ClientSchema() {
+        auto result = std::make_shared<TSchema<>>();
         result->AddString(CLIENT_HOSTNAME);
         result->AddString(CLIENT_PASSWORD);
         result->AddInt(CLIENT_PORT);
+        return result;
+    }
+
+    std::shared_ptr<ISchema> ServerSchema() {
+        auto result = std::make_shared<TSchema<>>();
         result->AddString(SERVER_PASSWORD);
         result->AddInt(SERVER_PORT);
         result->AddEnum(
-            SYSTEM_CONTROLLER,
+            SERVER_CONTROLLER,
             device_system::types(),
             device_system::default_type());
         return result;

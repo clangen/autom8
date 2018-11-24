@@ -152,7 +152,7 @@ int autom8_init(int rpc_mode) {
     debug::Start({ new debug::ConsoleBackend() });
 
     /* select the last selected system, or null by default */
-    std::string system = prefs()->Get("system.controller", "null");
+    std::string system = prefs()->Get("server.controller", "null");
     system_select(system);
 
     initialized_ = true;
@@ -292,7 +292,7 @@ json_ptr server_get_preference(json& options) {
 json_ptr server_status() {
     json_ptr result(new json());
 
-    std::string system = prefs()->Get("system.controller", "null");
+    std::string system = prefs()->Get("server.controller", "null");
     std::string fingerprint = prefs()->Get("server.fingerprint", "");
     int port = prefs()->Get("server.port", 7901);
     int webClientPort = prefs()->Get("server.webClientPort", 7902);
@@ -351,7 +351,7 @@ static json_ptr system_list() {
 static json_ptr system_selected() {
     json_ptr result(new json());
 
-    std::string system = prefs()->Get("system.controller", "null");
+    std::string system = prefs()->Get("server.controller", "null");
     (*result)["system_id"] = system;
 
     return result;
@@ -377,7 +377,7 @@ static int system_select(const std::string& system) {
         return AUTOM8_INVALID_SYSTEM;
     }
 
-    prefs()->Set("system.controller", system);
+    prefs()->Set("server.controller", system);
     return AUTOM8_OK;
 }
 

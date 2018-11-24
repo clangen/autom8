@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     int port = prefs->GetInt(settings::CLIENT_PORT);
 
     {
-        auto systemType = prefs->GetString(settings::SYSTEM_CONTROLLER);
+        auto systemType = prefs->GetString(settings::SERVER_CONTROLLER);
         autom8::device_system::set_instance(systemType);
 
         autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
