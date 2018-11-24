@@ -32,7 +32,6 @@
         "device_edit_invalid_input_overlay_message": "",
 
         "settings_about_config": "about:config",
-        "settings_device_controller": "selected device controller: %s",
         "settings_configure_device_controller": "configure '%s'",
         "settings_add_device": "add device to '%s'",
         "settings_device_system_list": "devices connected to '%s'",
@@ -44,6 +43,8 @@
         "settings_edit_device_address_exists_title": "address already in use",
         "settings_edit_device_address_exists_message": "the specified address is already being used by another device.",
         "settings_edit_device_select_type_title": "select device type",
+        "settings_configure_client": "connection settings",
+        "settings_configure_server": "server configuration",
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",

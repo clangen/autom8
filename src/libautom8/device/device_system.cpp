@@ -75,6 +75,11 @@ std::string device_system::default_type() {
     return DEFAULT_TYPE;
 }
 
+std::string device_system::current_type() {
+    std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
+    return ::type;
+}
+
 void device_system::clear_instance() {
     std::unique_lock<decltype(instance_mutex_)> lock(instance_mutex_);
     instance_ = device_system_ptr();

@@ -10,6 +10,7 @@ namespace autom8 { namespace app { namespace settings {
     const std::string CLIENT_HOSTNAME = "client.hostname";
     const std::string CLIENT_PASSWORD = "client.password";
     const std::string CLIENT_PORT = "client.port";
+    const std::string SERVER_ENABLED = "server.enabled";
     const std::string SERVER_PASSWORD = "server.password";
     const std::string SERVER_PORT = "server.port";
     const std::string SERVER_CONTROLLER = "server.controller";
@@ -22,6 +23,7 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(CLIENT_HOSTNAME, "localhost");
             prefs->SetDefault(CLIENT_PASSWORD, "changeme");
             prefs->SetDefault(CLIENT_PORT, 7901);
+            prefs->SetDefault(SERVER_ENABLED, true);
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
             prefs->SetDefault(SERVER_CONTROLLER, device_system::default_type());
@@ -45,6 +47,7 @@ namespace autom8 { namespace app { namespace settings {
 
     std::shared_ptr<ISchema> ServerSchema() {
         auto result = std::make_shared<TSchema<>>();
+        result->AddBool(SERVER_ENABLED);
         result->AddString(SERVER_PASSWORD);
         result->AddInt(SERVER_PORT);
         result->AddEnum(

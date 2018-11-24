@@ -11,6 +11,7 @@
 #include <app/overlay/DeviceEditOverlay.h>
 
 using namespace cursespp;
+using namespace autom8;
 using namespace autom8::app;
 using namespace f8n;
 using namespace f8n::sdk;
@@ -23,7 +24,7 @@ static bool isDeleteKey(const std::string& kn) {
 #endif
 }
 
-SettingsLayout::SettingsLayout(autom8::client_ptr client)
+SettingsLayout::SettingsLayout(client_ptr client)
 : LayoutBase()
 , client(client)
 , schema(settings::Schema()) {
@@ -35,10 +36,17 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     this->aboutConfig->Activated.connect(this, &SettingsLayout::OnAboutConfigActivated);
     this->AddWindow(aboutConfig);
 
-    this->deviceController = std::make_shared<TextLabel>();
-    this->deviceController->SetFocusOrder(order++);
-    this->deviceController->Activated.connect(this, &SettingsLayout::OnDeviceControllerActivated);
-    this->AddWindow(deviceController);
+    this->clientConfig = std::make_shared<TextLabel>();
+    this->clientConfig->SetText("> " + _TSTR("settings_configure_client"));
+    this->clientConfig->SetFocusOrder(order++);
+    this->clientConfig->Activated.connect(this, &SettingsLayout::OnConfigureClientActivated);
+    this->AddWindow(clientConfig);
+
+    this->serverConfig = std::make_shared<TextLabel>();
+    this->serverConfig->SetText("> " + _TSTR("settings_configure_server"));
+    this->serverConfig->SetFocusOrder(order++);
+    this->serverConfig->Activated.connect(this, &SettingsLayout::OnConfigureServerActivated);
+    this->AddWindow(serverConfig);
 
     this->configureController = std::make_shared<TextLabel>();
     this->configureController->SetFocusOrder(order++);
@@ -56,7 +64,7 @@ SettingsLayout::SettingsLayout(autom8::client_ptr client)
     this->deviceModelList->SetFocusOrder(order++);
     this->AddWindow(this->deviceModelList);
 
-    this->Reload();
+    this->ReloadController();
 }
 
 void SettingsLayout::OnLayout() {
@@ -65,7 +73,9 @@ void SettingsLayout::OnLayout() {
     int x = 1;
     int y = 0;
     this->aboutConfig->MoveAndResize(x, y++, cx, 1);
-    this->deviceController->MoveAndResize(x, y++, cx, 1);
+    ++y;
+    this->clientConfig->MoveAndResize(x, y++, cx, 1);
+    this->serverConfig->MoveAndResize(x, y++, cx, 1);
     this->configureController->MoveAndResize(x, y++, cx, 1);
     this->addDevice->MoveAndResize(x, y++, cx, 1);
     this->deviceModelList->MoveAndResize(0, y, cx + 1, cy - y);
@@ -75,11 +85,11 @@ void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
 
 }
 
-void SettingsLayout::Reload() {
-    auto controller = settings::Prefs()->GetString(settings::SERVER_CONTROLLER);
+void SettingsLayout::ReloadController() {
+    auto prefs = settings::Prefs();
+    auto controller = prefs->GetString(settings::SERVER_CONTROLLER);
 
-    this->deviceController->SetText("> " + str::format(
-        _TSTR("settings_device_controller"), controller.c_str()));
+    device_system::set_instance(controller);
 
     this->configureController->SetText("> " + str::format(
         _TSTR("settings_configure_device_controller"), controller.c_str()));
@@ -94,11 +104,36 @@ void SettingsLayout::Reload() {
     this->deviceModelList->OnAdapterChanged();
 }
 
-void SettingsLayout::OnDeviceRowActivated(cursespp::ListWindow* window, size_t index) {
+void SettingsLayout::ReloadClient() {
+    debug::i("ClientLayout", "settings saved, reconnecting...");
+    this->ReloadController();
+    auto prefs = settings::Prefs();
+    prefs->Save();
+    this->client->disconnect(true);
+    this->client->connect(
+        prefs->GetString(settings::CLIENT_HOSTNAME),
+        prefs->GetInt(settings::CLIENT_PORT),
+        prefs->GetString(settings::CLIENT_PASSWORD));
+}
+
+void SettingsLayout::ReloadServer() {
+    this->ReloadController();
+
+    auto prefs = settings::Prefs();
+    bool enabled = prefs->GetBool(settings::SERVER_ENABLED);
+    if (enabled && !server::is_running()) {
+        server::start(prefs->GetInt(settings::SERVER_PORT));
+    }
+    else if (!enabled && server::is_running()) {
+        server::stop();
+    }
+}
+
+void SettingsLayout::OnDeviceRowActivated(ListWindow* window, size_t index) {
     DeviceEditOverlay::Edit(
         device_system::instance(),
         this->deviceModelAdapter->At(index),
-        [this]() { this->Reload(); });
+        [this]() { this->ReloadController(); });
 }
 
 bool SettingsLayout::KeyPress(const std::string& kn) {
@@ -112,7 +147,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
             DeviceEditOverlay::Delete(
                 device_system::instance(),
                 this->deviceModelAdapter->At(index),
-                [this]() { this->Reload(); });
+                [this]() { this->ReloadController(); });
         }
         return true;
     }
@@ -120,43 +155,44 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
     return LayoutBase::KeyPress(kn);
 }
 
-void SettingsLayout::OnAboutConfigActivated(cursespp::TextLabel* label) {
+void SettingsLayout::OnAboutConfigActivated(TextLabel* label) {
     SchemaOverlay::Show(
         _TSTR("settings_about_config"),
         settings::Prefs(),
         this->schema,
         [this](bool changed) {
             if (changed) {
-                debug::i("ClientLayout", "settings saved, reconnecting...");
-                this->Reload();
-                auto prefs = settings::Prefs();
-                prefs->Save();
-                this->client->disconnect(true);
-                this->client->connect(
-                    prefs->GetString(settings::CLIENT_HOSTNAME),
-                    prefs->GetInt(settings::CLIENT_PORT),
-                    prefs->GetString(settings::CLIENT_PASSWORD));
+                this->ReloadClient();
+                this->ReloadServer();
             }
         });
 }
 
-void SettingsLayout::OnDeviceControllerActivated(cursespp::TextLabel* label) {
-    auto prefs = settings::Prefs();
-    auto selected = prefs->GetString(settings::SERVER_CONTROLLER);
-
-    auto entry = reinterpret_cast<const ISchema::EnumEntry*>(
-        this->schema->FindByName(settings::SERVER_CONTROLLER.c_str()));
-
-    SchemaOverlay::ShowEnumOverlay(
-        entry, prefs, [this, selected](std::string newValue) {
-            if (selected != newValue) {
-                device_system::set_instance(newValue);
-                this->Reload();
+void SettingsLayout::OnConfigureClientActivated(TextLabel* label) {
+    SchemaOverlay::Show(
+        _TSTR("settings_configure_client"),
+        settings::Prefs(),
+        settings::ClientSchema(),
+        [this](bool changed) {
+            if (changed) {
+                this->ReloadClient();
             }
         });
 }
 
-void SettingsLayout::OnConfigureControllerActivated(cursespp::TextLabel* label) {
+void SettingsLayout::OnConfigureServerActivated(TextLabel* label) {
+    SchemaOverlay::Show(
+        _TSTR("settings_configure_server"),
+        settings::Prefs(),
+        settings::ServerSchema(),
+        [this](bool changed) {
+            if (changed) {
+                this->ReloadServer();
+            }
+        });
+}
+
+void SettingsLayout::OnConfigureControllerActivated(TextLabel* label) {
     auto system = device_system::instance();
     auto schema = system->schema();
     if (schema && schema->Count()> 0) {
@@ -173,13 +209,13 @@ void SettingsLayout::OnConfigureControllerActivated(cursespp::TextLabel* label) 
     }
 }
 
-void SettingsLayout::OnAddDeviceActivated(cursespp::TextLabel* label) {
+void SettingsLayout::OnAddDeviceActivated(TextLabel* label) {
     DeviceEditOverlay::Create(
         device_system::instance(),
-        [this]() { this->Reload(); });
+        [this]() { this->ReloadController(); });
 }
 
-void SettingsLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
+void SettingsLayout::SetShortcutsWindow(ShortcutsWindow* shortcuts) {
     debug::info("SettingsLayout", "SetShortcutsWindow()");
 
     if (shortcuts) {

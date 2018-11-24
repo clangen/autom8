@@ -105,7 +105,9 @@ int main(int argc, char* argv[]) {
         auto systemType = prefs->GetString(settings::SERVER_CONTROLLER);
         autom8::device_system::set_instance(systemType);
 
-        autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
+        if (prefs->GetBool(settings::SERVER_ENABLED)) {
+            autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
+        }
 
         auto client = std::make_shared<autom8::client>();
         client->connect(host, port, password);
@@ -154,7 +156,10 @@ int main(int argc, char* argv[]) {
     }
 
     autom8::device_system::clear_instance(); /* ugh. fix this. */
-    autom8::server::stop();
+
+    if (autom8::server::is_running()) {
+        autom8::server::stop();
+    }
     debug::Stop();
 
     return 0;
