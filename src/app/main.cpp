@@ -39,10 +39,7 @@
 #include <autom8/autom8.h>
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
-#include <autom8/util/utility.hpp>
-#include <autom8/message/requests/get_device_list.hpp>
 #include <autom8/device/device_system.hpp>
-#include <autom8/device/null_device_system.hpp>
 
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
@@ -50,11 +47,9 @@
 #include <app/layout/MainLayout.h>
 #include <app/util/Settings.h>
 
-#include <f8n/f8n.h>
-#include <f8n/utf/str.h>
-
 #include <f8n/environment/Environment.h>
 #include <f8n/preferences/Preferences.h>
+#include <f8n/debug/debug.h>
 
 #ifdef WIN32
 #include "resource.h"
@@ -87,30 +82,28 @@ int main(int argc, char* argv[]) {
 #endif
 
     env::Initialize(APP_NAME, 1);
-
     debug::Start();
-
-    debug::info("main", str::format("app starting %d", 10));
+    debug::info("main", "app starting");
 
     settings::InitializeDefaults();
     auto prefs = settings::Prefs();
 
-    std::string password = prefs->GetString(settings::CLIENT_PASSWORD);
-    std::string host = prefs->GetString(settings::CLIENT_HOSTNAME);
-    int port = prefs->GetInt(settings::CLIENT_PORT);
-
     {
+        /* server startup */
         auto systemType = prefs->GetString(settings::SERVER_CONTROLLER);
         autom8::device_system::set_instance(systemType);
-
         if (prefs->GetBool(settings::SERVER_ENABLED)) {
             autom8::server::start(prefs->GetInt(settings::SERVER_PORT));
         }
 
+        /* client startup */
+        std::string password = prefs->GetString(settings::CLIENT_PASSWORD);
+        std::string host = prefs->GetString(settings::CLIENT_HOSTNAME);
+        int port = prefs->GetInt(settings::CLIENT_PORT);
         auto client = std::make_shared<autom8::client>();
         client->connect(host, port, password);
 
-        App app(APP_NAME); /* must be before layout creation */
+        App app(APP_NAME);
 
         app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
         app.SetColorMode(Colors::RGB);
@@ -127,7 +120,7 @@ int main(int argc, char* argv[]) {
                 client->disconnect();
                 return true;
             }
-            else if (kn == "c") {
+            else if (kn == "M-c") {
                 client->reconnect();
                 return true;
             }
@@ -139,11 +132,6 @@ int main(int argc, char* argv[]) {
                     autom8::server::start(7901);
                 }
                 return true;
-            }
-            else if (kn == "R") {
-                if (client->state() == autom8::client::state_connected) {
-                    client->send(autom8::get_device_list::request());
-                }
             }
             return false;
         });
