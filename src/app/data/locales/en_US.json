@@ -12,6 +12,8 @@
         "button_retry": "retry",
         "button_continue": "continue",
 
+        "device_list_title": "devices",
+
         "device_status_off": "off",
         "device_status_on": "on",
         "device_status_unknown": "??",
@@ -32,9 +34,9 @@
         "device_edit_invalid_input_overlay_message": "",
 
         "settings_about_config": "about:config",
-        "settings_configure_device_controller": "configure '%s'",
-        "settings_add_device": "add device to '%s'",
-        "settings_device_system_list": "devices connected to '%s'",
+        "settings_configure_device_controller": "%s controller settings",
+        "settings_add_device": "add device to %s",
+        "settings_device_system_list": "%s controller devices",
 
         "settings_delete_device_overlay_title": "confirm delete",
         "settings_delete_device_overlay_message": "are you sure you want to delete device '%s'?",

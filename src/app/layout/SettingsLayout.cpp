@@ -30,12 +30,6 @@ SettingsLayout::SettingsLayout(client_ptr client)
 , schema(settings::Schema()) {
     int order = 0;
 
-    this->aboutConfig = std::make_shared<TextLabel>();
-    this->aboutConfig->SetText("> " + _TSTR("settings_about_config"));
-    this->aboutConfig->SetFocusOrder(order++);
-    this->aboutConfig->Activated.connect(this, &SettingsLayout::OnAboutConfigActivated);
-    this->AddWindow(aboutConfig);
-
     this->clientConfig = std::make_shared<TextLabel>();
     this->clientConfig->SetText("> " + _TSTR("settings_configure_client"));
     this->clientConfig->SetFocusOrder(order++);
@@ -72,13 +66,11 @@ void SettingsLayout::OnLayout() {
     auto cy = this->GetContentHeight();
     int x = 1;
     int y = 0;
-    this->aboutConfig->MoveAndResize(x, y++, cx, 1);
-    ++y;
     this->clientConfig->MoveAndResize(x, y++, cx, 1);
     this->serverConfig->MoveAndResize(x, y++, cx, 1);
-    this->configureController->MoveAndResize(x, y++, cx, 1);
-    this->addDevice->MoveAndResize(x, y++, cx, 1);
-    this->deviceModelList->MoveAndResize(0, y, cx + 1, cy - y);
+    this->configureController->MoveAndResize(x + 1, y++, cx - 1, 1);
+    this->addDevice->MoveAndResize(x + 1, y++, cx - 1, 1);
+    this->deviceModelList->MoveAndResize(1, y, cx, cy - y);
 }
 
 void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
@@ -97,7 +89,7 @@ void SettingsLayout::ReloadController() {
     this->addDevice->SetText("> " + str::format(
         _TSTR("settings_add_device"), controller.c_str()));
 
-    this->deviceModelList->SetFrameTitle("> " + str::format(
+    this->deviceModelList->SetFrameTitle(str::format(
         _TSTR("settings_device_system_list"), controller.c_str()));
 
     this->deviceModelAdapter->Requery(device_system::instance());
@@ -141,6 +133,18 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
         Broadcast(message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT);
         return true;
     }
+    if (kn == "?") {
+        SchemaOverlay::Show(
+            _TSTR("settings_about_config"),
+            settings::Prefs(),
+            this->schema,
+            [this](bool changed) {
+                if (changed) {
+                    this->ReloadClient();
+                    this->ReloadServer();
+                }
+            });
+    }
     else if (this->GetFocus() == this->deviceModelList && isDeleteKey(kn)) {
         auto index = this->deviceModelList->GetSelectedIndex();
         if (index != ListWindow::NO_SELECTION) {
@@ -153,19 +157,6 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
     }
 
     return LayoutBase::KeyPress(kn);
-}
-
-void SettingsLayout::OnAboutConfigActivated(TextLabel* label) {
-    SchemaOverlay::Show(
-        _TSTR("settings_about_config"),
-        settings::Prefs(),
-        this->schema,
-        [this](bool changed) {
-            if (changed) {
-                this->ReloadClient();
-                this->ReloadServer();
-            }
-        });
 }
 
 void SettingsLayout::OnConfigureClientActivated(TextLabel* label) {

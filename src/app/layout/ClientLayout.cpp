@@ -1,11 +1,9 @@
 #include "ClientLayout.h"
 #include <cursespp/App.h>
-#include <cursespp/Colors.h>
 #include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
 #include <f8n/sdk/ISchema.h>
-#include <f8n/preferences/Preferences.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
 
@@ -13,12 +11,8 @@ using namespace autom8;
 using namespace autom8::app;
 using namespace cursespp;
 using namespace f8n;
-using namespace f8n::prefs;
 using namespace f8n::runtime;
 using namespace f8n::sdk;
-
-static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
-static const int SCHEDULE_RECONNECT = app::message::CreateType();
 
 ClientLayout::ClientLayout(client_ptr client)
 : LayoutBase()
@@ -28,27 +22,11 @@ ClientLayout::ClientLayout(client_ptr client)
             this->deviceList->OnAdapterChanged();
         });
 
-    this->clientStatus = std::make_shared<TextLabel>();
-    this->clientStatus->SetText("client: disconnected", text::AlignCenter);
-    this->clientStatus->SetContentColor(Color::Banner);
-    this->AddWindow(clientStatus);
-
-    this->serverStatus = std::make_shared<TextLabel>();
-    this->serverStatus->SetText("server: stopped", text::AlignCenter);
-    this->serverStatus->SetContentColor(Color::Banner);
-    this->AddWindow(serverStatus);
-
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
-    this->deviceList->SetFrameTitle("devices");
+    this->deviceList->SetFrameTitle(_TSTR("device_list_title"));
     this->deviceList->EntryActivated.connect(this, &ClientLayout::OnDeviceRowActivated);
     this->AddWindow(this->deviceList);
     this->deviceList->SetFocusOrder(0);
-
-    client->state_changed.connect(this, &ClientLayout::OnClientStateChanged);
-    autom8::server::started.connect(this, &ClientLayout::OnServerStateChanged);
-    autom8::server::stopped.connect(this, &ClientLayout::OnServerStateChanged);
-
-    this->Update();
 }
 
 void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
@@ -78,55 +56,7 @@ void ClientLayout::OnLayout() {
     LayoutBase::OnLayout();
     int cx = this->GetContentWidth();
     int cy = this->GetContentHeight();
-    this->clientStatus->MoveAndResize(0, 0, cx, 1);
-    this->serverStatus->MoveAndResize(0, 1, cx, 1);
-    this->deviceList->MoveAndResize(0, 2, cx, cy - 2);
-}
-
-void ClientLayout::ProcessMessage(IMessage& message){
-    if (message.Type() == UPDATE_STATUS_MESSAGE) {
-        this->Update();
-    }
-    else if (message.Type() == SCHEDULE_RECONNECT) {
-        if (client->state() == autom8::client::state_disconnected) {
-            debug::info("ClientLayout", "reconnecting...");
-            client->reconnect();
-        }
-    }
-}
-
-void ClientLayout::Update() {
-    using S = autom8::client::connection_state;
-
-    std::string str = "disconnected";
-    auto color = Color::TextDisabled;
-    switch (client->state()) {
-        case S::state_connecting:
-            str = "connecting";
-            break;
-        case S::state_connected:
-            str = std::string("connected to ") + client->hostname();
-            color = Color::Banner;
-            break;
-        case S::state_disconnecting:
-            str = "disconnecting";
-            break;
-        default:
-            break;
-    }
-
-    this->clientStatus->SetText(str, cursespp::text::AlignCenter);
-    this->clientStatus->SetContentColor(Color(color));
-
-    str = "stopped";
-    color = Color::TextDisabled;
-    if (autom8::server::is_running()) {
-        str = "running";
-        color = Color::ListItemHeader;
-    }
-
-    this->serverStatus->SetText(std::string("local server ") + str, cursespp::text::AlignCenter);
-    this->serverStatus->SetContentColor(Color(color));
+    this->deviceList->MoveAndResize(0, 0, cx, cy);
 }
 
 void ClientLayout::OnDeviceRowActivated(ListWindow* listWindow, size_t index) {
@@ -140,20 +70,4 @@ bool ClientLayout::KeyPress(const std::string& kn) {
         return true;
     }
     return LayoutBase::KeyPress(kn);
-}
-
-void ClientLayout::OnServerStateChanged() {
-    this->Post(UPDATE_STATUS_MESSAGE);
-}
-
-void ClientLayout::OnClientStateChanged(client::connection_state state, client::reason reason) {
-    this->Post(UPDATE_STATUS_MESSAGE);
-
-    if (state == autom8::client::state_disconnected) {
-        if (reason != client::auth_failed && reason != client::user) {
-            debug::info("ClientLayout", "scheduling reconnect...");
-            this->Remove(SCHEDULE_RECONNECT);
-            this->Post(SCHEDULE_RECONNECT, 0L, 0L, 5000);
-        }
-    }
 }

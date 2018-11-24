@@ -19,12 +19,21 @@ namespace autom8 { namespace app {
                 autom8::client_ptr client);
 
             virtual ~MainLayout();
-
+            virtual void OnLayout() override;
             virtual void ProcessMessage(f8n::runtime::IMessage& message) override;
 
         private:
+            void UpdateStatus();
+            void OnServerStateChanged();
+            void OnClientStateChanged(
+                autom8::client::connection_state state,
+                autom8::client::reason reason);
+
+            autom8::client_ptr client;
             std::shared_ptr<autom8::app::ClientLayout> clientLayout;
             std::shared_ptr<autom8::app::SettingsLayout> settingsLayout;
+            std::shared_ptr<cursespp::TextLabel> clientStatus;
+            std::shared_ptr<cursespp::TextLabel> serverStatus;
     };
 
 } }
