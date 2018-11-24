@@ -54,6 +54,7 @@ SettingsLayout::SettingsLayout(client_ptr client)
 
     this->deviceModelAdapter = std::make_shared<DeviceModelAdapter>(device_system::instance());
     this->deviceModelList = std::make_shared<ListWindow>(this->deviceModelAdapter);
+    this->deviceModelList->SetAllowArrowKeyPropagation(true);
     this->deviceModelList->EntryActivated.connect(this, &SettingsLayout::OnDeviceRowActivated);
     this->deviceModelList->SetFocusOrder(order++);
     this->AddWindow(this->deviceModelList);
