@@ -25,9 +25,6 @@
     <ClCompile Include="layout\MainLayout.cpp">
       <Filter>src\layout</Filter>
     </ClCompile>
-    <ClCompile Include="layout\ServerLayout.cpp">
-      <Filter>src\layout</Filter>
-    </ClCompile>
     <ClCompile Include="layout\SettingsLayout.cpp">
       <Filter>src\layout</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
       <Filter>src\layout</Filter>
     </ClInclude>
     <ClInclude Include="layout\ClientLayout.h">
-      <Filter>src\layout</Filter>
-    </ClInclude>
-    <ClInclude Include="layout\ServerLayout.h">
       <Filter>src\layout</Filter>
     </ClInclude>
     <ClInclude Include="layout\SettingsLayout.h">

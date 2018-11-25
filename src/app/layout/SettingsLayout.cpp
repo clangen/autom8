@@ -74,10 +74,6 @@ void SettingsLayout::OnLayout() {
     this->deviceModelList->MoveAndResize(1, y, cx, cy - y);
 }
 
-void SettingsLayout::ProcessMessage(f8n::runtime::IMessage& message) {
-
-}
-
 void SettingsLayout::ReloadController() {
     auto prefs = settings::Prefs();
     auto controller = prefs->GetString(settings::SERVER_CONTROLLER);

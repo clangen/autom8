@@ -108,7 +108,6 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClCompile Include="adapter\DeviceModelAdapter.cpp" />
     <ClCompile Include="layout\ClientLayout.cpp" />
     <ClCompile Include="layout\MainLayout.cpp" />
-    <ClCompile Include="layout\ServerLayout.cpp" />
     <ClCompile Include="layout\SettingsLayout.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="overlay\DeviceEditOverlay.cpp" />
@@ -121,7 +120,6 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
     <ClInclude Include="adapter\DeviceModelAdapter.h" />
     <ClInclude Include="layout\ClientLayout.h" />
     <ClInclude Include="layout\MainLayout.h" />
-    <ClInclude Include="layout\ServerLayout.h" />
     <ClInclude Include="layout\SettingsLayout.h" />
     <ClInclude Include="overlay\DeviceEditOverlay.h" />
     <ClInclude Include="resource.h" />
