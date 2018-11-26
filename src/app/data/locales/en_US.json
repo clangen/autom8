@@ -36,7 +36,7 @@
         "settings_about_config": "about:config",
         "settings_configure_device_controller": "%s controller settings",
         "settings_add_device": "add device to %s",
-        "settings_device_system_list": "%s controller devices",
+        "settings_device_system_list": "%s devices",
 
         "settings_delete_device_overlay_title": "confirm delete",
         "settings_delete_device_overlay_message": "are you sure you want to delete device '%s'?",
