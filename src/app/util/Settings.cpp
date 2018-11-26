@@ -14,6 +14,16 @@ namespace autom8 { namespace app { namespace settings {
     const std::string SERVER_PASSWORD = "server.password";
     const std::string SERVER_PORT = "server.port";
     const std::string SERVER_CONTROLLER = "server.controller";
+    const std::string UI_BACKGROUND_TYPE = "ui.backgroundType";
+    const std::string UI_COLOR_MODE = "ui.colorMode";
+
+    static const std::string DEFAULT_BACKGROUND_TYPE = "theme";
+
+#ifdef WIN32
+    static const std::string DEFAULT_UI_COLOR_MODE = "rgb";
+#else
+    static const std::string DEFAULT_UI_COLOR_MODE = "palette";
+#endif
 
     void InitializeDefaults() {
         static bool initialized = false;
@@ -27,6 +37,8 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
             prefs->SetDefault(SERVER_CONTROLLER, device_system::default_type());
+            prefs->SetDefault(UI_BACKGROUND_TYPE, DEFAULT_BACKGROUND_TYPE);
+            prefs->SetDefault(UI_COLOR_MODE, DEFAULT_UI_COLOR_MODE);
         }
     }
 
@@ -34,6 +46,14 @@ namespace autom8 { namespace app { namespace settings {
         auto result = std::make_shared<TSchema<>>();
         result->Add(ClientSchema().get());
         result->Add(ServerSchema().get());
+        result->AddEnum(
+            UI_BACKGROUND_TYPE,
+            { "inherit", "theme" },
+            DEFAULT_BACKGROUND_TYPE);
+        result->AddEnum(
+            UI_COLOR_MODE,
+            { "basic", "rgb", "palette" },
+            DEFAULT_UI_COLOR_MODE);
         return result;
     }
 
@@ -59,6 +79,25 @@ namespace autom8 { namespace app { namespace settings {
 
     std::shared_ptr<Preferences> Prefs() {
         return Preferences::ForComponent("settings");
+    }
+
+    cursespp::Colors::BgType BackgroundType() {
+        auto value = Prefs()->GetString(UI_BACKGROUND_TYPE);
+        if (value == "inherit") {
+            return cursespp::Colors::Inherit;
+        }
+        return cursespp::Colors::Theme;
+    }
+
+    cursespp::Colors::Mode ColorMode() {
+        auto value = Prefs()->GetString(UI_COLOR_MODE);
+        if (value == "rgb") {
+            return cursespp::Colors::RGB;
+        }
+        else if (value == "palette") {
+            return cursespp::Colors::Palette;
+        }
+        return cursespp::Colors::Basic;
     }
 
 }}}
