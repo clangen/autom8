@@ -29,6 +29,7 @@ namespace autom8 { namespace app {
 
         private:
             void OnDeviceRowActivated(cursespp::ListWindow* w, size_t index);
+            void OnDeviceRowContextMenu(cursespp::ListWindow* w, size_t index);
 
             std::shared_ptr<DeviceListAdapter> deviceListAdapter;
             autom8::client_ptr client;

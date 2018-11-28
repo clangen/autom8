@@ -1,7 +1,7 @@
 #include "SettingsLayout.h"
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
-#include <f8n/utf/str.h>
+#include <f8n/str/util.h>
 #include <cursespp/App.h>
 #include <cursespp/SchemaOverlay.h>
 #include <cursespp/Screen.h>

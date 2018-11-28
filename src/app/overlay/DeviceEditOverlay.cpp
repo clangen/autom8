@@ -6,8 +6,8 @@
 #include <cursespp/Screen.h>
 #include <cursespp/SimpleScrollAdapter.h>
 #include <f8n/debug/debug.h>
-#include <f8n/utf/str.h>
-#include <f8n/utf/conv.h>
+#include <f8n/str/util.h>
+#include <f8n/str/utf.h>
 #include <f8n/i18n/Locale.h>
 #include <algorithm>
 #include <locale>

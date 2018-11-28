@@ -1,9 +1,11 @@
 #include "ClientLayout.h"
-#include <cursespp/App.h>
-#include <cursespp/Screen.h>
 #include <f8n/debug/debug.h>
 #include <f8n/i18n/Locale.h>
 #include <f8n/sdk/ISchema.h>
+#include <cursespp/App.h>
+#include <cursespp/InputOverlay.h>
+#include <cursespp/NumberValidator.h>
+#include <cursespp/Screen.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
 
@@ -25,6 +27,7 @@ ClientLayout::ClientLayout(client_ptr client)
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
     this->deviceList->SetFrameTitle(_TSTR("device_list_title"));
     this->deviceList->EntryActivated.connect(this, &ClientLayout::OnDeviceRowActivated);
+    this->deviceList->EntryContextMenu.connect(this, &ClientLayout::OnDeviceRowContextMenu);
     this->AddWindow(this->deviceList);
     this->deviceList->SetFocusOrder(0);
 }
@@ -32,7 +35,7 @@ ClientLayout::ClientLayout(client_ptr client)
 void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
     debug::info("ClientLayout", "SetShortcutsWindow()");
 
-    this->shortcuts = shortcuts;
+this->shortcuts = shortcuts;
 
     if (shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
@@ -63,6 +66,46 @@ void ClientLayout::OnDeviceRowActivated(ListWindow* listWindow, size_t index) {
     auto device = this->deviceListAdapter->At(index);
     device::Toggle(this->client, device);
 }
+
+void ClientLayout::OnDeviceRowContextMenu(cursespp::ListWindow* w, size_t index) {
+    static const int MIN_BRIGHTNESS = 0;
+    static const int MAX_BRIGHTNESS = 100;
+
+    auto device = this->deviceListAdapter->At(index);
+    if (device::Type(device) == autom8::device_type_lamp) {
+        int brightness = device
+            .value("attributes", nlohmann::json::object())
+            .value("brightness", MAX_BRIGHTNESS);
+
+        auto title = str::format(
+            _TSTR("device_lamp_brightness_overlay_title"),
+            MIN_BRIGHTNESS, MAX_BRIGHTNESS);
+
+        auto validator = std::make_shared<NumberValidator<int>>(
+            MIN_BRIGHTNESS,  MAX_BRIGHTNESS, [](int value) -> std::string {
+                return std::to_string(value);
+            });
+
+        size_t width = (size_t)(Screen::GetWidth() * 0.8);
+
+        std::shared_ptr<InputOverlay> dialog(new InputOverlay());
+        auto client = this->client;
+
+        dialog->SetTitle(title)
+            .SetText(std::to_string(brightness))
+            .SetValidator(validator)
+            .SetWidth(width)
+            .SetInputAcceptedCallback([client, device, brightness](std::string value) {
+                int updated = std::stoi(value);
+                if (updated != brightness) {
+                    device::SetBrightness(client, device, updated);
+                }
+            });
+
+        App::Overlays().Push(dialog);
+    }
+}
+
 
 bool ClientLayout::KeyPress(const std::string& kn) {
     if (kn == "s") {

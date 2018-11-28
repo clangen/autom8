@@ -1,5 +1,5 @@
 #include <f8n/debug/debug.h>
-#include <f8n/utf/str.h>
+#include <f8n/str/util.h>
 
 #include <autom8/device/device_system.hpp>
 #include <autom8/device/null_device_system.hpp>

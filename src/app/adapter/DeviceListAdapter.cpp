@@ -71,7 +71,8 @@ static std::string formatRow(size_t width, const nlohmann::json& device) {
     const int labelWidth = std::max(0, (int) width - addressWidth - statusWidth - 6);
     const autom8::device_status status = device.value("status", autom8::device_status_unknown);
 
-    const std::string addressStr = device.value("address", "??");
+    const std::string addressStr = text::Align(
+        device.value("address", "??"), text::AlignLeft, addressWidth);
 
     std::string statusStr = "off";
     if (status == autom8::device_status_on) {
@@ -131,8 +132,7 @@ void DeviceListAdapter::OnClientResponse(autom8::response_ptr response) {
             auto& device = this->data.at(i);
             auto address = body->value("address", "");
             if (device.value("address", "") == address) {
-                device_status updatedStatus = body->value("status", autom8::device_status_unknown);
-                device["status"] = updatedStatus;
+                this->data[i] = *body;
                 this->NotifyChanged();
                 break;
             }

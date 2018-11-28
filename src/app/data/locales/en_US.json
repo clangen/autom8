@@ -25,6 +25,7 @@
 
         "device_edit_overlay_title": "edit device",
         "device_add_overlay_title": "add device",
+        "device_lamp_brightness_overlay_title": "set brightness (%d - %d)",
         "device_field_address": "address: ",
         "device_field_label": "label: ",
         "device_field_groups": "groups: ",

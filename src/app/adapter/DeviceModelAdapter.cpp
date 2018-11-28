@@ -73,7 +73,8 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
 
     const int labelWidth = std::max(0, (int) width - addressWidth - typeWidth - 6);
 
-    const std::string addressStr = device->address();
+    const std::string addressStr = text::Align(
+        device->address(), text::AlignLeft, addressWidth);
 
     std::string typeStr = _TSTR("device_type_generic");
     switch (device->type()) {
@@ -90,7 +91,8 @@ static std::string formatRow(size_t width, const device_list& all, device_ptr de
             break;
     }
 
-    std::string label = text::Align(device->label(), text::AlignLeft, labelWidth);
+    std::string label = text::Align(
+        device->label(), text::AlignLeft, labelWidth);
 
     return " " + addressStr + "  " +  label + "  " + typeStr + " ";
 }
