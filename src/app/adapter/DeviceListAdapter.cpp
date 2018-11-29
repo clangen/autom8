@@ -8,6 +8,7 @@
 #include <f8n/debug/debug.h>
 #include <f8n/runtime/Message.h>
 #include <app/util/Message.h>
+#include <app/util/Device.h>
 #include <algorithm>
 
 using namespace cursespp;
@@ -80,6 +81,14 @@ static std::string formatRow(size_t width, const nlohmann::json& device) {
     }
 
     std::string label = device.value("label", "unknown device");
+
+    if (device.value("type", -1) == autom8::device_type_lamp) {
+        int brightness = device::GetBrightness(device);
+        if (brightness != 100) {
+            label += " (" + std::to_string(brightness) + "%)";
+        }
+    }
+
     label = text::Align(label, text::AlignLeft, labelWidth);
 
     return " " + addressStr + "  " +  label + "  " + statusStr + " ";

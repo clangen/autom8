@@ -38,6 +38,12 @@ namespace autom8 { namespace app { namespace device {
         return device.value("type", autom8::device_type_unknown);
     }
 
+    int GetBrightness(const nlohmann::json& device) {
+        return device
+            .value("attributes", nlohmann::json::object())
+            .value("brightness", 100);
+    }
+
     bool SetBrightness(autom8::client_ptr client, const nlohmann::json& device, int brightness) {
         std::string address = device.value("address", "");
         if (address.size() && Type(device) == autom8::device_type_lamp) {

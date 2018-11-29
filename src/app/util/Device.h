@@ -7,6 +7,7 @@ namespace autom8 { namespace app { namespace device {
 
     bool Toggle(autom8::client_ptr, nlohmann::json& device);
     bool SetBrightness(autom8::client_ptr, const nlohmann::json& device, int brightness);
+    int GetBrightness(const nlohmann::json& device);
     autom8::device_type Type(const nlohmann::json& device);
 
 } } }
