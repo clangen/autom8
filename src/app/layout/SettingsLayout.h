@@ -3,6 +3,7 @@
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 
+#include <cursespp/App.h>
 #include <cursespp/TextLabel.h>
 #include <cursespp/LayoutBase.h>
 #include <cursespp/ListWindow.h>
@@ -32,16 +33,19 @@ namespace autom8 { namespace app {
             void OnAddDeviceActivated(cursespp::TextLabel* label);
             void OnConfigureControllerActivated(cursespp::TextLabel* label);
             void OnConfigureClientActivated(cursespp::TextLabel* label);
+            void OnConfigureUiActivated(cursespp::TextLabel* label);
             void OnConfigureServerActivated(cursespp::TextLabel* label);
 
             void ReloadController();
             void ReloadClient();
             void ReloadServer();
+            void ReloadUi();
 
             autom8::client_ptr client;
             std::shared_ptr<f8n::sdk::ISchema> schema;
             std::shared_ptr<DeviceModelAdapter> deviceModelAdapter;
             std::shared_ptr<cursespp::TextLabel> clientConfig;
+            std::shared_ptr<cursespp::TextLabel> uiConfig;
             std::shared_ptr<cursespp::TextLabel> serverConfig;
             std::shared_ptr<cursespp::TextLabel> configureController;
             std::shared_ptr<cursespp::TextLabel> addDevice;

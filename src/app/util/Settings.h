@@ -11,6 +11,7 @@ namespace autom8 { namespace app { namespace settings {
     std::shared_ptr<f8n::sdk::ISchema> Schema();
     std::shared_ptr<f8n::sdk::ISchema> ClientSchema();
     std::shared_ptr<f8n::sdk::ISchema> ServerSchema();
+    std::shared_ptr<f8n::sdk::ISchema> UiSchema();
     std::shared_ptr<f8n::prefs::Preferences> Prefs();
     cursespp::Colors::BgType BackgroundType();
     cursespp::Colors::Mode ColorMode();
@@ -24,5 +25,6 @@ namespace autom8 { namespace app { namespace settings {
     extern const std::string SERVER_CONTROLLER;
     extern const std::string UI_BACKGROUND_TYPE;
     extern const std::string UI_COLOR_MODE;
+    extern const std::string UI_THEME;
 
 } } }

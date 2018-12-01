@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
         app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
         app.SetColorMode(settings::ColorMode());
         app.SetColorBackgroundType(settings::BackgroundType());
-       app.SetColorTheme(env::GetApplicationDirectory() + "themes/gruvbox_dark.json");
+        app.SetColorTheme(prefs->GetString(settings::UI_THEME));
 
 #ifdef WIN32
         app.SetIcon(IDI_ICON1);

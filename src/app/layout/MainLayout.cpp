@@ -109,7 +109,6 @@ void MainLayout::UpdateStatus() {
     this->serverStatus->SetContentColor(Color(color));
 }
 
-
 void MainLayout::OnServerStateChanged() {
     this->Post(UPDATE_STATUS_MESSAGE);
 }

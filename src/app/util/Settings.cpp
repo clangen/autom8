@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include <autom8/device/device_system.hpp>
+#include <cursespp/Colors.h>
 
 using namespace autom8;
 using namespace f8n::sdk;
@@ -16,8 +17,10 @@ namespace autom8 { namespace app { namespace settings {
     const std::string SERVER_CONTROLLER = "server.controller";
     const std::string UI_BACKGROUND_TYPE = "ui.backgroundType";
     const std::string UI_COLOR_MODE = "ui.colorMode";
+    const std::string UI_THEME = "ui.theme";
 
-    static const std::string DEFAULT_BACKGROUND_TYPE = "theme";
+    static const std::string DEFAULT_UI_BACKGROUND_TYPE = "theme";
+    static const std::string DEFAULT_UI_THEME = "default";
 
 #ifdef WIN32
     static const std::string DEFAULT_UI_COLOR_MODE = "rgb";
@@ -37,8 +40,9 @@ namespace autom8 { namespace app { namespace settings {
             prefs->SetDefault(SERVER_PASSWORD, "changeme");
             prefs->SetDefault(SERVER_PORT, 7901);
             prefs->SetDefault(SERVER_CONTROLLER, device_system::default_type());
-            prefs->SetDefault(UI_BACKGROUND_TYPE, DEFAULT_BACKGROUND_TYPE);
+            prefs->SetDefault(UI_BACKGROUND_TYPE, DEFAULT_UI_BACKGROUND_TYPE);
             prefs->SetDefault(UI_COLOR_MODE, DEFAULT_UI_COLOR_MODE);
+            prefs->SetDefault(UI_THEME, DEFAULT_UI_THEME);
         }
     }
 
@@ -46,14 +50,24 @@ namespace autom8 { namespace app { namespace settings {
         auto result = std::make_shared<TSchema<>>();
         result->Add(ClientSchema().get());
         result->Add(ServerSchema().get());
+        result->Add(UiSchema().get());
+        return result;
+    }
+
+    std::shared_ptr<ISchema> UiSchema() {
+        auto result = std::make_shared<TSchema<>>();
         result->AddEnum(
             UI_BACKGROUND_TYPE,
             { "inherit", "theme" },
-            DEFAULT_BACKGROUND_TYPE);
+            DEFAULT_UI_BACKGROUND_TYPE);
         result->AddEnum(
             UI_COLOR_MODE,
             { "basic", "rgb", "palette" },
             DEFAULT_UI_COLOR_MODE);
+        result->AddEnum(
+            UI_THEME,
+            cursespp::Colors::ListThemes(),
+            DEFAULT_UI_THEME);
         return result;
     }
 

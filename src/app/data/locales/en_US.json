@@ -47,6 +47,7 @@
         "settings_edit_device_address_exists_message": "the specified address is already being used by another device.",
         "settings_edit_device_select_type_title": "select device type",
         "settings_configure_client": "connection settings",
+        "settings_configure_ui": "ui settings",
         "settings_configure_server": "server configuration",
 
         "shortcuts_quit": "quit",

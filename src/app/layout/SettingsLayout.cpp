@@ -3,6 +3,7 @@
 #include <f8n/i18n/Locale.h>
 #include <f8n/str/util.h>
 #include <cursespp/App.h>
+#include <cursespp/Colors.h>
 #include <cursespp/SchemaOverlay.h>
 #include <cursespp/Screen.h>
 #include <autom8/device/device_system.hpp>
@@ -36,6 +37,12 @@ SettingsLayout::SettingsLayout(client_ptr client)
     this->clientConfig->Activated.connect(this, &SettingsLayout::OnConfigureClientActivated);
     this->AddWindow(clientConfig);
 
+    this->uiConfig = std::make_shared<TextLabel>();
+    this->uiConfig->SetText("> " + _TSTR("settings_configure_ui"));
+    this->uiConfig->SetFocusOrder(order++);
+    this->uiConfig->Activated.connect(this, &SettingsLayout::OnConfigureUiActivated);
+    this->AddWindow(uiConfig);
+
     this->serverConfig = std::make_shared<TextLabel>();
     this->serverConfig->SetText("> " + _TSTR("settings_configure_server"));
     this->serverConfig->SetFocusOrder(order++);
@@ -68,6 +75,7 @@ void SettingsLayout::OnLayout() {
     int x = 1;
     int y = 0;
     this->clientConfig->MoveAndResize(x, y++, cx, 1);
+    this->uiConfig->MoveAndResize(x, y++, cx, 1);
     this->serverConfig->MoveAndResize(x, y++, cx, 1);
     this->configureController->MoveAndResize(x + 1, y++, cx - 1, 1);
     this->addDevice->MoveAndResize(x + 1, y++, cx - 1, 1);
@@ -105,6 +113,11 @@ void SettingsLayout::ReloadClient() {
         prefs->GetString(settings::CLIENT_PASSWORD));
 }
 
+void SettingsLayout::ReloadUi() {
+    Colors::Init(settings::ColorMode(), settings::BackgroundType());
+    Colors::SetTheme(settings::Prefs()->GetString(settings::UI_THEME));
+}
+
 void SettingsLayout::ReloadServer() {
     this->ReloadController();
 
@@ -138,6 +151,7 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
             [this](bool changed) {
                 if (changed) {
                     this->ReloadClient();
+                    this->ReloadUi();
                     this->ReloadServer();
                 }
             });
@@ -164,6 +178,18 @@ void SettingsLayout::OnConfigureClientActivated(TextLabel* label) {
         [this](bool changed) {
             if (changed) {
                 this->ReloadClient();
+            }
+        });
+}
+
+void SettingsLayout::OnConfigureUiActivated(TextLabel* label) {
+    SchemaOverlay::Show(
+        _TSTR("settings_configure_ui"),
+        settings::Prefs(),
+        settings::UiSchema(),
+        [this](bool changed) {
+            if (changed) {
+                this->ReloadUi();
             }
         });
 }
