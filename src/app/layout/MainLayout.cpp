@@ -36,7 +36,6 @@ MainLayout::MainLayout(App& app, client_ptr client)
 
     this->SetLayout(this->clientLayout);
     this->Post(REGISTER_FOR_BROADCASTS);
-    this->SetPadding(2, 0, 0, 0);
     this->UpdateStatus();
 }
 
@@ -45,10 +44,14 @@ MainLayout::~MainLayout() {
 }
 
 void MainLayout::OnLayout() {
+    bool serverRunning = autom8::server::is_running();
+    this->SetPadding(serverRunning ? 2 : 1, 0, 0, 0);
     AppLayout::OnLayout();
     auto cx = Screen::GetWidth();
     this->clientStatus->MoveAndResize(0, 0, cx, 1);
-    this->serverStatus->MoveAndResize(0, 1, cx, 1);
+    if (serverRunning) {
+        this->serverStatus->MoveAndResize(0, 1, cx, 1);
+    }
 }
 
 void MainLayout::ProcessMessage(f8n::runtime::IMessage& message) {
@@ -103,10 +106,15 @@ void MainLayout::UpdateStatus() {
     if (autom8::server::is_running()) {
         str = "running";
         color = Color::ListItemHeader;
+        this->serverStatus->Show();
+    }
+    else {
+        this->serverStatus->Hide();
     }
 
     this->serverStatus->SetText(std::string("local server ") + str, cursespp::text::AlignCenter);
     this->serverStatus->SetContentColor(Color(color));
+    this->Layout();
 }
 
 void MainLayout::OnServerStateChanged() {
