@@ -1,7 +1,9 @@
 # autom8-curses
 an autom8 client based on the [cursespp](https://github.com/clangen/cursespp) library
 
-it runs on Windows, macOS and Linux (and probably FreeBSD). it looks like this:
+it runs and behaves exactly the same on windows, macos and linux (and probably freebsd).
+
+here are some screenshots:
 
 ## main screen
 
