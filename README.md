@@ -3,8 +3,6 @@ an [autom8](https://github.com/clangen/autom8) client based on the [cursespp](ht
 
 it runs and behaves exactly the same on windows, macos and linux (and probably freebsd).
 
-here are some screenshots:
-
 ## main screen
 
 ![main screen](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_curses_01.png)
