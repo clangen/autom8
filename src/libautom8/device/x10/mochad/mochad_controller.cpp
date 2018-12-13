@@ -217,19 +217,21 @@ void mochad_controller::handle_resolve(
     tcp::resolver::iterator endpoint_iterator)
 {
     if (!error) {
+        tcp::resolver::iterator end;
+
         debug::info(TAG, "resolved host");
 
         socket_ = new tcp::socket(io_service_);
 
-        socket_->async_connect(
-            *endpoint_iterator,
+        boost::asio::async_connect(
+            socket_->lowest_layer(),
+            endpoint_iterator,
+            end,
             boost::bind(
                 &mochad_controller::handle_connect,
                 this,
                 boost::asio::placeholders::error,
-                endpoint_iterator
-            )
-        );
+                endpoint_iterator));
     }
     else {
 #ifdef LOG_CONNECTION
