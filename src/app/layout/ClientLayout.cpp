@@ -112,5 +112,9 @@ bool ClientLayout::KeyPress(const std::string& kn) {
         Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
         return true;
     }
+    else if (kn == "`" || kn == "~") {
+        Broadcast(message::BROADCAST_SWITCH_TO_CONSOLE_LAYOUT);
+        return true;
+    }
     return LayoutBase::KeyPress(kn);
 }

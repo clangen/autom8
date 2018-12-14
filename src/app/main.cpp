@@ -46,6 +46,7 @@
 
 #include <app/layout/MainLayout.h>
 #include <app/util/Settings.h>
+#include <app/util/ConsoleLogger.h>
 
 #include <f8n/environment/Environment.h>
 #include <f8n/preferences/Preferences.h>
@@ -81,8 +82,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
+    auto consoleLogger = new ConsoleLogger(Window::MessageQueue());
+    auto fileLogger = new debug::SimpleFileBackend();
+
     env::Initialize(APP_NAME, 1);
-    debug::Start();
+    debug::Start({ fileLogger, consoleLogger });
     debug::info("main", "app starting");
 
     settings::InitializeDefaults();
@@ -136,7 +140,7 @@ int main(int argc, char* argv[]) {
             return false;
         });
 
-        app.Run(std::make_shared<MainLayout>(app, client));
+        app.Run(std::make_shared<MainLayout>(app, consoleLogger, client));
 
         client->disconnect();
     }

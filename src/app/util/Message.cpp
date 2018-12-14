@@ -8,6 +8,7 @@ namespace autom8 { namespace app { namespace message {
     }
 
     const int BROADCAST_SWITCH_TO_CLIENT_LAYOUT = CreateType();
+    const int BROADCAST_SWITCH_TO_CONSOLE_LAYOUT = CreateType();
     const int BROADCAST_SWITCH_TO_SETTINGS_LAYOUT = CreateType();
 
 }}}

@@ -79,9 +79,11 @@ set (autom8_curses_SRCS
   ./src/app/adapter/DeviceListAdapter.cpp
   ./src/app/adapter/DeviceModelAdapter.cpp
   ./src/app/layout/ClientLayout.cpp
+  ./src/app/layout/ConsoleLayout.cpp
   ./src/app/layout/SettingsLayout.cpp
   ./src/app/layout/MainLayout.cpp
   ./src/app/overlay/DeviceEditOverlay.cpp
+  ./src/app/util/ConsoleLogger.cpp
   ./src/app/util/Device.cpp
   ./src/app/util/Message.cpp
   ./src/app/util/Settings.cpp

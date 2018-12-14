@@ -143,6 +143,10 @@ bool SettingsLayout::KeyPress(const std::string& kn) {
         Broadcast(message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT);
         return true;
     }
+    else if (kn == "`" || kn == "~") {
+        Broadcast(message::BROADCAST_SWITCH_TO_CONSOLE_LAYOUT);
+        return true;
+    }
     if (kn == "?") {
         SchemaOverlay::Show(
             _TSTR("settings_about_config"),

@@ -14,11 +14,12 @@ static const int REGISTER_FOR_BROADCASTS = app::message::CreateType();
 static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
 static const int SCHEDULE_RECONNECT = app::message::CreateType();
 
-MainLayout::MainLayout(App& app, client_ptr client)
+MainLayout::MainLayout(App& app, ConsoleLogger* logger, client_ptr client)
 : AppLayout(app)
 , client(client) {
     this->clientLayout = std::make_shared<ClientLayout>(client);
     this->settingsLayout = std::make_shared<SettingsLayout>(client);
+    this->consoleLayout = std::make_shared<ConsoleLayout>(logger);
 
     this->clientStatus = std::make_shared<TextLabel>();
     this->clientStatus->SetText("client: disconnected", text::AlignCenter);
@@ -63,6 +64,9 @@ void MainLayout::ProcessMessage(f8n::runtime::IMessage& message) {
     }
     else if (message.Type() == message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT) {
         this->SetLayout(this->clientLayout);
+    }
+    else if (message.Type() == message::BROADCAST_SWITCH_TO_CONSOLE_LAYOUT) {
+        this->SetLayout(this->consoleLayout);
     }
     if (message.Type() == UPDATE_STATUS_MESSAGE) {
         this->UpdateStatus();

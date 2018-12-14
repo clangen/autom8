@@ -8,7 +8,9 @@
 #include <f8n/runtime/IMessage.h>
 
 #include <app/layout/ClientLayout.h>
+#include <app/layout/ConsoleLayout.h>
 #include <app/layout/SettingsLayout.h>
+#include <app/util/ConsoleLogger.h>
 
 namespace autom8 { namespace app {
 
@@ -16,6 +18,7 @@ namespace autom8 { namespace app {
         public:
             MainLayout(
                 cursespp::App& app,
+                ConsoleLogger* logger,
                 autom8::client_ptr client);
 
             virtual ~MainLayout();
@@ -24,6 +27,7 @@ namespace autom8 { namespace app {
 
         private:
             void UpdateStatus();
+
             void OnServerStateChanged();
             void OnClientStateChanged(
                 autom8::client::connection_state state,
@@ -31,6 +35,7 @@ namespace autom8 { namespace app {
 
             autom8::client_ptr client;
             std::shared_ptr<autom8::app::ClientLayout> clientLayout;
+            std::shared_ptr<autom8::app::ConsoleLayout> consoleLayout;
             std::shared_ptr<autom8::app::SettingsLayout> settingsLayout;
             std::shared_ptr<cursespp::TextLabel> clientStatus;
             std::shared_ptr<cursespp::TextLabel> serverStatus;
