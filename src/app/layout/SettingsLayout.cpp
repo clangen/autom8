@@ -234,8 +234,6 @@ void SettingsLayout::OnAddDeviceActivated(TextLabel* label) {
 }
 
 void SettingsLayout::SetShortcutsWindow(ShortcutsWindow* shortcuts) {
-    debug::info("SettingsLayout", "SetShortcutsWindow()");
-
     if (shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
         shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));

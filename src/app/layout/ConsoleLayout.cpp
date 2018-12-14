@@ -29,8 +29,6 @@ ConsoleLayout::ConsoleLayout(ConsoleLogger* logger)
 }
 
 void ConsoleLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
-    debug::info("ClientLayout", "SetShortcutsWindow()");
-
     this->shortcuts = shortcuts;
 
     if (shortcuts) {
