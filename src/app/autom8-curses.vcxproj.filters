@@ -49,6 +49,12 @@
     <ClCompile Include="adapter\DeviceModelAdapter.cpp">
       <Filter>src\adapter</Filter>
     </ClCompile>
+    <ClCompile Include="layout\ConsoleLayout.cpp">
+      <Filter>src\layout</Filter>
+    </ClCompile>
+    <ClCompile Include="util\ConsoleLogger.cpp">
+      <Filter>src\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="layout\MainLayout.h">
@@ -80,6 +86,12 @@
     </ClInclude>
     <ClInclude Include="adapter\DeviceModelAdapter.h">
       <Filter>src\adapter</Filter>
+    </ClInclude>
+    <ClInclude Include="layout\ConsoleLayout.h">
+      <Filter>src\layout</Filter>
+    </ClInclude>
+    <ClInclude Include="util\ConsoleLogger.h">
+      <Filter>src\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

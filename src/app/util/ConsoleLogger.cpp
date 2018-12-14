@@ -14,11 +14,16 @@ static const int MESSAGE_LOG = autom8::app::message::CreateType();
 
 static std::string timestamp() {
     time_t rawtime = { 0 };
-    struct tm * timeinfo;
-    char buffer [64];
+    char buffer[64] = { 0 };
     time(&rawtime);
-    timeinfo = localtime (&rawtime);
-    strftime (buffer, sizeof(buffer), "%T", timeinfo);
+#ifdef WIN32
+    struct tm timeinfo = { 0 };
+    localtime_s(&timeinfo, &rawtime);
+    strftime(buffer, sizeof(buffer), "%T", &timeinfo);
+#else
+    struct tm* timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%T", timeinfo);
+#endif
     return std::string(buffer);
 }
 
