@@ -82,10 +82,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
+    env::Initialize(APP_NAME, 1);
+
     auto consoleLogger = new ConsoleLogger(Window::MessageQueue());
     auto fileLogger = new debug::SimpleFileBackend();
-
-    env::Initialize(APP_NAME, 1);
     debug::Start({ fileLogger, consoleLogger });
     debug::info("main", "app starting");
 

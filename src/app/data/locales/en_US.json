@@ -54,6 +54,7 @@
 
         "shortcuts_quit": "quit",
         "shortcuts_devices": "devices",
+        "shortcuts_console": "console",
         "shortcuts_settings": "settings",
 
         "validator_dialog_title": "validation error",

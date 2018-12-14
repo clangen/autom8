@@ -28,6 +28,7 @@ namespace autom8 { namespace app {
         private:
             void OnAdapterChanged(cursespp::SimpleScrollAdapter* adapter);
             void OnSelectionChanged(cursespp::ListWindow* window, size_t index, size_t prev);
+            void OnItemActivated(cursespp::ListWindow* window, size_t index);
 
             ConsoleLogger* logger;
             ConsoleLogger::AdapterPtr adapter;

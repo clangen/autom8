@@ -30,7 +30,10 @@ namespace autom8 { namespace app {
             AdapterPtr Adapter();
 
         private:
-            void FormatAndDispatch(const std::string& tag, const std::string& str);
+            void FormatAndDispatch(
+                const std::string& tag,
+                const std::string& level,
+                const std::string& str);
 
             AdapterPtr adapter;
             f8n::runtime::IMessageQueue& messageQueue;

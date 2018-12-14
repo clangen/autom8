@@ -38,24 +38,26 @@ ConsoleLogger::ConsoleLogger(IMessageQueue& messageQueue)
 }
 
 void ConsoleLogger::verbose(const std::string& tag, const std::string& string) {
-    this->FormatAndDispatch(tag, string);
+    this->FormatAndDispatch(tag, "v", string);
 }
 
 void ConsoleLogger::info(const std::string& tag, const std::string& string) {
-    this->FormatAndDispatch(tag, string);
+    this->FormatAndDispatch(tag, "i", string);
 }
 
 void ConsoleLogger::warning(const std::string& tag, const std::string& string) {
-    this->FormatAndDispatch(tag, string);
+    this->FormatAndDispatch(tag, "w", string);
 }
 
 void ConsoleLogger::error(const std::string& tag, const std::string& string) {
-    this->FormatAndDispatch(tag, string);
+    this->FormatAndDispatch(tag, "e", string);
 }
 
-void ConsoleLogger::FormatAndDispatch(const std::string& tag, const std::string& str) {
+void ConsoleLogger::FormatAndDispatch(
+    const std::string& tag, const std::string& level, const std::string& str)
+{
     const std::string formatted = str::format(
-        "%s [%s] %s", timestamp().c_str(), tag.c_str(), str.c_str());
+        "%s [%s] [%s] %s", timestamp().c_str(), level.c_str(), tag.c_str(), str.c_str());
 
     this->messageQueue.Post(std::make_shared<LogMessage>(this, formatted));
 }

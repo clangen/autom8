@@ -291,7 +291,12 @@ void client::send(response_ptr r) {
 
 void client::send(request_ptr r) {
     if (r->uri() != "autom8://request/ping") {
-        debug::info(TAG, "sending request: " + r->uri() + " " + r->body()->dump());
+        if (r->uri() == "autom8://request/authenticate") {
+            debug::info(TAG, "sending request: " + r->uri() + " [payload redacted]");
+        }
+        else {
+            debug::info(TAG, "sending request: " + r->uri() + " " + r->body()->dump());
+        }
     }
 
     send(message_formatter::create(r));

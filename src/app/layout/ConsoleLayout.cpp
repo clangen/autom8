@@ -1,7 +1,8 @@
 #include "ConsoleLayout.h"
 #include <f8n/i18n/Locale.h>
-#include <cursespp/Screen.h>
 #include <cursespp/App.h>
+#include <cursespp/Screen.h>
+#include <cursespp/ToastOverlay.h>
 #include <app/util/Device.h>
 #include <app/util/Message.h>
 
@@ -20,6 +21,7 @@ ConsoleLayout::ConsoleLayout(ConsoleLogger* logger)
 
     this->listView = std::make_shared<ListWindow>(this->adapter);
     this->listView->SelectionChanged.connect(this, &ConsoleLayout::OnSelectionChanged);
+    this->listView->EntryActivated.connect(this, &ConsoleLayout::OnItemActivated);
     this->listView->SetFrameTitle(_TSTR("console_list_title"));
     this->AddWindow(this->listView);
     this->listView->SetFocusOrder(0);
@@ -32,6 +34,7 @@ void ConsoleLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
     this->shortcuts = shortcuts;
 
     if (shortcuts) {
+        shortcuts->AddShortcut("~", _TSTR("shortcuts_console"));
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
         shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));
         shortcuts->AddShortcut("^D", _TSTR("shortcuts_quit"));
@@ -45,7 +48,7 @@ void ConsoleLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
             }
         });
 
-        shortcuts->SetActive("d");
+        shortcuts->SetActive("~");
     }
 }
 
@@ -67,9 +70,17 @@ void ConsoleLayout::OnSelectionChanged(cursespp::ListWindow* window, size_t inde
     this->scrolledToBottom = index == (count - 1);
 }
 
+void ConsoleLayout::OnItemActivated(cursespp::ListWindow* window, size_t index) {
+    ToastOverlay::Show(this->logger->Adapter()->StringAt(index), -1);
+}
+
 bool ConsoleLayout::KeyPress(const std::string& kn) {
     if (kn == "s") {
         Broadcast(message::BROADCAST_SWITCH_TO_SETTINGS_LAYOUT);
+        return true;
+    }
+    if (kn == "d") {
+        Broadcast(message::BROADCAST_SWITCH_TO_CLIENT_LAYOUT);
         return true;
     }
     return LayoutBase::KeyPress(kn);
