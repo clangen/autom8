@@ -33,9 +33,7 @@ ClientLayout::ClientLayout(client_ptr client)
 }
 
 void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
-    debug::info("ClientLayout", "SetShortcutsWindow()");
-
-this->shortcuts = shortcuts;
+    this->shortcuts = shortcuts;
 
     if (shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
