@@ -18,7 +18,6 @@ ConsoleLayout::ConsoleLayout(ConsoleLogger* logger)
 , logger(logger) {
     this->adapter = logger->Adapter();
     this->adapter->Changed.connect(this, &ConsoleLayout::OnAdapterChanged);
-
     this->listView = std::make_shared<ListWindow>(this->adapter);
     this->listView->SelectionChanged.connect(this, &ConsoleLayout::OnSelectionChanged);
     this->listView->EntryActivated.connect(this, &ConsoleLayout::OnItemActivated);
@@ -36,7 +35,7 @@ void ConsoleLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
         shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));
         shortcuts->AddShortcut("^D", _TSTR("shortcuts_quit"));
-
+        shortcuts->SetActive("~");
         shortcuts->SetChangedCallback([this](std::string key) {
             if (key == "^D") {
                 App::Instance().Quit();
@@ -45,8 +44,6 @@ void ConsoleLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
                 this->KeyPress(key);
             }
         });
-
-        shortcuts->SetActive("~");
     }
 }
 
@@ -66,6 +63,13 @@ void ConsoleLayout::OnAdapterChanged(SimpleScrollAdapter* adapter) {
 void ConsoleLayout::OnSelectionChanged(cursespp::ListWindow* window, size_t index, size_t prev) {
     auto count = this->logger->Adapter()->GetEntryCount();
     this->scrolledToBottom = index == (count - 1);
+}
+
+void ConsoleLayout::OnVisibilityChanged(bool visible) {
+    LayoutBase::OnVisibilityChanged(visible);
+    if (visible && this->scrolledToBottom) {
+        this->listView->ScrollToBottom();
+    }
 }
 
 void ConsoleLayout::OnItemActivated(cursespp::ListWindow* window, size_t index) {

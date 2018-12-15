@@ -23,7 +23,6 @@ ClientLayout::ClientLayout(client_ptr client)
         client, Window::MessageQueue(), [this]() {
             this->deviceList->OnAdapterChanged();
         });
-
     this->deviceList = std::make_shared<ListWindow>(this->deviceListAdapter);
     this->deviceList->SetFrameTitle(_TSTR("device_list_title"));
     this->deviceList->EntryActivated.connect(this, &ClientLayout::OnDeviceRowActivated);
@@ -39,7 +38,7 @@ void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
         shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));
         shortcuts->AddShortcut("^D", _TSTR("shortcuts_quit"));
-
+        shortcuts->SetActive("d");
         shortcuts->SetChangedCallback([this](std::string key) {
             if (key == "^D") {
                 App::Instance().Quit();
@@ -48,8 +47,6 @@ void ClientLayout::SetShortcutsWindow(cursespp::ShortcutsWindow* shortcuts) {
                 this->KeyPress(key);
             }
         });
-
-        shortcuts->SetActive("d");
     }
 }
 

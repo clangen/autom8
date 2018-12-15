@@ -25,6 +25,9 @@ namespace autom8 { namespace app {
             virtual bool KeyPress(const std::string& kn) override;
             virtual void SetShortcutsWindow(cursespp::ShortcutsWindow* w) override;
 
+        protected:
+            void OnVisibilityChanged(bool visible) override;
+
         private:
             void OnAdapterChanged(cursespp::SimpleScrollAdapter* adapter);
             void OnSelectionChanged(cursespp::ListWindow* window, size_t index, size_t prev);

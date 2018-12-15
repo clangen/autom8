@@ -238,7 +238,7 @@ void SettingsLayout::SetShortcutsWindow(ShortcutsWindow* shortcuts) {
         shortcuts->AddShortcut("d", _TSTR("shortcuts_devices"));
         shortcuts->AddShortcut("s", _TSTR("shortcuts_settings"));
         shortcuts->AddShortcut("^D", _TSTR("shortcuts_quit"));
-
+        shortcuts->SetActive("s");
         shortcuts->SetChangedCallback([this](std::string key) {
             if (key == "^D") {
                 App::Instance().Quit();
@@ -247,7 +247,5 @@ void SettingsLayout::SetShortcutsWindow(ShortcutsWindow* shortcuts) {
                 this->KeyPress(key);
             }
         });
-
-        shortcuts->SetActive("s");
     }
 }
