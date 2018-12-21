@@ -106,11 +106,6 @@ IScrollAdapter::EntryPtr DeviceModelAdapter::GetEntry(ScrollableWindow* window, 
         this->devices.at(index));
 
     auto entry = std::make_shared<SingleLineEntry>(label);
-
-    int64_t color = Color(selected
-        ? Color::ListItemHighlighted : Color::Default);
-
-    entry->SetAttrs(color);
-
+    entry->SetAttrs(selected ? Color::ListItemHighlighted : Color::Default);
     return entry;
 }
