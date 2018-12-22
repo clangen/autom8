@@ -2,6 +2,7 @@
 **/__output
 **/.vs
 **/*.user
+**/.DS_Store
 build
 CMakeCache.txt
 CMakeFiles/
