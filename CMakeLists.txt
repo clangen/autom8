@@ -31,11 +31,11 @@ include_directories (
   "${autom8_curses_SOURCE_DIR}/src/libautom8/include"
 )
 
-# "/usr/local" doesn't seem to be included by default on macOS 10.12+
+link_directories ("/usr/local/lib")
+include_directories("/usr/local/include")
+
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  link_directories ("/usr/local/lib")
   link_directories ("/usr/local/opt/openssl/lib")
-  include_directories("/usr/local/include")
   include_directories("/usr/local/opt/openssl/include")
 endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
