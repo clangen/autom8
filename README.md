@@ -1,5 +1,5 @@
 # autom8-curses
-a terminal-based home automation client/server based on the [cursespp](https://github.com/clangen/cursespp) and [libautom8](https://github.com/clangen/autom8) libraries. 
+a terminal-based home automation client/server that uses [cursespp](https://github.com/clangen/cursespp) and [libautom8](https://github.com/clangen/autom8). 
 
 it runs and behaves exactly the same on windows, macos linux and freebsd.
 
