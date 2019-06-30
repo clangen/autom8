@@ -102,7 +102,7 @@ namespace autom8 {
             BN_set_word(e, RSA_F4);
             RSA* rsa = RSA_new();
 
-            if (RSA_generate_key_ex(rsa, 1024, e, nullptr)) {
+            if (RSA_generate_key_ex(rsa, 2048, e, nullptr)) {
                 EVP_PKEY* key = EVP_PKEY_new();
 
 #if OPENSSL_VERSION_NUMBER >= 0x10100000
