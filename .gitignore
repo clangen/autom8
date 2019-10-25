@@ -1,5 +1,9 @@
 **/__build
 **/__output
+**/__build32
+**/__output32
+**/__build64
+**/__output64
 **/.vs
 **/*.user
 **/.DS_Store

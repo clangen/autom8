@@ -73,7 +73,7 @@ using client_ptr = std::shared_ptr<autom8::client>;
 #ifdef WIN32
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) {
     PDC_set_resize_limits(MIN_HEIGHT, MAX_SIZE, MIN_WIDTH, MAX_SIZE);
-    PDC_resize_screen(DEFAULT_HEIGHT, DEFAULT_WIDTH);
+    //PDC_resize_screen(DEFAULT_HEIGHT, DEFAULT_WIDTH);
 
     if (App::Running(APP_NAME)) {
         return 0;
