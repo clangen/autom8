@@ -97,17 +97,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output32\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output32\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>comctl32.lib;cursespp.lib;3rdparty.lib;f8n.lib;crypto-45.lib;ssl-47.lib;tls-19.lib;libautom8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
-xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\crypto-45.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\ssl-47.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\tls-19.dll" "$(OutDir)"</Command>
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,17 +119,14 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib64-msvc-14.1\;$(SolutionDir)__output64\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib64-msvc-14.1\;$(SolutionDir)__output64\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>comctl32.lib;cursespp.lib;3rdparty.lib;f8n.lib;crypto-45.lib;ssl-47.lib;tls-19.lib;libautom8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
-xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\crypto-45.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\ssl-47.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\tls-19.dll" "$(OutDir)"</Command>
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -157,10 +151,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\relea
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
-xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\crypto-45.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\ssl-47.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\release\tls-19.dll" "$(OutDir)"</Command>
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,10 +176,7 @@ xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\dll\libressl\relea
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
-xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\crypto-45.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\ssl-47.dll" "$(OutDir)"
-xcopy /y "$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\dll\libressl\release\tls-19.dll" "$(OutDir)"</Command>
+xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
