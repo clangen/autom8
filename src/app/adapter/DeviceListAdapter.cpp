@@ -26,17 +26,16 @@ DeviceListAdapter::DeviceListAdapter(
 : client(client)
 , messageQueue(messageQueue)
 , changedCallback(changedCallback) {
+    messageQueue.Register(this);
     client->recv_response.connect(this, &DeviceListAdapter::OnClientResponse);
-
     client->state_changed.connect(this, &DeviceListAdapter::OnClientStateChanged);
-
     if (client->state() == client::state_connected) {
         this->Requery();
     }
 }
 
 DeviceListAdapter::~DeviceListAdapter() {
-
+    messageQueue.Unregister(this);
 }
 
 void DeviceListAdapter::ProcessMessage(IMessage &message) {
