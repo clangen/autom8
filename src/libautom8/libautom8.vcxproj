@@ -22,7 +22,7 @@
     <ProjectGuid>{4602D866-D98D-4AC6-A501-A2463CD41355}</ProjectGuid>
     <RootNamespace>autom8</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -30,26 +30,26 @@
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -97,7 +97,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_71_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -111,7 +111,7 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-44D.lib;ssl-46D.lib;tls-18D.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -124,7 +124,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_71_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -137,7 +137,7 @@
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-44D.lib;ssl-46D.lib;tls-18D.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -149,7 +149,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_71_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -160,7 +160,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-44.lib;ssl-46.lib;tls-18.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -170,7 +170,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_71_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -181,7 +181,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_71_0\lib32-msvc-14.1\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>3rdparty.lib;f8n.lib;crypto-44.lib;ssl-46.lib;tls-18.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>

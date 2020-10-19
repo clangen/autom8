@@ -9,10 +9,12 @@
 
 #include <openssl/pem.h>
 #include <openssl/conf.h>
+#include <openssl/x509.h>
 #include <openssl/x509v3.h>
 #include <openssl/engine.h>
 #include <openssl/md5.h>
 #include <openssl/rsa.h>
+#include <openssl/bn.h>
 
 #include <boost/filesystem.hpp>
 
@@ -128,8 +130,8 @@ namespace autom8 {
 
                 X509_set_version(x509, 2);
                 ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
-                X509_gmtime_adj(X509_get_notBefore(x509), 0);
-                X509_gmtime_adj(X509_get_notAfter(x509), (long)(60 * 60 * 24 * days));
+                X509_gmtime_adj(X509_getm_notBefore(x509), 0);
+                X509_gmtime_adj(X509_getm_notAfter(x509), (long)(60 * 60 * 24 * days));
                 X509_set_pubkey(x509, key);
 
                 X509_NAME* name = X509_get_subject_name(x509);
