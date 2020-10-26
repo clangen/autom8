@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
         app.SetColorTheme(prefs->GetString(settings::UI_THEME));
 
 #ifdef WIN32
-        app.SetIcon(IDI_ICON1);
+        //app.SetIcon(IDI_ICON1);
         app.SetSingleInstanceId("autom8");
 #endif
 
