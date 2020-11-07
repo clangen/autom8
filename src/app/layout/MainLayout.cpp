@@ -93,7 +93,7 @@ void MainLayout::UpdateStatus() {
             break;
         case S::state_connected:
             str = std::string("connected to ") + client->hostname();
-            color = Color::Banner;
+            color = Color::Header;
             break;
         case S::state_disconnecting:
             str = "disconnecting";
