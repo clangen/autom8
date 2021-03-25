@@ -39,6 +39,8 @@ if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
   include_directories("/usr/local/opt/openssl/include")
   link_directories ("/usr/local/opt/icu4c/lib")
   include_directories("/usr/local/opt/icu4c/include")
+  link_directories ("/usr/local/opt/ncurses/lib")
+  include_directories("/usr/local/opt/ncurses/include")
 endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if (EXISTS "/etc/arch-release" OR EXISTS "/etc/manjaro-release" OR NO_NCURSESW)
