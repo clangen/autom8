@@ -2,9 +2,6 @@
 
 #include <autom8/device/x10/cm15a/cm15a_device_system.hpp>
 
-#include <boost/thread.hpp>
-#include <boost/filesystem.hpp>
-
 #include <autom8/device/device_model.hpp>
 #include <autom8/device/x10/x10_device_factory.hpp>
 #include <autom8/util/utility.hpp>
@@ -13,6 +10,8 @@
 #include <string>
 #include <iostream>
 #include <set>
+#include <mutex>
+#include <filesystem>
 
 using namespace autom8;
 
@@ -25,10 +24,10 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
  * in shared_ptrs(), which may be deleted after static variable destructors
  * have been called. */
 static instance_list *instances_ = new instance_list();
-static boost::mutex *instance_mutex_ = new boost::mutex();
+static std::mutex *instance_mutex_ = new std::mutex();
 
 void on_message_received(const char **argv, int argc) {
-    boost::mutex::scoped_lock lock(*instance_mutex_);
+    std::unique_lock<std::mutex> lock(*instance_mutex_);
 
     instance_list::iterator it = instances_->begin();
     while (it != instances_->end()) {
@@ -44,7 +43,7 @@ cm15a_device_system::cm15a_device_system()
     at runtime */
     wchar_t buffer[4096];
     ::GetModuleFileName((HMODULE)&__ImageBase, buffer, 4096);
-    boost::filesystem::path module_path(buffer);
+    std::filesystem::path module_path(buffer);
     ::SetDllDirectory(module_path.parent_path().wstring().c_str());
 
     // create the factory and model
@@ -80,7 +79,7 @@ cm15a_device_system::cm15a_device_system()
     is_functional_ = true;
 
     {
-        boost::mutex::scoped_lock lock(*instance_mutex_);
+        std::unique_lock<std::mutex> lock(*instance_mutex_);
         instances_->insert(this);
 
         if (instances_->size() == 1) {
@@ -95,7 +94,7 @@ cm15a_device_system::cm15a_device_system()
 
 cm15a_device_system::~cm15a_device_system() {
     {
-        boost::mutex::scoped_lock lock(*instance_mutex_);
+        std::unique_lock<std::mutex> lock(*instance_mutex_);
         instances_->erase(instances_->find(this));
 
         if (instances_->size() == 0) {

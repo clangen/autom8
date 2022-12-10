@@ -8,17 +8,16 @@
 #include <autom8/message/message.hpp>
 #include <autom8/message/message_formatter.hpp>
 #include <autom8/message/response.hpp>
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
+#include <asio.hpp>
+#include <asio/ssl.hpp>
 #include <sigslot/sigslot.h>
 #include <thread>
 #include <mutex>
 
-using boost::asio::ip::tcp;
-using boost::system::error_code;
+using asio::ip::tcp;
 
 namespace autom8 {
-    typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket;
+    typedef asio::ssl::stream<asio::ip::tcp::socket> ssl_socket;
 
     class session : public std::enable_shared_from_this<session> {
     public:
@@ -28,8 +27,8 @@ namespace autom8 {
 
     public:
         session(
-            boost::asio::io_service& io_service,
-            boost::asio::ssl::context& context);
+            asio::io_service& io_service,
+            asio::ssl::context& context);
 
         virtual ~session();
 

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <json.hpp>
 
 namespace autom8 {
     class message {
     private:
-        typedef boost::asio::streambuf::const_buffers_type buffer_type;
-        typedef boost::asio::buffers_iterator<buffer_type> buffer_iterator;
-        typedef boost::asio::streambuf streambuf;
+        typedef asio::streambuf::const_buffers_type buffer_type;
+        typedef asio::buffers_iterator<buffer_type> buffer_iterator;
+        typedef asio::streambuf streambuf;
 
     public:
         enum message_type {

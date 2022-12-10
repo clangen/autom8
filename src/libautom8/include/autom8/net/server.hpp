@@ -8,8 +8,9 @@
 #include <autom8/message/request.hpp>
 #include <autom8/util/signal_handler.hpp>
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
+#include <asio.hpp>
+#include <asio/ssl.hpp>
+#include <asio/high_resolution_timer.hpp>
 
 #include <sigslot/sigslot.h>
 
@@ -17,14 +18,11 @@
 #include <memory>
 #include <set>
 
-using boost::asio::ip::tcp;
-using boost::system::error_code;
-
 namespace autom8 {
     class server: public signal_handler
                 , public std::enable_shared_from_this<server> {
     private:
-        using timer_ptr = std::shared_ptr<boost::asio::deadline_timer>;
+        using timer_ptr = std::shared_ptr<asio::high_resolution_timer>;
         using session_ptr = session::session_ptr;
         using session_list =  std::set<session_ptr>;
         using thread_ptr = std::unique_ptr<std::thread>;
@@ -56,14 +54,14 @@ namespace autom8 {
         void on_session_disconnected(session_ptr);
         void schedule_ping();
         void boostrap_new_session(session_ptr session);
-        void handle_scheduled_ping(const error_code& error);
+        void handle_scheduled_ping(const std::error_code& error);
         void io_service_thread_proc();
 
         void start_accept();
-        void handle_accept(const boost::system::error_code&, session_ptr);
+        void handle_accept(const std::error_code&, session_ptr);
 
-        boost::asio::io_service io_service_;
-        boost::asio::ssl::context ssl_context_;
+        asio::io_service io_service_;
+        asio::ssl::context ssl_context_;
         tcp::endpoint endpoint_;
         tcp::acceptor acceptor_;
         session_list session_list_;

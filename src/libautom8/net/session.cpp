@@ -7,7 +7,7 @@
 #include <autom8/message/message_matcher.hpp>
 #include <f8n/debug/debug.h>
 #include <f8n/preferences/Preferences.h>
-#include <boost/format.hpp>
+#include <f8n/str/util.h>
 #include <atomic>
 
 using namespace autom8;
@@ -19,7 +19,7 @@ static std::atomic<int> instance_count_ { 0 };
 static const std::string TAG = "session";
 
 inline void print_instance_count() {
-    debug::info(TAG, (boost::format("session instance count: %1%") % instance_count_).str());
+    debug::info(TAG, f8n::str::format("session instance count: %d", instance_count_.load()));
 }
 
 inline void inc_instance_count() {
@@ -32,7 +32,7 @@ inline void dec_instance_count() {
     print_instance_count();
 }
 
-session::session(boost::asio::io_service& io_service, boost::asio::ssl::context& context)
+session::session(asio::io_service& io_service, asio::ssl::context& context)
 : socket_(io_service, context)
 , is_authenticated_(false)
 , is_disconnected_(true) {
@@ -58,7 +58,7 @@ void session::start() {
     }
 
     try {
-        socket_.handshake(boost::asio::ssl::stream_base::server);
+        socket_.handshake(asio::ssl::stream_base::server);
 
         is_disconnected_ = false;
         ip_address_ = (socket_.lowest_layer().remote_endpoint().address().to_string());
@@ -85,10 +85,10 @@ void session::enqueue_write(message_formatter_ptr formatter) {
         return;
     }
 
-    boost::asio::async_write(
+    asio::async_write(
         socket_,
-        boost::asio::buffer(formatter->to_string()),
-        [this](const boost::system::error_code& error, std::size_t bytes) {
+        asio::buffer(formatter->to_string()),
+        [this](const std::error_code& error, std::size_t bytes) {
             if (error) {
                 this->disconnect("message write failed");
             }
@@ -126,8 +126,8 @@ bool session::handle_authentication(session_ptr session, message_ptr message) {
     message_formatter_ptr f =message_formatter::create(
         messages::responses::authenticate_failed());
 
-    boost::system::error_code ec;
-    write(session->socket_, boost::asio::buffer(f->to_string()), ec);
+    std::error_code ec;
+    write(session->socket_, asio::buffer(f->to_string()), ec);
     session->disconnect("authenticate failed");
 
     return false;
@@ -177,7 +177,7 @@ void session::disconnect(const std::string& reason) {
         is_disconnected_ = true;
 
         try {
-            boost::system::error_code ec;
+            std::error_code ec;
             socket_.lowest_layer().cancel(ec);
             socket_.lowest_layer().close();
         }
@@ -195,7 +195,7 @@ void session::disconnect(const std::string& reason) {
 void session::async_read_next_message() {
     message_ptr m = message_ptr(new message());
 
-    auto callback = [this, m](const boost::system::error_code& error, std::size_t bytes_read) {
+    auto callback = [this, m](const std::error_code& error, std::size_t bytes_read) {
         if (error) {
             this->disconnect("socket read() failed");
         }
@@ -218,7 +218,7 @@ void session::async_read_next_message() {
         }
     };
 
-    boost::asio::async_read_until(
+    asio::async_read_until(
         socket_,
         m->read_buffer(),
         message_matcher(),

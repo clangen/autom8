@@ -59,14 +59,14 @@ static volatile int rpc_mode_ = AUTOM8_RPC_MODE_ASYNC;
 static std::thread* io_thread_ = 0;
 static std::recursive_mutex enforce_serial_lock_;
 static std::mutex io_thread_lock_;
-static boost::asio::io_service io_service_;
+static asio::io_service io_service_;
 
 static void io_thread_proc() {
     debug::info(RPC_TAG, "thread started");
 
     /* the io_service will close itself if it thinks there is no
     more work to be done. this line prevents it from auto-stopping */
-    boost::asio::io_service::work work(io_service_);
+    asio::io_service::work work(io_service_);
     io_service_.run();
 
     debug::info(RPC_TAG, "thread finished");

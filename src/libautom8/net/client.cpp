@@ -5,21 +5,22 @@
 #include <autom8/message/message_matcher.hpp>
 #include <autom8/message/common_messages.hpp>
 #include <autom8/util/utility.hpp>
+
 #include <f8n/debug/debug.h>
+#include <f8n/str/util.h>
 
 #include <ostream>
+#include <functional>
 
 #include <json.hpp>
 
-#include <boost/bind.hpp>
 #include <base64/base64.h>
-#include <boost/format.hpp>
+
 
 using namespace autom8;
 using namespace nlohmann;
 using debug = f8n::debug;
 
-typedef boost::format format;
 static request_ptr ping_(messages::requests::ping());
 static response_ptr pong_(messages::responses::pong());
 static response_ptr authenticate_(messages::responses::authenticated());
@@ -70,33 +71,37 @@ void client::reconnect() {
     set_state(state_connecting);
 
     connection_.started(new std::thread(
-        boost::bind(&client::io_service_thread_proc, this)));
+        std::bind(&client::io_service_thread_proc, this)));
 }
 
 void client::io_service_thread_proc() {
-    tcp::resolver resolver(*connection_.io_service_);
-    tcp::resolver::query query(hostname_, std::to_string(port_));
+    asio::ip::tcp::resolver resolver(*connection_.io_service_);
+    asio::ip::tcp::resolver::query query(hostname_, std::to_string(port_));
 
-    boost::system::error_code error;
-    tcp::resolver::iterator begin = resolver.resolve(query, error);
-    tcp::resolver::iterator end;
+    std::error_code error;
+    asio::ip::tcp::resolver::iterator begin = resolver.resolve(query, error);
+    asio::ip::tcp::resolver::iterator end;
 
     if (error) {
         disconnect(connect_failed);
     }
     else {
         connection_.socket_->set_verify_callback(
-            boost::bind(&client::verify_certificate, this, _1, _2));
+            std::bind(
+                &client::verify_certificate,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2));
 
-        boost::asio::async_connect(
+        asio::async_connect(
             connection_.socket_->lowest_layer(),
             begin,
             end,
-            boost::bind(
+            std::bind(
                 &client::handle_connect,
                 this,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::iterator));
+                std::placeholders::_1,
+                std::placeholders::_2));
 
         connection_.io_service_->run();
     }
@@ -104,7 +109,7 @@ void client::io_service_thread_proc() {
     debug::info(TAG, "i/o service thread done");
 }
 
-bool client::verify_certificate(bool preverified, boost::asio::ssl::verify_context& ctx) {
+bool client::verify_certificate(bool preverified, asio::ssl::verify_context& ctx) {
 #if 0
     // The verify callback can be used to check whether the certificate that is
     // being presented is valid for the peer. For example, RFC 2818 describes
@@ -161,8 +166,8 @@ void client::set_state(connection_state state, reason reason) {
 }
 
 void client::handle_connect(
-    const boost::system::error_code& error,
-    tcp::resolver::iterator endpoint_iterator)
+    const std::error_code& error,
+    asio::ip::tcp::resolver::iterator endpoint_iterator)
 {
     if (error) {
         disconnect(client::connect_failed);
@@ -173,15 +178,15 @@ void client::handle_connect(
         debug::info(TAG, "handled_connect ok, starting handshake");
 
         connection_.socket_->async_handshake(
-            boost::asio::ssl::stream_base::client,
-            boost::bind(
+            asio::ssl::stream_base::client,
+            std::bind(
                 &client::handle_handshake,
                 this,
-                boost::asio::placeholders::error));
+                std::placeholders::_1));
     }
 }
 
-void client::handle_handshake(const boost::system::error_code& error) {
+void client::handle_handshake(const std::error_code& error) {
     if (error) {
         disconnect(client::handshake_failed);
     }
@@ -200,12 +205,12 @@ void client::schedule_ping() {
         }
 
         connection_.ping_timer_ = connection::timer_ptr(
-            new boost::asio::deadline_timer(*connection_.io_service_));
+            new asio::high_resolution_timer(*connection_.io_service_));
 
-        connection_.ping_timer_->expires_from_now(boost::posix_time::seconds(5));
+        connection_.ping_timer_->expires_from_now(std::chrono::seconds(5));
 
         connection_.ping_timer_->async_wait(
-            [this](const boost::system::error_code& error) {
+            [this](const std::error_code& error) {
                 if (!error) {
                     this->send(ping_);
                     this->schedule_ping();
@@ -217,11 +222,11 @@ void client::schedule_ping() {
 void client::async_read_next_message() {
     message_ptr m(new message());
 
-    boost::asio::async_read_until(
+    asio::async_read_until(
         *connection_.socket_,
         m->read_buffer(),
         message_matcher(),
-        [this, message = m](const boost::system::error_code& error, std::size_t size) {
+        [this, message = m](const std::error_code& error, std::size_t size) {
             if (error || !size) {
                 disconnect(client::read_failed);
             }
@@ -309,10 +314,10 @@ void client::send(message_formatter_ptr f) {
         state_ == state_connecting ||
         state_ == state_authenticating)
     {
-        boost::asio::async_write(
+        asio::async_write(
             *connection_.socket_,
-            boost::asio::buffer(f->to_string()),
-            [this](const boost::system::error_code& error, std::size_t size) {
+            asio::buffer(f->to_string()),
+            [this](const std::error_code& error, std::size_t size) {
                 if (error || size == 0) {
                     this->disconnect(client::write_failed);
                 }

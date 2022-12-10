@@ -2,11 +2,9 @@
 #include <autom8/util/utility.hpp>
 #include <autom8/db/db.hpp>
 
+#include <f8n/str/util.h>
 #include <f8n/debug/debug.h>
 #include <f8n/environment/Environment.h>
-
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace autom8;
 using debug = f8n::debug;
@@ -51,17 +49,17 @@ device_model::~device_model() {
 void device_model::create_tables() {
     /* devices table */
     {
-        std::string create_table = (boost::format(
-            " CREATE TABLE IF NOT EXISTS %1% ("
-            " %2% INTEGER PRIMARY KEY AUTOINCREMENT, "
-            " %3% INTEGER, "
-            " %4% STRING UNIQUE, "
-            " %5% STRING); ")
-            % device_table_name_
-            % ID_COLUMN
-            % TYPE_COLUMN
-            % ADDRESS_COLUMN
-            % LABEL_COLUMN).str();
+        std::string create_table = f8n::str::format(
+            " CREATE TABLE IF NOT EXISTS %s ("
+            " %s INTEGER PRIMARY KEY AUTOINCREMENT, "
+            " %s INTEGER, "
+            " %s STRING UNIQUE, "
+            " %s STRING); ",
+            device_table_name_.c_str(),
+            ID_COLUMN,
+            TYPE_COLUMN,
+            ADDRESS_COLUMN,
+            LABEL_COLUMN);
 
         autom8::db::statement stmt(connection_, create_table);
         if (!stmt.execute()) {
@@ -72,15 +70,15 @@ void device_model::create_tables() {
 
     /* groups table */
     {
-        std::string create_table = (boost::format(
-            " CREATE TABLE IF NOT EXISTS %1% ("
-            " %2% INTEGER PRIMARY KEY AUTOINCREMENT, "
-            " %3% STRING, "
-            " %4% INTEGER); ")
-            % groups_table_name_
-            % ID_COLUMN
-            % GROUP_NAME_COLUMN
-            % DEVICE_ID_COLUMN).str();
+        std::string create_table = f8n::str::format(
+            " CREATE TABLE IF NOT EXISTS %s ("
+            " %s INTEGER PRIMARY KEY AUTOINCREMENT, "
+            " %s STRING, "
+            " %s INTEGER); ",
+            groups_table_name_.c_str(),
+            ID_COLUMN,
+            GROUP_NAME_COLUMN,
+            DEVICE_ID_COLUMN);
 
         autom8::db::statement stmt(connection_, create_table);
         if (!stmt.execute()) {
@@ -98,14 +96,14 @@ device_ptr device_model::add(
 {
     device_ptr device;
 
-    std::string insert_row = (boost::format(
-        " INSERT INTO %1% (%2%, %3%, %4%, %5%)"
-        " VALUES(NULL, ?, ?, ?);")
-        % device_table_name_
-        % ID_COLUMN
-        % TYPE_COLUMN
-        % ADDRESS_COLUMN
-        % LABEL_COLUMN).str();
+    std::string insert_row = f8n::str::format(
+        " INSERT INTO %s (%s, %s, %s, %s)"
+        " VALUES(NULL, ?, ?, ?);",
+        device_table_name_.c_str(),
+        ID_COLUMN,
+        TYPE_COLUMN,
+        ADDRESS_COLUMN,
+        LABEL_COLUMN);
 
     {
         std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
@@ -137,11 +135,11 @@ bool device_model::remove(device_ptr device) {
 bool device_model::remove(database_id id) {
     bool result = false;
 
-    std::string delete_device = (boost::format(
-        " DELETE FROM %1%"
-        " WHERE %2%=?;")
-        % device_table_name_
-        % ID_COLUMN).str();
+    std::string delete_device = f8n::str::format(
+        " DELETE FROM %s"
+        " WHERE %2%=?;",
+        device_table_name_.c_str(),
+        ID_COLUMN);
 
     {
         std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
@@ -176,15 +174,15 @@ bool device_model::update(
     const std::string& label,
     const std::vector<std::string>& groups)
 {
-    std::string query = (boost::format(
+    std::string query = f8n::str::format(
         " UPDATE %1%"
         " SET %2%=?, %3%=?, %4%=?"
-        " WHERE %5%=?;")
-        % device_table_name_
-        % TYPE_COLUMN
-        % ADDRESS_COLUMN
-        % LABEL_COLUMN
-        % ID_COLUMN).str();
+        " WHERE %5%=?;",
+        device_table_name_.c_str(),
+        TYPE_COLUMN,
+        ADDRESS_COLUMN,
+        LABEL_COLUMN,
+        ID_COLUMN);
 
     bool result;
 
@@ -211,15 +209,15 @@ bool device_model::update(
 device_ptr device_model::find_by_address(const std::string& address_to_find) {
     device_ptr device;
 
-    std::string query = (boost::format(
-        " SELECT %1%, %2%, %3%, %4%"
-        " FROM %5%"
-        " WHERE address=?;")
-        % ID_COLUMN
-        % TYPE_COLUMN
-        % ADDRESS_COLUMN
-        % LABEL_COLUMN
-        % device_table_name_).str();
+    std::string query = f8n::str::format(
+        " SELECT %s, %s, %s, %s"
+        " FROM %s"
+        " WHERE address=?;",
+        ID_COLUMN,
+        TYPE_COLUMN,
+        ADDRESS_COLUMN,
+        LABEL_COLUMN,
+        device_table_name_.c_str());
 
     std::unique_lock<decltype(connection_mutex_)> lock(connection_mutex_);
 
@@ -243,15 +241,16 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
 }
 
 device_list device_model::all_devices() const {
-    std::string query = (boost::format(
+    std::string query = f8n::str::format(
         " SELECT %1%, %2%, %3%, %4%"
         " FROM %5%"
-        " ORDER BY %3%;")
-        % ID_COLUMN
-        % TYPE_COLUMN
-        % ADDRESS_COLUMN
-        % LABEL_COLUMN
-        % device_table_name_).str();
+        " ORDER BY %3%;",
+        ID_COLUMN,
+        TYPE_COLUMN,
+        ADDRESS_COLUMN,
+        LABEL_COLUMN,
+        device_table_name_.c_str(),
+        ADDRESS_COLUMN);
 
     autom8::db::statement stmt(connection_, query);
 
@@ -278,11 +277,11 @@ device_list device_model::all_devices() const {
 }
 
 bool device_model::remove_groups(database_id id) {
-    std::string query = (boost::format(
-        " DELETE FROM %1%"
-        " WHERE %2%=?;")
-        % groups_table_name_
-        % DEVICE_ID_COLUMN).str();
+    std::string query = f8n::str::format(
+        " DELETE FROM %s"
+        " WHERE %2%=?;",
+        groups_table_name_.c_str(),
+        DEVICE_ID_COLUMN);
 
     autom8::db::statement stmt(connection_, query);
     stmt.bind_int64(1, id);
@@ -297,13 +296,13 @@ bool device_model::set_groups(database_id id, const std::vector<std::string>& gr
     /* add */
     if (ok) {
         for (size_t i = 0; i < groups.size(); i++) {
-            std::string query = (boost::format(
-                " INSERT INTO %1% (%2%, %3%, %4%)"
-                " VALUES(NULL, ?, ?);")
-                % groups_table_name_
-                % ID_COLUMN
-                % GROUP_NAME_COLUMN
-                % DEVICE_ID_COLUMN).str();
+            std::string query = f8n::str::format(
+                " INSERT INTO %s (%s, %s, %s)"
+                " VALUES(NULL, ?, ?);",
+                groups_table_name_.c_str(),
+                ID_COLUMN,
+                GROUP_NAME_COLUMN,
+                DEVICE_ID_COLUMN);
 
             autom8::db::statement stmt(connection_, query);
             stmt.bind_string(1, groups[i]);
@@ -318,13 +317,13 @@ bool device_model::set_groups(database_id id, const std::vector<std::string>& gr
 }
 
 void device_model::get_groups(database_id id, std::vector<std::string>& groups) const {
-    std::string query = (boost::format(
-        " SELECT %1%"
-        " FROM %2%"
-        " WHERE %3%=?;")
-        % GROUP_NAME_COLUMN
-        % groups_table_name_
-        % DEVICE_ID_COLUMN).str();
+    std::string query = f8n::str::format(
+        " SELECT %s"
+        " FROM %s"
+        " WHERE %s=?;",
+        GROUP_NAME_COLUMN,
+        groups_table_name_.c_str(),
+        DEVICE_ID_COLUMN);
 
     autom8::db::statement stmt(connection_, query);
     stmt.bind_int64(1, id);

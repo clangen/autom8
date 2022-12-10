@@ -30,26 +30,26 @@
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfAtl>Dynamic</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -97,8 +97,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -106,6 +106,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -124,14 +125,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
@@ -149,8 +151,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -158,6 +160,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -170,8 +173,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(SolutionDir)..\boost_1_74_0\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -179,6 +182,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\boost_1_74_0\lib32-msvc-14.2\;$(SolutionDir)__output\Release\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

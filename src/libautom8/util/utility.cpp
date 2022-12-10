@@ -1,5 +1,4 @@
 #include <autom8/util/utility.hpp>
-#include <boost/filesystem.hpp>
 #include <openssl/sha.h>
 #include <sstream>
 

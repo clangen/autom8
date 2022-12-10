@@ -2,8 +2,7 @@
 #include <string>
 #include <iostream>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/format.hpp>
+#include <f8n/str/util.h>
 
 #include <autom8/message/common_messages.hpp>
 #include <autom8/net/server.hpp>
@@ -42,9 +41,10 @@ void x10_device::set_device_status(device_status new_status) {
     {
         auto lock = state_lock();
 
-        command_string = (boost::format("%1% %2%")
-            % address()
-            % (new_status == device_status_off ? "off" : "on")).str();
+        command_string = f8n::str::format(
+            "%s %s",
+            address().c_str(),
+            (new_status == device_status_off ? "off" : "on"));
     }
 
     owner_->send_device_message(powerline_command, command_string.c_str());

@@ -1,16 +1,13 @@
-#include <f8n/preferences/Preferences.h>
-
 #include <autom8/device/x10/mochad/mochad_device_system.hpp>
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
-
-#include <boost/algorithm/string_regex.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <autom8/device/device_model.hpp>
 #include <autom8/device/x10/x10_device_factory.hpp>
 #include <autom8/util/utility.hpp>
 
+#include <f8n/preferences/Preferences.h>
+#include <f8n/str/util.h>
+
+#include <regex>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -61,8 +58,8 @@ bool update_x10_device(device_model& model, const std::string& address, const st
 void mochad_device_system::on_message_received(std::string message) {
     // std::cerr << "*** " << message << std::endl;
 
-    boost::cmatch match;
-    if (boost::regex_match(message.c_str(), match, boost::regex(MOCHAD_MESSAGE_REGEX))) {
+    std::cmatch match;
+    if (std::regex_match(message.c_str(), match, std::regex(MOCHAD_MESSAGE_REGEX))) {
         if (match.size() == 5) {
             std::string direction = match[1];
             std::string type = match[2];
@@ -146,18 +143,17 @@ bool mochad_device_system::send_device_message(command_type message_type, const 
     need to futz with some of the params before we pass it along to
     the controller */
     std::string input(message_params);
-    std::vector<std::string> parts;
-    boost::split(parts, input, boost::is_any_of(" "));
+    std::vector<std::string> parts = f8n::str::split(input, " ");
 
     /* for bright/dim commands, x10_lamp assumes the range is from 0..100.
     however, mochad uses 0..31. normalize here before passing along*/
     if (parts.size() == 3 && (parts.at(1) == "bright" || parts.at(1) == "dim")) {
         try {
-            int value = boost::lexical_cast<int>(parts.at(2));
+            int value = std::stoi(parts.at(2));
             value = (value * MOCHAD_MAX_LAMP_BRIGHTNESS) / X10_MAX_LAMP_BRIGHTNESS;
-            parts.at(2) = boost::lexical_cast<std::string>(value);
+            parts.at(2) = std::to_string(value);
         }
-        catch (boost::bad_lexical_cast) {
+        catch (...) {
             /* nothing we can do... move on */
         }
     }

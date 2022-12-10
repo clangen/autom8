@@ -1,11 +1,11 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 namespace autom8 {
     class message_matcher {
     public:
-        typedef boost::true_type result_type;
+        typedef std::true_type result_type;
 
         message_matcher(size_t max_length = 10485760) // maximum 10 meg message size by default
         : max_length_(max_length)

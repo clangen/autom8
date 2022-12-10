@@ -5,8 +5,8 @@
 #include <autom8/util/ssl_certificate.hpp>
 #include <autom8/message/common_messages.hpp>
 #include <f8n/debug/debug.h>
-#include <boost/format.hpp>
-#include <boost/bind.hpp>
+#include <f8n/str/util.h>
+#include <functional>
 #include <base64/base64.h>
 #include <ostream>
 #include <functional>
@@ -22,13 +22,11 @@ sigslot::signal0<> server::stopped;
 
 static const std::string TAG = "server";
 
-typedef boost::format format;
-
 server::server(unsigned short port)
 : endpoint_(tcp::v4(), port)
 , io_service_()
 , acceptor_(io_service_, endpoint_)
-, ssl_context_(boost::asio::ssl::context::sslv23)
+, ssl_context_(asio::ssl::context::sslv23)
 , stopped_(false) {
     if (!ssl_certificate::exists()) {
         if (!ssl_certificate::generate()) {
@@ -39,8 +37,8 @@ server::server(unsigned short port)
 
     try {
         ssl_context_.use_certificate_chain_file(ssl_certificate::filename());
-        ssl_context_.use_private_key_file(ssl_certificate::filename(), boost::asio::ssl::context::pem);
-        ssl_context_.set_options(boost::asio::ssl::context::verify_none);
+        ssl_context_.use_private_key_file(ssl_certificate::filename(), asio::ssl::context::pem);
+        ssl_context_.set_options(asio::ssl::context::verify_none);
     }
     catch (...) {
         debug::error(TAG, "ssl certificate generated, apparently, but unable to load?");
@@ -108,16 +106,16 @@ void server::start_accept() {
 
     acceptor_.async_accept(
         sess->socket().lowest_layer(),
-        boost::bind(
+        std::bind(
             &server::handle_accept,
             this,
-            boost::asio::placeholders::error,
+            std::placeholders::_1,
             sess
         )
     );
 }
 
-void server::handle_accept(const boost::system::error_code& error, session_ptr sess) {
+void server::handle_accept(const std::error_code& error, session_ptr sess) {
     if (error) {
         debug::info(TAG, "socket accept failed, connection error or server shutting down");
         return;
@@ -225,7 +223,7 @@ void server::send(request_ptr request) {
     }
 }
 
-void server::handle_scheduled_ping(const error_code& error) {
+void server::handle_scheduled_ping(const std::error_code& error) {
     ping_timer_ = timer_ptr();
     if ((!error) && (!stopped_)) {
         server::send(messages::requests::ping());
@@ -238,14 +236,14 @@ void server::schedule_ping() {
         ping_timer_->cancel();
     }
 
-    ping_timer_ = timer_ptr(new boost::asio::deadline_timer(io_service_));
-    ping_timer_->expires_from_now(boost::posix_time::seconds(240));
+    ping_timer_ = timer_ptr(new asio::high_resolution_timer(io_service_));
+    ping_timer_->expires_from_now(std::chrono::seconds(240));
 
     ping_timer_->async_wait(
         bind(
             &server::handle_scheduled_ping,
             this,
-            boost::asio::placeholders::error));
+            std::placeholders::_1));
 }
 
 void server::on_session_disconnected(session_ptr session) {
@@ -261,7 +259,7 @@ void server::on_session_disconnected(session_ptr session) {
         debug::info(
             TAG,
             "session disconnected: " + session->ip_address() + ", " +
-            (format("count=%1%") % session_list_.size()).str());
+            f8n::str::format("count=%d", session_list_.size()));
     }
 }
 
@@ -325,7 +323,7 @@ void server::boostrap_new_session(session_ptr session) {
         session_list_.insert(session);
         session->disconnect_signal().connect(this, &server::on_session_disconnected);
         session->start();
-        debug::info(TAG, (format("session starting, count=%1%") % session_list_.size()).str());
+        debug::info(TAG, f8n::str::format("session starting, count=%d", session_list_.size()));
     }
 
     /* implicitly wakes up idle sessions, and will cause the OS to detect

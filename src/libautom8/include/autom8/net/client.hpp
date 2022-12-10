@@ -9,9 +9,9 @@
 #include <autom8/message/message_formatter.hpp>
 #include <autom8/util/signal_handler.hpp>
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
-#include <boost/asio/ssl.hpp>
+#include <asio.hpp>
+#include <asio/ssl.hpp>
+#include <asio/high_resolution_timer.hpp>
 
 #include <sigslot/sigslot.h>
 #include <memory>
@@ -20,13 +20,10 @@
 #include <utility>
 #include <future>
 
-using boost::asio::ip::tcp;
-using boost::system::error_code;
-
 namespace autom8 {
     class client;
     typedef std::shared_ptr<client> client_ptr;
-    typedef std::shared_ptr<boost::asio::deadline_timer> timer_ptr;
+    typedef std::shared_ptr<asio::high_resolution_timer> timer_ptr;
 
     class client: public signal_handler
                 , public std::enable_shared_from_this<client> {
@@ -78,15 +75,15 @@ namespace autom8 {
 
     private:
         void handle_connect(
-            const boost::system::error_code& error,
-            tcp::resolver::iterator endpoint_iterator);
+            const std::error_code& error,
+            asio::ip::tcp::resolver::iterator endpoint_iterator);
 
         void handle_handshake(
-            const boost::system::error_code& error);
+            const std::error_code& error);
 
         bool verify_certificate(
             bool preverified,
-            boost::asio::ssl::verify_context& ctx);
+            asio::ssl::verify_context& ctx);
 
         void async_read_next_message();
 
@@ -102,14 +99,14 @@ namespace autom8 {
 
     private:
         struct connection {
-            using ssl_socket = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
+            using ssl_socket = asio::ssl::stream<asio::ip::tcp::socket>;
             using ssl_socket_ptr = std::unique_ptr<ssl_socket> ;
-            using ssl_context =  boost::asio::ssl::context;
+            using ssl_context =  asio::ssl::context;
             using ssl_context_ptr = std::unique_ptr<ssl_context>;
-            using io_service_ptr = std::unique_ptr <boost::asio::io_service>;
+            using io_service_ptr = std::unique_ptr <asio::io_service>;
             using thread = std::thread;
             using thread_ptr = std::unique_ptr<thread>;
-            using timer_ptr = std::unique_ptr<boost::asio::deadline_timer>;
+            using timer_ptr = std::unique_ptr<asio::high_resolution_timer>;
 
             ssl_context_ptr ssl_context_;
             ssl_socket_ptr socket_;
@@ -149,10 +146,10 @@ namespace autom8 {
 
             void reset() {
                 close();
-                io_service_ = std::make_unique<boost::asio::io_service>();
-                ssl_context_ = std::make_unique<ssl_context>(boost::asio::ssl::context::sslv23);
-                ssl_context_->set_verify_mode(boost::asio::ssl::context::verify_peer);
-                ssl_context_->set_options(boost::asio::ssl::context::default_workarounds);
+                io_service_ = std::make_unique<asio::io_service>();
+                ssl_context_ = std::make_unique<ssl_context>(asio::ssl::context::sslv23);
+                ssl_context_->set_verify_mode(asio::ssl::context::verify_peer);
+                ssl_context_->set_options(asio::ssl::context::default_workarounds);
                 socket_ = std::make_unique<ssl_socket>(*io_service_, *ssl_context_);
             }
 

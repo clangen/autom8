@@ -2,8 +2,7 @@
 #include <string>
 #include <iostream>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/format.hpp>
+#include <f8n/str/util.h>
 
 #include <autom8/message/common_messages.hpp>
 #include <autom8/net/server.hpp>
@@ -76,10 +75,8 @@ void x10_lamp::set_brightness(int new_brightness) {
             int delta = abs(new_brightness - brightness_);
 
             // build the string
-            command_string = (boost::format("%1% %2% %3%")
-                % address_
-                % command
-                % delta).str();
+            command_string = f8n::str::format(
+                "%s %s %d", address_.c_str(), command.c_str(), delta);
 
             // update clients
             brightness_ = new_brightness;

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <boost/asio.hpp>
-#include <boost/asio/ssl.hpp>
+#include <asio.hpp>
+#include <asio/ssl.hpp>
+#include <asio/high_resolution_timer.hpp>
 #include <memory>
 #include <queue>
 #include <thread>
@@ -32,17 +33,17 @@ namespace autom8 {
         void start_connecting();
 
         void handle_resolve(
-            const boost::system::error_code&,
-            boost::asio::ip::tcp::resolver::iterator
+            const std::error_code&,
+            asio::ip::tcp::resolver::iterator
         );
 
         void handle_connect(
-            const boost::system::error_code&,
-            boost::asio::ip::tcp::resolver::iterator
+            const std::error_code&,
+            asio::ip::tcp::resolver::iterator
         );
 
-        void handle_write(const boost::system::error_code&);
-        void handle_read(const boost::system::error_code&, size_t);
+        void handle_write(const std::error_code&);
+        void handle_read(const std::error_code&, size_t);
         void read_next_message();
         void start_next_write();
         void disconnect();
@@ -52,11 +53,11 @@ namespace autom8 {
         void send_ping();
 
     private:
-        boost::asio::io_service io_service_;
-        boost::asio::ip::tcp::socket* socket_;
-        boost::asio::ip::tcp::resolver resolver_;
-        boost::asio::streambuf read_buffer_;
-        boost::asio::deadline_timer reconnect_timer_, ping_timer_;
+        asio::io_service io_service_;
+        asio::ip::tcp::socket* socket_;
+        asio::ip::tcp::resolver resolver_;
+        asio::streambuf read_buffer_;
+        asio::high_resolution_timer reconnect_timer_, ping_timer_;
         std::shared_ptr<std::thread> io_thread_;
         std::queue<std::string> write_queue_;
         std::mutex write_queue_lock_, connection_lock_;

@@ -1,5 +1,4 @@
 #include <autom8/device/device_base.hpp>
-#include <boost/format.hpp>
 #include <json.hpp>
 
 using namespace autom8;

@@ -2,11 +2,11 @@
 #include <autom8/constants.h>
 
 #include <f8n/debug/debug.h>
-
-#include <boost/algorithm/string_regex.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include <f8n/str/util.h>
 
 #include <base64/base64.h>
+
+#include <regex>
 
 using namespace nlohmann;
 using namespace autom8;
@@ -20,7 +20,7 @@ message::message()
 : type_(message_type_invalid) {
 }
 
-boost::asio::streambuf& message::read_buffer() {
+asio::streambuf& message::read_buffer() {
     return read_buffer_;
 }
 
@@ -49,9 +49,7 @@ bool message::parse_message(size_t bytes_read) {
 
         // parse the message. it should consist of two parts: a URI and
         // a body, separated by a MESSAGE_URI_DELIMITER
-        std::vector<std::string> split_result;
-        boost::regex split_regex(MESSAGE_URI_DELIMITER);
-        boost::algorithm::split_regex(split_result, plain_text, split_regex);
+        std::vector<std::string> split_result = f8n::str::split(plain_text, MESSAGE_URI_DELIMITER);
         if (split_result.size() != 2) {
             return false;
         }
@@ -63,9 +61,9 @@ bool message::parse_message(size_t bytes_read) {
         body_ = json::parse(body);
 
         // parse and validate the URI
-        boost::cmatch uri_matches;
-        boost::regex uri_regex(MESSAGE_URI_REGEX_MATCH);
-        if (boost::regex_match(uri.c_str(), uri_matches, uri_regex)) {
+        std::cmatch uri_matches;
+        std::regex uri_regex(MESSAGE_URI_REGEX_MATCH);
+        if (std::regex_match(uri.c_str(), uri_matches, uri_regex)) {
             if (uri_matches.size() == 4) {
                 // [0] = full string
                 // [1] = autom8://
@@ -97,7 +95,7 @@ bool message::parse_message(size_t bytes_read) {
 
 void message::read_string_from_buffer(std::string& target, size_t bytes_read) {
     buffer_type buffers = read_buffer_.data();
-    buffer_iterator buff_it = boost::asio::buffers_begin(buffers);
+    buffer_iterator buff_it = asio::buffers_begin(buffers);
 
     target.assign(buff_it, (buff_it + bytes_read));
 

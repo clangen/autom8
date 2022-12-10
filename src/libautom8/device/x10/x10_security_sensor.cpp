@@ -2,9 +2,6 @@
 #include <string>
 #include <iostream>
 
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <autom8/message/common_messages.hpp>
 #include <autom8/net/server.hpp>
 

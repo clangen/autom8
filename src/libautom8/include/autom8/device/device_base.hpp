@@ -3,7 +3,6 @@
 #include <autom8/constants.h>
 
 #include <memory>
-#include <boost/enable_shared_from_this.hpp>
 
 #include <json.hpp>
 

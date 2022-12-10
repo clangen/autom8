@@ -16,12 +16,15 @@
 #include <openssl/rsa.h>
 #include <openssl/bn.h>
 
-#include <boost/filesystem.hpp>
+#include <sstream>
+#include <filesystem>
 
 #ifdef WIN32
 #include <io.h>
 #include <fcntl.h>
 #endif
+
+#include <utf8/utf8.h>
 
 static const std::string TAG = "ssl_certificate";
 
@@ -29,14 +32,12 @@ using namespace autom8;
 using namespace f8n::utf;
 using namespace f8n::prefs;
 using debug = f8n::debug;
-
-#include <utf8/utf8.h>
+namespace fs = std::filesystem;
 
 namespace autom8 {
     namespace ssl_certificate {
         bool exists() {
-            return boost::filesystem::exists(
-                boost::filesystem::path(filename()));
+            return fs::exists(fs::u8path(filename()));
         }
 
         bool remove() {
@@ -44,8 +45,7 @@ namespace autom8 {
                 return true;
             }
 
-            return boost::filesystem::remove(
-                boost::filesystem::path(filename()));
+            return fs::remove(fs::u8path(filename()));
         }
 
         std::string filename() {

@@ -1,5 +1,3 @@
-#include <boost/format.hpp>
-
 #include <autom8/net/server.hpp>
 #include <autom8/message/response.hpp>
 #include <autom8/device/device_system.hpp>

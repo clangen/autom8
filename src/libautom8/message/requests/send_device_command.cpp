@@ -8,9 +8,6 @@
 
 #include <f8n/debug/debug.h>
 
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-
 using namespace autom8;
 using namespace nlohmann;
 using debug = f8n::debug;
@@ -88,14 +85,14 @@ void send_device_command::dispatch(
     if (command == set_status_command) {
         iterator it = params.find("status");
         if (it != params.end()) {
-            device_status new_status = (device_status) boost::lexical_cast<int>(it->second);
+            device_status new_status = (device_status) std::stoi(it->second);
             (new_status == device_status_on) ? device->turn_on() : device->turn_off();
         }
     }
     else if (command == set_brightness_command) {
         iterator it = params.find("brightness");
         if (it != params.end()) {
-            int brightness = boost::lexical_cast<int>(it->second);
+            int brightness = std::stoi(it->second);
 
             lamp* l = NULL;
             if (device->get_interface(l)) {

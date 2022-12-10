@@ -1,6 +1,6 @@
 #include <autom8/device/x10/mochad/mochad_controller.hpp>
 #include <autom8/util/utility.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 #include <f8n/debug/debug.h>
 #include <f8n/str/util.h>
 #include <f8n/preferences/Preferences.h>
@@ -13,7 +13,7 @@ using namespace autom8;
 using namespace f8n;
 using namespace f8n::prefs;
 using debug = f8n::debug;
-using boost::asio::ip::tcp;
+using asio::ip::tcp;
 
 mochad_controller::mochad_controller()
 : resolver_(io_service_)
@@ -38,7 +38,7 @@ bool mochad_controller::init() {
         debug::info(TAG, "starting up");
 
         io_thread_.reset(
-            new std::thread(boost::bind(
+            new std::thread(std::bind(
                 &mochad_controller::io_thread_proc,
                 this
             ))
@@ -112,9 +112,9 @@ void mochad_controller::schedule_ping() {
     std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (connected_) {
-        ping_timer_.expires_from_now(boost::posix_time::seconds(10));
+        ping_timer_.expires_from_now(std::chrono::seconds(10));
 
-        ping_timer_.async_wait(boost::bind(
+        ping_timer_.async_wait(std::bind(
             &mochad_controller::send_ping, this
         ));
     }
@@ -125,9 +125,9 @@ void mochad_controller::schedule_reconnect() {
 
     if (!connected_ && !reconnecting_) {
         debug::info(TAG, "scheduling reconnect in 10 seconds");
-        reconnect_timer_.expires_from_now(boost::posix_time::seconds(10));
+        reconnect_timer_.expires_from_now(std::chrono::seconds(10));
 
-        reconnect_timer_.async_wait(boost::bind(
+        reconnect_timer_.async_wait(std::bind(
             &mochad_controller::start_connecting, this
         ));
 
@@ -135,7 +135,7 @@ void mochad_controller::schedule_reconnect() {
     }
 }
 
-void mochad_controller::handle_write(const boost::system::error_code& error) {
+void mochad_controller::handle_write(const std::error_code& error) {
     {
         std::unique_lock<decltype(write_queue_lock_)> lock(write_queue_lock_);
         writing_ = false;
@@ -156,7 +156,7 @@ void mochad_controller::handle_write(const boost::system::error_code& error) {
     }
 }
 
-void mochad_controller::handle_read(const boost::system::error_code& error, size_t size) {
+void mochad_controller::handle_read(const std::error_code& error, size_t size) {
     if (!error) {
         std::istream is(&read_buffer_);
         std::string line;
@@ -170,22 +170,22 @@ void mochad_controller::read_next_message() {
     std::unique_lock<decltype(connection_lock_)> lock(connection_lock_);
 
     if (connected_) {
-        boost::asio::async_read_until(
+        asio::async_read_until(
             *socket_,
             read_buffer_,
             '\n',
-            boost::bind(
+            std::bind(
                 &mochad_controller::handle_read,
                 this,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred
+                std::placeholders::_1,
+                std::placeholders::_2
             )
         );
     }
 }
 
 void mochad_controller::handle_connect(
-    const boost::system::error_code& error,
+    const std::error_code& error,
     tcp::resolver::iterator endpoint_iterator)
 {
     {
@@ -213,7 +213,7 @@ void mochad_controller::handle_connect(
 }
 
 void mochad_controller::handle_resolve(
-    const boost::system::error_code& error,
+    const std::error_code& error,
     tcp::resolver::iterator endpoint_iterator)
 {
     if (!error) {
@@ -223,14 +223,14 @@ void mochad_controller::handle_resolve(
 
         socket_ = new tcp::socket(io_service_);
 
-        boost::asio::async_connect(
+        asio::async_connect(
             socket_->lowest_layer(),
             endpoint_iterator,
             end,
-            boost::bind(
+            std::bind(
                 &mochad_controller::handle_connect,
                 this,
-                boost::asio::placeholders::error,
+                std::placeholders::_1,
                 endpoint_iterator));
     }
     else {
@@ -268,11 +268,11 @@ void mochad_controller::start_connecting() {
 
     resolver_.async_resolve(
         query,
-        boost::bind(
+        std::bind(
             &mochad_controller::handle_resolve,
             this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::iterator
+            std::placeholders::_1,
+            std::placeholders::_2
         )
     );
 }
@@ -285,7 +285,7 @@ void mochad_controller::io_thread_proc() {
     /* the io_service will close itself if it thinks there is no
     more work to be done. this line prevents it from auto-stopping
     when the server is stopped. */
-    boost::asio::io_service::work work(io_service_);
+    asio::io_service::work work(io_service_);
     io_service_.run();
 
     disconnect();
@@ -318,13 +318,13 @@ void mochad_controller::start_next_write() {
         std::cerr << "writing to socket now! " << command << std::endl;
 #endif
 
-        boost::asio::async_write(
+        asio::async_write(
             *socket_,
-            boost::asio::buffer(command.c_str(), command.size()),
-            boost::bind(
+            asio::buffer(command.c_str(), command.size()),
+            std::bind(
                 &mochad_controller::handle_write,
                 this,
-                boost::asio::placeholders::error
+                std::placeholders::_1
             )
         );
     }
