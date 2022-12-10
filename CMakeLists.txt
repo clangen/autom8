@@ -34,12 +34,18 @@ link_directories ("/usr/local/lib")
 include_directories("/usr/local/include")
 
 if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  link_directories ("/usr/local/opt/openssl/lib")
-  include_directories("/usr/local/opt/openssl/include")
-  link_directories ("/usr/local/opt/icu4c/lib")
-  include_directories("/usr/local/opt/icu4c/include")
-  link_directories ("/usr/local/opt/ncurses/lib")
-  include_directories("/usr/local/opt/ncurses/include")
+  execute_process(
+    COMMAND brew config
+    COMMAND grep -i HOMEBREW_PREFIX
+    COMMAND awk "{print $2}"
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE BSD_PATH_PREFIX)
+  link_directories ("${BSD_PATH_PREFIX}/opt/openssl/lib")
+  include_directories("${BSD_PATH_PREFIX}/opt/openssl/include")
+  link_directories ("${BSD_PATH_PREFIX}/opt/icu4c/lib")
+  include_directories("${BSD_PATH_PREFIX}/opt/icu4c/include")
+  link_directories ("${BSD_PATH_PREFIX}/opt/ncurses/lib")
+  include_directories("${BSD_PATH_PREFIX}/opt/ncurses/include")
 endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if (EXISTS "/etc/arch-release" OR EXISTS "/etc/manjaro-release" OR NO_NCURSESW)
