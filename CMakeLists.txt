@@ -104,10 +104,19 @@ add_subdirectory("${autom8_curses_SOURCE_DIR}/src/cursespp/")
 
 add_dependencies(autom8_curses f8n cursespp)
 
+set(EXTRA_LINK_LIBRARIES "")
+if (
+  (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0) OR
+  (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.0)
+)
+  message(STATUS "[build] detected old compiler, manuallyh adding -lstdc++fs")
+  set(EXTRA_LINK_LIBRARIES ${EXTRA_LINK_LIBRARIES} stdc++fs)
+endif()
+
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses ncursesw panelw f8n cursespp ssl crypto)
+  target_link_libraries(autom8_curses ${EXTRA_LINK_LIBRARIES} ncursesw panelw f8n cursespp ssl crypto)
 else (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses curses panel f8n cursespp ssl crypto)
+  target_link_libraries(autom8_curses ${EXTRA_LINK_LIBRARIES} curses panel f8n cursespp ssl crypto)
 endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 file(GLOB themes "src/app/data/themes/*.json")
