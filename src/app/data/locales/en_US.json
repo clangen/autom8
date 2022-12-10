@@ -57,6 +57,9 @@
         "shortcuts_console": "console",
         "shortcuts_settings": "settings",
 
+        "client_disconnected_invalid_password_title": "incorrect password",
+        "client_disconnected_invalid_password_message": "disconnected from server: incorrect password",
+
         "validator_dialog_title": "validation error",
         "validator_dialog_number_parse_bounded_error": "please enter a number between {{minimum}} and {{maximum}} to continue.",
         "validator_dialog_number_parse_error": "please enter a number to continue."

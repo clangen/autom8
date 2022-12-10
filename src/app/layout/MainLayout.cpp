@@ -2,6 +2,8 @@
 #include <app/util/Message.h>
 #include <cursespp/Colors.h>
 #include <cursespp/Screen.h>
+#include <cursespp/DialogOverlay.h>
+#include <f8n/i18n/Locale.h>
 #include <f8n/debug/debug.h>
 
 using namespace autom8;
@@ -13,6 +15,7 @@ using namespace f8n::runtime;
 static const int REGISTER_FOR_BROADCASTS = app::message::CreateType();
 static const int UPDATE_STATUS_MESSAGE = app::message::CreateType();
 static const int SCHEDULE_RECONNECT = app::message::CreateType();
+static const int SHOW_INCORRECT_PASSWORD_DIALOG = app::message::CreateType();
 
 MainLayout::MainLayout(App& app, ConsoleLogger* logger, client_ptr client)
 : AppLayout(app)
@@ -77,6 +80,14 @@ void MainLayout::ProcessMessage(f8n::runtime::IMessage& message) {
             client->reconnect();
         }
     }
+    else if (message.Type() == SHOW_INCORRECT_PASSWORD_DIALOG) {
+        std::shared_ptr<DialogOverlay> dialog(new DialogOverlay());
+        (*dialog)
+            .SetTitle(_TSTR("client_disconnected_invalid_password_title"))
+            .SetMessage(_TSTR("client_disconnected_invalid_password_message"))
+            .AddButton("KEY_ENTER", "ENTER", _TSTR("button_ok"));
+        App::Overlays().Push(dialog);
+    }
     else {
         AppLayout::ProcessMessage(message);
     }
@@ -129,7 +140,10 @@ void MainLayout::OnClientStateChanged(client::connection_state state, client::re
     this->Post(UPDATE_STATUS_MESSAGE);
 
     if (state == autom8::client::state_disconnected) {
-        if (reason != client::auth_failed && reason != client::user) {
+        if (reason == client::auth_failed) {
+            this->Post(SHOW_INCORRECT_PASSWORD_DIALOG);
+        }
+        else if (reason != client::user) {
             debug::info("ClientLayout", "scheduling reconnect...");
             this->Remove(SCHEDULE_RECONNECT);
             this->Post(SCHEDULE_RECONNECT, 0L, 0L, 5000);
