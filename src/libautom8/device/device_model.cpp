@@ -137,7 +137,7 @@ bool device_model::remove(database_id id) {
 
     std::string delete_device = f8n::str::format(
         " DELETE FROM %s"
-        " WHERE %2%=?;",
+        " WHERE %s=?;",
         device_table_name_.c_str(),
         ID_COLUMN);
 
@@ -279,7 +279,7 @@ device_list device_model::all_devices() const {
 bool device_model::remove_groups(database_id id) {
     std::string query = f8n::str::format(
         " DELETE FROM %s"
-        " WHERE %2%=?;",
+        " WHERE %s=?;",
         groups_table_name_.c_str(),
         DEVICE_ID_COLUMN);
 
