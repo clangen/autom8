@@ -115,8 +115,13 @@ int main(int argc, char* argv[]) {
         app.SetColorTheme(prefs->GetString(settings::UI_THEME));
 
 #ifdef WIN32
-        //app.SetIcon(IDI_ICON1);
+        app.SetIcon(IDI_ICON1);
         app.SetSingleInstanceId("autom8");
+        auto font = settings::GetApplicationDirectory() + "fonts/SourceCodePro-Medium.ttf";
+        if (App::RegisterFont(font)) {
+            App::SetDefaultFontface("Source Code Pro Medium");
+            App::SetDefaultMenuVisibility(false);
+        }
 #endif
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {

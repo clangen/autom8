@@ -103,10 +103,18 @@
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+
+
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+
 xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(TargetDir)" /Y /e</Command>
+
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(TargetDir)" /Y /e
+
+if not exist "$(TargetDir)fonts" mkdir "$(TargetDir)fonts"
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(TargetDir)fonts\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -127,10 +135,18 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(T
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+
+
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+
 xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win64\dll\openssl\*" "$(TargetDir)" /Y /e</Command>
+
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win64\dll\openssl\*" "$(TargetDir)" /Y /e
+
+if not exist "$(TargetDir)fonts" mkdir "$(TargetDir)fonts"
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(TargetDir)fonts\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,10 +170,18 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win64\dll\openssl\*" "$(T
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+
+
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+
 xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(TargetDir)" /Y /e</Command>
+
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(TargetDir)" /Y /e
+
+if not exist "$(TargetDir)fonts" mkdir "$(TargetDir)fonts"
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(TargetDir)fonts\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -181,10 +205,18 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win32\dll\openssl\*" "$(T
     </Link>
     <PostBuildEvent>
       <Command>if not exist "$(TargetDir)themes" mkdir "$(TargetDir)themes"
+
 xcopy "$(ProjectDir)data\themes\*" "$(TargetDir)themes\" /Y /e
+
+
 if not exist "$(TargetDir)locales" mkdir "$(TargetDir)locales"
+
 xcopy "$(ProjectDir)data\locales\*" "$(TargetDir)locales\" /Y /e
-xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win64\dll\openssl\*" "$(TargetDir)" /Y /e</Command>
+
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win64\dll\openssl\*" "$(TargetDir)" /Y /e
+
+if not exist "$(TargetDir)fonts" mkdir "$(TargetDir)fonts"
+xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(TargetDir)fonts\" /Y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
