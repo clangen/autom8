@@ -8,18 +8,16 @@ project(autom8_curses)
 set (autom8_curses_VERSION_MAJOR 0)
 set (autom8_curses_VERSION_MINOR 1)
 
-set(CMAKE_CXX_STANDARD 14)
+find_program(CCACHE_FOUND ccache)
+if (CCACHE_FOUND)
+  message(STATUS "[ccache] ccache enabled!")
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-
-if (${LINK_STATICALLY} MATCHES "true")
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-
-set (BOOST_LIBS system filesystem thread regex)
-find_package(Boost 1.55.0 REQUIRED ${BOOST_LIBS})
-add_definitions (-DHAVE_BOOST -D_FILE_OFFSET_BITS=64 -DSIGSLOT_USE_POSIX_THREADS)
-set (BOOST_LINK_LIBS ${Boost_LIBRARIES})
 
 set (EXECUTABLE_OUTPUT_PATH ${autom8_curses_SOURCE_DIR}/__output)
 
@@ -27,6 +25,7 @@ include_directories (
   "${autom8_curses_SOURCE_DIR}/src"
   "${autom8_curses_SOURCE_DIR}/src/cursespp/f8n/src"
   "${autom8_curses_SOURCE_DIR}/src/cursespp/f8n/src/3rdparty/include"
+  "${autom8_curses_SOURCE_DIR}/src/cursespp/f8n/src/3rdparty/asio/asio/include"
   "${autom8_curses_SOURCE_DIR}/src/cursespp/src"
   "${autom8_curses_SOURCE_DIR}/src/libautom8/include"
 )
@@ -100,9 +99,9 @@ add_subdirectory("${autom8_curses_SOURCE_DIR}/src/cursespp/")
 add_dependencies(autom8_curses f8n cursespp)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} ncursesw panelw f8n cursespp ssl crypto)
+  target_link_libraries(autom8_curses ncursesw panelw f8n cursespp ssl crypto)
 else (CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(autom8_curses ${BOOST_LINK_LIBS} curses panel f8n cursespp ssl crypto)
+  target_link_libraries(autom8_curses curses panel f8n cursespp ssl crypto)
 endif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 file(GLOB themes "src/app/data/themes/*.json")

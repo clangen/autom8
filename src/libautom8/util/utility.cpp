@@ -1,6 +1,7 @@
 #include <autom8/util/utility.hpp>
 #include <openssl/sha.h>
 #include <sstream>
+#include <string.h>
 
 namespace autom8 {
     namespace utility {
