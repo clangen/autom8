@@ -175,9 +175,9 @@ bool device_model::update(
     const std::vector<std::string>& groups)
 {
     std::string query = f8n::str::format(
-        " UPDATE %1%"
-        " SET %2%=?, %3%=?, %4%=?"
-        " WHERE %5%=?;",
+        " UPDATE %s"
+        " SET %s=?, %s=?, %s=?"
+        " WHERE %s=?;",
         device_table_name_.c_str(),
         TYPE_COLUMN,
         ADDRESS_COLUMN,
@@ -242,9 +242,9 @@ device_ptr device_model::find_by_address(const std::string& address_to_find) {
 
 device_list device_model::all_devices() const {
     std::string query = f8n::str::format(
-        " SELECT %1%, %2%, %3%, %4%"
-        " FROM %5%"
-        " ORDER BY %3%;",
+        " SELECT %s, %s, %s, %s"
+        " FROM %s"
+        " ORDER BY %s;",
         ID_COLUMN,
         TYPE_COLUMN,
         ADDRESS_COLUMN,
