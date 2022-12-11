@@ -3,6 +3,8 @@ a terminal-based home automation client/server that uses [cursespp](https://gith
 
 it runs and behaves exactly the same on windows, macos linux and freebsd.
 
+[homepage is here](https://autom8.io)
+
 ## main screen
 
 ![main screen](https://raw.githubusercontent.com/clangen/clangen-projects-static/master/autom8/screenshots/autom8_curses_01.png)
