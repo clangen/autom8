@@ -107,22 +107,25 @@ int main(int argc, char* argv[]) {
         auto client = std::make_shared<autom8::client>();
         client->connect(host, port, password);
 
-        App app(APP_NAME);
-
-        app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
-        app.SetColorMode(settings::ColorMode());
-        app.SetColorBackgroundType(settings::BackgroundType());
-        app.SetColorTheme(prefs->GetString(settings::UI_THEME));
-
 #ifdef WIN32
-        app.SetIcon(IDI_ICON1);
-        app.SetSingleInstanceId("autom8");
         auto font = settings::GetApplicationDirectory() + "fonts/SourceCodePro-Medium.ttf";
         if (App::RegisterFont(font)) {
             App::SetDefaultFontface("Source Code Pro Medium");
             App::SetDefaultMenuVisibility(false);
         }
 #endif
+
+        App app(APP_NAME);
+
+#ifdef WIN32
+        app.SetSingleInstanceId("autom8");
+        app.SetIcon(IDI_ICON1);
+#endif
+
+        app.SetMinimumSize(MIN_WIDTH, MIN_HEIGHT);
+        app.SetColorMode(settings::ColorMode());
+        app.SetColorBackgroundType(settings::BackgroundType());
+        app.SetColorTheme(prefs->GetString(settings::UI_THEME));
 
         app.SetKeyHandler([&](const std::string& kn) -> bool {
             if (kn == "M-d") {
