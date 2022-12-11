@@ -160,6 +160,7 @@ int main(int argc, char* argv[]) {
     }
 
     debug::Stop();
+    consoleLogger->Stop();
 
     return 0;
 }

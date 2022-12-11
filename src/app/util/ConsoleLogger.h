@@ -28,6 +28,8 @@ namespace autom8 { namespace app {
 
             virtual void ProcessMessage(f8n::runtime::IMessage &message) override;
 
+            void Stop();
+
             AdapterPtr Adapter();
 
         private:

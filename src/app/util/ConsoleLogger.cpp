@@ -44,6 +44,9 @@ ConsoleLogger::ConsoleLogger(IMessageQueue& messageQueue)
 }
 
 ConsoleLogger::~ConsoleLogger() {
+}
+
+void ConsoleLogger::Stop() {
     messageQueue.Unregister(this);
 }
 
