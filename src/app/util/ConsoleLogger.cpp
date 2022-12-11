@@ -40,6 +40,11 @@ ConsoleLogger::ConsoleLogger(IMessageQueue& messageQueue)
 : messageQueue(messageQueue) {
     this->adapter = std::make_shared<SimpleScrollAdapter>();
     this->adapter->SetSelectable(true);
+    messageQueue.Register(this);
+}
+
+ConsoleLogger::~ConsoleLogger() {
+    messageQueue.Unregister(this);
 }
 
 void ConsoleLogger::verbose(const std::string& tag, const std::string& string) {

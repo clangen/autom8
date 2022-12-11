@@ -155,6 +155,7 @@ int main(int argc, char* argv[]) {
     if (autom8::server::is_running()) {
         autom8::server::stop();
     }
+
     debug::Stop();
 
     return 0;
