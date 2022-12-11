@@ -3,6 +3,8 @@ a terminal-based home automation client/server that uses [cursespp](https://gith
 
 it runs and behaves exactly the same on windows, macos linux and freebsd.
 
+3 clause bsd licensed.
+
 [homepage is here](https://autom8.io)
 
 ## main screen
