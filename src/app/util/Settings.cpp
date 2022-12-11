@@ -1,7 +1,12 @@
 #include "Settings.h"
 #include <f8n/str/utf.h>
+#include <f8n/str/util.h>
 #include <autom8/device/device_system.hpp>
 #include <cursespp/Colors.h>
+
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 using namespace autom8;
 using namespace f8n::sdk;
@@ -186,7 +191,7 @@ namespace autom8 { namespace app { namespace settings {
         realpath(command.u8string().c_str(), pathbuf);
         delete[] argv;
 #else
-        std::string pathToProc = u8fmt("/proc/%d/exe", (int)getpid());
+        std::string pathToProc = f8n::str::format("/proc/%d/exe", (int)getpid());
         readlink(pathToProc.c_str(), pathbuf, PATH_MAX);
 #endif
 
