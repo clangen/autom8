@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DefaultActivityTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+    </style>
+
+    <style name="GenericTranslucentTheme" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowShowWallpaper">false</item>
+    </style>
+
+    <style name="DeviceActivityTranslucentTheme" parent="@style/GenericTranslucentTheme">
+        <item name="android:windowShowWallpaper">true</item>
+    </style>
+
+    <style name="TranslucentListView" parent="android:style/Widget.ListView">
+        <item name="android:background">@color/device_list_translucent_bg</item>
+    </style>
+
+    <style name="DefaultText">
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+    </style>
+
+    <style name="DeviceStatusText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="DeviceItemText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:shadowColor">@color/device_row_text_shadow</item>
+        <item name="android:shadowRadius">2.0</item>
+        <item name="android:shadowDx">0.0</item>
+        <item name="android:shadowDy">0.0</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">left</item>
+        <item name="android:layout_weight">1.0</item>
+    </style>
+
+    <style name="DeviceItemPrimaryText" parent="DeviceItemText">
+        <item name="android:textColor">@color/device_row_default_primary_text</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+    </style>
+
+    <style name="VerifyValueText" parent="DeviceItemPrimaryText">
+        <item name="android:singleLine">false</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+    </style>
+
+    <style name="DeviceItemSecondaryText" parent="DeviceItemText">
+        <item name="android:shadowRadius">1.0</item>
+        <item name="android:textColor">@color/device_row_default_secondary_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginLeft">12sp</item>
+        <item name="android:layout_marginRight">12sp</item>
+    </style>
+</resources>

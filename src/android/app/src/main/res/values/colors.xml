@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="device_list_translucent_bg">#33000000</color>
+
+    <color name="device_row_alert_bg">#88ff0000</color>
+    <color name="device_row_alert_status_text">#ffffff</color>
+    <color name="device_row_alert_status_bg">#bbff0000</color>
+
+    <color name="device_row_off_status_bg">#00ffffff</color>
+    <color name="device_row_off_status_text">#888888</color>
+
+    <color name="device_row_on_bg">#44ffffff</color>
+    <color name="device_row_on_status_bg">#22ffffff</color>
+    <color name="device_row_on_status_text">#ffffff</color>
+
+    <color name="device_row_default_primary_text">#ffffff</color>
+    <color name="device_row_default_secondary_text">#bbbbbb</color>
+    <color name="device_row_text_shadow">#000000</color>
+
+    <color name="notification_text">#000000</color>
+
+    <color name="connected_header_opaque">#202020</color>
+
+    <color name="connection_item_button_text">#ffffff</color>
+    <color name="connection_item_button_normal_bg">#444444</color>
+    <color name="ripple_color">#cccccc</color>
+    <color name="connection_item_button_focused_bg">#777777</color>
+    <color name="connection_item_button_pressed_bg">#666666</color>
+    <color name="connection_item_primary_text">#ffffff</color>
+    <color name="button_bar_button">#55000000</color>
+    <color name="connection_manager_item_bg">#22000000</color>
+
+    <color name="color_primary">#44661f</color>
+    <color name="color_primary_dark">#2c4214</color>
+    <color name="color_accent">#d1ff9f</color>
+</resources>

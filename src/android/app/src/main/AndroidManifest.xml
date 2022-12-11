@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Required, otherwise on HDPI devices ListView dividers
+    look jaggy. This probably affects other controls as well,
+    but is most noticeable in ListViews.  -->
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:anyDensity="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name="org.clangen.autom8.Application"
+        android:icon="@mipmap/ic_launcher_square"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/DefaultActivityTheme"
+        android:label="@string/app_name" >
+
+        <activity
+            android:name=".ui.activity.DevicesActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/DefaultActivityTheme"
+            android:label="@string/app_name"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.CAMERA_BUTTON" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".ui.activity.EditConnectionActivity"
+            android:label="@string/edit_connection_name"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.ConnectionManagerActivity"
+            android:label="@string/connection_manager_name"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.VerifyConnectionActivity"
+            android:launchMode="singleInstance"
+            android:label="@string/verify_server_name"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/settings_name"
+            android:exported="false" />
+
+        <service
+            android:label="@string/service_name"
+            android:name=".service.ClientService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="org.clangen.autom8.service.ACTION_START_SERVICE" />
+                <action android:name="org.clangen.autom8.service.ACTION_INC_CLIENT_COUNT" />
+                <action android:name="org.clangen.autom8.service.ACTION_DEC_CLIENT_COUNT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".ExternalIntentReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="999999">
+                <action android:name="org.clangen.autom8.CHANGE_CONNECTION" />
+            </intent-filter>
+       </receiver>
+
+    </application>
+</manifest>

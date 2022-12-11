@@ -6,7 +6,8 @@ cmake_minimum_required(VERSION 3.1)
 project(autom8_curses)
 
 set (autom8_curses_VERSION_MAJOR 0)
-set (autom8_curses_VERSION_MINOR 1)
+set (autom8_curses_VERSION_MINOR 9)
+set (autom8_curses_VERSION_PATCH 0)
 
 find_program(CCACHE_FOUND ccache)
 if (CCACHE_FOUND)

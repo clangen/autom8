@@ -1,0 +1,7 @@
+.gradle
+/local.properties
+.idea/**
+.project
+.classpath
+.DS_Store
+/build

@@ -1,0 +1,79 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/connection_manager_item_background"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="64dp" >
+
+    <TextView
+        android:id="@+id/DeleteButton"
+        android:background="@drawable/listview_item_button"
+        android:textColor="@color/connection_item_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:padding="12dp"
+        android:layout_marginRight="4dp"
+        android:gravity="center"
+        android:focusable="true"
+        android:textSize="16sp"
+        android:text="@string/connection_mgr_button_delete"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/EditButton"
+        android:background="@drawable/listview_item_button"
+        android:textColor="@color/connection_item_button_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="12dp"
+        android:layout_marginRight="4dp"
+        android:gravity="center"
+        android:focusable="true"
+        android:textSize="16sp"
+        android:text="@string/connection_mgr_button_edit"
+        android:layout_toLeftOf="@+id/DeleteButton"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:id="@+id/ConnectionItem"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/EditButton"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:focusable="true"
+        android:paddingRight="8sp"
+        android:paddingLeft="16sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/Name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:gravity="left"
+                android:textColor="@color/connection_item_primary_text"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/Details"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:gravity="left" />
+
+           </LinearLayout>
+
+       </FrameLayout>
+
+</RelativeLayout>

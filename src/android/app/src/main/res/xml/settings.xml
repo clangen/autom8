@@ -1,0 +1,69 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent">
+
+    <PreferenceCategory
+        android:key=""
+        android:title="@string/settings_section_service" >
+
+        <CheckBoxPreference
+            android:key="@string/pref_run_in_background"
+            android:title="@string/setting_run_in_background_title"
+            android:summary="@string/setting_run_in_background_desc"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_security_notifications"
+            android:title="@string/setting_security_notifications_title"
+            android:summary="@string/setting_security_notifications_desc"
+            android:dependency="@string/pref_run_in_background"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_start_at_boot"
+            android:title="@string/setting_start_at_boot_title"
+            android:summary="@string/setting_start_at_boot_desc"
+            android:dependency="@string/pref_run_in_background"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key=""
+        android:title="@string/settings_section_advanced" >
+
+        <Preference
+            android:key="@string/pref_connection_manager"
+            android:title="@string/setting_connection_manager_title"
+            android:summary="@string/setting_connection_manager_desc" />
+
+        <CheckBoxPreference
+            android:key="@string/pref_translucency_enabled"
+            android:title="@string/setting_translucency_title"
+            android:summary="@string/setting_translucency_desc"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="@string/pref_notification_ringtone"
+            android:title="@string/setting_ringtone_title"
+            android:summary="@string/setting_ringtone_desc"
+            android:showSilent="true"
+            android:ringtoneType="notification" />
+
+        <EditTextPreference
+            android:key="@string/pref_hearbeat_interval"
+            android:title="@string/setting_heartbeat_title"
+            android:summary="@string/setting_heartbeat_desc"
+            android:inputType="numberDecimal"
+            android:defaultValue="10.0" />
+
+        <EditTextPreference
+            android:key="@string/pref_version"
+            android:title="@string/setting_version_title"
+            android:summary="@string/setting_version_desc"
+            android:enabled="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

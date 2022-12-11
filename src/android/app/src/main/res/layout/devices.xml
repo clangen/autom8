@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/DevicesView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ListView
+        android:id="@+id/DevicesListView"
+        android:divider="@android:drawable/divider_horizontal_dark"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/listview_item_background"
+        android:dividerHeight="1dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

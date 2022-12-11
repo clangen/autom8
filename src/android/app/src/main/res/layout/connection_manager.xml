@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ConnectionManagerView"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <include layout="@layout/toolbar"/>
+
+    <ListView
+        android:id="@+id/ListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.0"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/NoConnectionsView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1.0"
+        android:gravity="center"
+        android:text="@string/connection_mgr_no_connections" />
+
+    <View
+        android:background="@android:drawable/divider_horizontal_dark"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/CloseButton"
+            android:background="@drawable/listview_item_background"
+            android:focusable="true"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_weight="0.5"
+            android:clickable="true"
+            android:text="@string/button_close" />
+        <View
+            android:background="@android:drawable/divider_horizontal_dark"
+            android:layout_width="1dp"
+            android:layout_height="fill_parent" />
+
+        <TextView
+            android:id="@+id/AddButton"
+            android:background="@drawable/listview_item_background"
+            android:focusable="true"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_weight="0.5"
+            android:text="@string/connection_mgr_button_add_connection" />
+
+    </LinearLayout>
+
+</LinearLayout>

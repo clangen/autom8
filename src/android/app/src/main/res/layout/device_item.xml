@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/DeviceItemView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:id="@+id/DeviceItemSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingRight="4dp"
+        android:paddingLeft="4dp"
+        android:background="@drawable/connection_manager_item_background"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/DeviceItemSeparatorText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/DeviceItemGroupToggleView"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="4dp"
+            android:gravity="right"
+            android:textStyle="normal"
+            android:textSize="18dp" />
+
+        <ToggleButton
+            android:id="@+id/DeviceItemGroupToggleView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/DeviceItemRow"
+        android:background="@drawable/listview_item_background"
+        android:layout_below="@id/DeviceItemSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="64dp">
+
+        <FrameLayout
+            android:id="@+id/DeviceItemStatusContainer"
+            android:layout_alignParentLeft="true"
+            android:layout_width="64dp"
+            android:layout_height="64dp" >
+
+            <TextView
+                style="@style/DeviceStatusText"
+                android:visibility="invisible"
+                android:id="@+id/DeviceItemStatusViewText" />
+
+            <ProgressBar
+                android:id="@+id/DeviceItemUpdatingView"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/DeviceItemMainContent"
+            android:layout_toRightOf="@+id/DeviceItemStatusContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/DeviceItemPrimaryText"
+                    android:id="@+id/DeviceItemLabelView" />
+
+                <TextView
+                    style="@style/DeviceItemSecondaryText"
+                    android:id="@+id/DeviceItemModuleInfoView" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

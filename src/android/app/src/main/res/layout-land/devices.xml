@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/DevicesView"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <GridView
+        android:id="@+id/DevicesGridView"
+        android:divider="@android:drawable/divider_horizontal_dark"
+        android:dividerHeight="1dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="0sp"
+        android:horizontalSpacing="1sp"
+        android:verticalSpacing="1sp"
+        android:numColumns="2" />
+
+</RelativeLayout>
