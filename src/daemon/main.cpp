@@ -2,8 +2,10 @@
 #include <f8n/environment/Environment.h>
 #include <f8n/preferences/Preferences.h>
 #include <f8n/debug/debug.h>
+#include <f8n/str/util.h>
 
 #include <autom8/autom8.h>
+#include <autom8/version.h>
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/device/device_system.hpp>
@@ -17,11 +19,11 @@ struct Daemon: f8n::daemon::Daemon {
     }
 
     std::string Version() override {
-        return "0.90.0";
+        return f8n::str::format("%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
     }
 
     std::string Hash() override {
-        return "nohash";
+        return VERSION_COMMIT_HASH;
     }
 
     std::string LockFilename() override {
