@@ -21,3 +21,5 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 else ()
   target_link_libraries(app ${autom8_LINK_LIBRARIES} curses panel autom8)
 endif ()
+
+target_include_directories(app BEFORE PRIVATE ${VENDOR_INCLUDE_DIRECTORIES})

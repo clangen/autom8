@@ -46,13 +46,21 @@ if (CMAKE_SYSTEM_NAME MATCHES "Darwin")
     COMMAND awk "{print $2}"
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE BSD_PATH_PREFIX)
-  link_directories ("${BSD_PATH_PREFIX}/opt/openssl/lib")
-  include_directories("${BSD_PATH_PREFIX}/opt/openssl/include")
-  link_directories ("${BSD_PATH_PREFIX}/opt/icu4c/lib")
-  include_directories("${BSD_PATH_PREFIX}/opt/icu4c/include")
-  link_directories ("${BSD_PATH_PREFIX}/opt/ncurses/lib")
-  include_directories("${BSD_PATH_PREFIX}/opt/ncurses/include")
-endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  list(
+    APPEND
+    VENDOR_LINK_DIRECTORIES
+    "${BSD_PATH_PREFIX}/opt/libev/lib"
+    "${BSD_PATH_PREFIX}/opt/openssl/lib"
+    "${BSD_PATH_PREFIX}/opt/icu4c/lib"
+    "${BSD_PATH_PREFIX}/opt/ncurses/lib")
+  list(
+    APPEND
+    VENDOR_INCLUDE_DIRECTORIES
+    "${BSD_PATH_PREFIX}/opt/libev/include"
+    "${BSD_PATH_PREFIX}/opt/openssl/include"
+    "${BSD_PATH_PREFIX}/opt/icu4c/include"
+    "${BSD_PATH_PREFIX}/opt/ncurses/include")
+endif ()
 
 if (EXISTS "/etc/arch-release" OR EXISTS "/etc/manjaro-release" OR NO_NCURSESW)
   add_definitions (-DNO_NCURSESW)
@@ -60,8 +68,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
   add_definitions (-DNO_NCURSESW)
 endif()
 
-find_library(LIBCRYPTO NAMES crypto)
-find_library(LIBSSL NAMES ssl)
+find_library(LIBCRYPTO NAMES crypto PATHS ${VENDOR_LINK_DIRECTORIES})
+find_library(LIBSSL NAMES ssl PATHS ${VENDOR_LINK_DIRECTORIES})
 
 set(autom8_LINK_LIBRARIES ${LIBCRYPTO} ${LIBSSL} f8n cursespp)
 if (
