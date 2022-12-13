@@ -43,6 +43,17 @@ struct Daemon: f8n::daemon::Daemon {
                 new debug::SimpleFileBackend()
             });
         }
+
+        f8n::env::Initialize("autom8", ENVIRONMENT_VERSION);
+        auto prefs = f8n::prefs::Preferences::ForComponent("settings");
+        auto systemType = prefs->GetString("server.controller");
+        auto serverPort = prefs->GetInt("server.port", 7901);
+        debug::i("daemon", f8n::str::format(
+            "system type: '%s' port: '%d'",
+            systemType.c_str(),
+            serverPort));
+        autom8::device_system::set_instance(systemType);
+        autom8::server::start(serverPort);
     }
 
     void OnDeinit() override{

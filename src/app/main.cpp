@@ -40,6 +40,7 @@
 #include <autom8/net/client.hpp>
 #include <autom8/net/server.hpp>
 #include <autom8/device/device_system.hpp>
+#include <autom8/version.h>
 
 #include <cursespp/App.h>
 #include <cursespp/Colors.h>
@@ -82,7 +83,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 int main(int argc, char* argv[]) {
 #endif
 
-    env::Initialize(APP_NAME, 1);
+    env::Initialize(APP_NAME, ENVIRONMENT_VERSION);
 
     auto consoleLogger = new ConsoleLogger(Window::MessageQueue());
     auto fileLogger = new debug::SimpleFileBackend();
@@ -108,7 +109,7 @@ int main(int argc, char* argv[]) {
         client->connect(host, port, password);
 
 #ifdef WIN32
-        auto font = settings::GetApplicationDirectory() + "fonts/SourceCodePro-Medium.ttf";
+        auto font = f8n::env::GetApplicationDirectory() + "fonts/SourceCodePro-Medium.ttf";
         if (App::RegisterFont(font)) {
             App::SetDefaultFontface("Source Code Pro Medium");
             App::SetDefaultMenuVisibility(false);

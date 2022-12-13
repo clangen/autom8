@@ -41,3 +41,5 @@
 #define VERSION_PATCH 1
 #define VERSION_COMMIT_HASH "#b845ac9"
 #define VERSION "0.99.1"
+
+#define ENVIRONMENT_VERSION 1

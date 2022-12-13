@@ -16,8 +16,6 @@ namespace autom8 { namespace app { namespace settings {
     cursespp::Colors::BgType BackgroundType();
     cursespp::Colors::Mode ColorMode();
 
-    std::string GetApplicationDirectory();
-
     extern const std::string CLIENT_HOSTNAME;
     extern const std::string CLIENT_PASSWORD;
     extern const std::string CLIENT_PORT;
