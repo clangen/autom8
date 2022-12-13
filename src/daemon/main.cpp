@@ -30,6 +30,10 @@ struct Daemon: f8n::daemon::Daemon {
         return "/tmp/autom8d.lock";
     }
 
+    std::vector<int> GetSignals() override {
+        return { SIGUSR1 };
+    }
+
     void OnInit(f8n::daemon::Type type, f8n::runtime::MessageQueue& messageQueue) override {
         if (type == f8n::daemon::Type::Background) {
             freopen("/tmp/autom8d.log", "w", stderr);
@@ -65,6 +69,7 @@ struct Daemon: f8n::daemon::Daemon {
     }
 
     void OnSignal(int signal) override {
+        debug::i("daemon", f8n::str::format("signal received: %d", signal));
     }
 } instance;
 
