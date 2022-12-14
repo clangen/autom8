@@ -1,0 +1,87 @@
+0.99.1
+
+* added `autom8d` daemon for UNIX platforms.
+* upgraded to the latest version of utfcpp.
+* refactored, modernized `cmake` configuration files.
+* various small bug fixes.
+
+--------------------------------------------------------------------------------
+
+0.99.0
+
+* replaced the QT-based desktop app with a multi-platform terminal based app.
+* removed boost as a project dependency.
+* upgraded the Android client to use the latest tooling.
+
+--------------------------------------------------------------------------------
+
+0.8.1
+
+* added Linux and Raspberry Pi support, plus a web admin app, and web client app.
+* added support for `mochad` cm15a driver on Linux.
+* upgraded android client to use material design components (much prettier now).
+* upgraded windows server to latest Qt and OpenSSL version.
+
+--------------------------------------------------------------------------------
+
+0.3.1
+
+* improved password hashing and security. (note: you may need to reset your
+  password)
+* fixed bugs related to picking up RF commands from devices outside of the system
+
+--------------------------------------------------------------------------------
+
+0.2.6
+
+android:
+  * added new "Intercept camera button" setting to start autom8 (instead of the
+    camera) when the camera button is pressed. (disabled by default)
+
+server:
+  * disable ability to create new devices with uppercase characters, leading to
+    device status not updating properly.
+
+--------------------------------------------------------------------------------
+
+0.2.5
+
+android:
+  * improved battery usage when security notifications are disabled
+  * fixed blurry drawing observed on high resolution devices
+  * all strings are now localized and can be easily translated
+  * fixed bug where background notification may disappear until the app is
+    opened again
+  * fixed strange edge-case bug where user could get stuck creating a new
+    profile
+  * improved connection reliability
+
+server:
+  * fixed bug where clients with high latency or low bandwidth could cause lag
+    when updating devices on faster connections
+  * huge performance improvements, now scales to support over 200 simultaneous
+    clients
+  * fixed UI performance issues when log file becomes extremely large, or lots
+    is logged in a short period of time
+  * fixed bug where new connections may be accepted during the shutdown process
+  * fixed many small bugs
+
+--------------------------------------------------------------------------------
+
+0.2.0
+
+android:
+  * optional persistent notification for easy system-wide access
+  * improved battery usage
+  * more reliable persistent connection (and auto-reconnect)
+  * main window translucency (looks great with live wallpapers!)
+  * brand new settings screen with more options
+  * fixed all known focus problems on non-touch screen devices
+
+server:
+  * user interface completely rewritten in QT4
+  * added the much requested "minimize to system tray"
+  * more robust session management and shutdown
+  * improved logging, with automatic log truncation
+  * generally more reliable and resource friendly
+
