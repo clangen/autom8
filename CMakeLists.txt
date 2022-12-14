@@ -88,6 +88,19 @@ add_subdirectory("${autom8_project_SOURCE_DIR}/src/daemon/")
 add_dependencies(app f8n cursespp libautom8)
 add_dependencies(daemon f8n cursespp libautom8)
 
+add_custom_target(postbuild ALL DEPENDS app daemon)
+
+add_custom_command(
+  TARGET postbuild
+  POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/script/patch-rpath.sh" ${CMAKE_CURRENT_SOURCE_DIR})
+
+if (CMAKE_BUILD_TYPE MATCHES Release)
+  message(STATUS "[post-build] binary stripping enabled for ${CMAKE_CURRENT_SOURCE_DIR}")
+  add_custom_command(
+    TARGET postbuild
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/script/strip-binaries.sh" ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 file(GLOB themes "src/app/data/themes/*.json")
 file(COPY ${themes} DESTINATION __output/themes)
 
