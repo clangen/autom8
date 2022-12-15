@@ -93,17 +93,7 @@ add_custom_target(postbuild ALL DEPENDS app daemon)
 
 add_custom_command(
   TARGET postbuild
-  POST_BUILD COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/script/patch-rpath.sh" ${CMAKE_CURRENT_SOURCE_DIR})
-
-if (CMAKE_BUILD_TYPE MATCHES Release)
-  message(STATUS "[post-build] binary stripping enabled for ${CMAKE_CURRENT_SOURCE_DIR}")
-  add_custom_command(
-    TARGET postbuild
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/script/strip-binaries.sh" ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
-file(GLOB themes "src/app/data/themes/*.json")
-file(COPY ${themes} DESTINATION __output/themes)
-
-file(GLOB locales "src/app/data/locales/*.json")
-file(COPY ${locales} DESTINATION __output/locales)
+  POST_BUILD
+  COMMAND
+  "${CMAKE_CURRENT_SOURCE_DIR}/script/post-build.sh"
+  ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BUILD_TYPE})
