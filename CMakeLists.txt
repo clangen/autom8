@@ -24,6 +24,7 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fPIC -O2")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set (EXECUTABLE_OUTPUT_PATH ${autom8_project_SOURCE_DIR}/__output)
+set (LIBRARY_OUTPUT_PATH ${autom8_project_SOURCE_DIR}/__output)
 
 include_directories (
   "${autom8_project_SOURCE_DIR}/src"
