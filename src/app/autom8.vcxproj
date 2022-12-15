@@ -97,6 +97,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)__output32\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -129,6 +130,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)__output64\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -162,6 +164,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;WINVER=0x0601;NOMINMAX;UNICODE;_UNICODE;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -197,6 +200,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;WINVER=0x0601;NOMINMAX;UNICODE;_UNICODE;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
