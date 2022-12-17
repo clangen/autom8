@@ -16,4 +16,7 @@ fi
 $SCRIPT_DIR/patch-rpath.sh $DIR
 $SCRIPT_DIR/stage-static-assets.sh $DIR
 
+echo "[post-build] re-running 'cmake .' to re-index compiled artifacts"
+cmake .
+
 echo "[post-build] finished"
