@@ -98,8 +98,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -127,7 +127,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
@@ -154,7 +154,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -177,7 +177,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)include;$(ProjectDir)..\cursespp\f8n\src\3rdparty\asio\asio\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\include\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\win32_include\;$(ProjectDir)..\cursespp\f8n\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0601;_WINDOWS;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;_WEBSOCKETPP_CPP11_TYPE_TRAITS_;_WEBSOCKETPP_CPP11_RANDOM_DEVICE_;ASIO_STANDALONE;AUTOM8_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
