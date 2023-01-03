@@ -98,6 +98,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)__output32\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win32\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -131,6 +132,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)__output64\Debug\;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib;$(ProjectDir)..\cursespp\f8n\src\3rdparty\bin\win64\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -165,6 +167,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -201,6 +204,7 @@ xcopy "$(SolutionDir)src\cursespp\f8n\src\3rdparty\bin\win\font\*.ttf" "$(Target
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
